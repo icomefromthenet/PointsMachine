@@ -17,7 +17,7 @@ class PointSystemGateway extends AbstractTable implements TableInterface
     * Create a new instance of the querybuilder
     *
     * @access public
-    * @return IComeFromTheNet\Ledger\Query\AccountGroupQuery
+    * @return IComeFromTheNet\PointsMachine\DB\Query\PointSystemQuery
     */
     public function newQueryBuilder()
     {

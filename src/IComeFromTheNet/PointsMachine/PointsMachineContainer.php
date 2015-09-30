@@ -11,6 +11,8 @@ use DBALGateway\Metadata\Schema;
 
 use IComeFromTheNet\PointsMachine\DB\Builder\PointSystemBuilder;
 use IComeFromTheNet\PointsMachine\DB\Gateway\PointSystemGateway;
+use IComeFromTheNet\PointsMachine\DB\Builder\PointSystemZoneBuilder;
+use IComeFromTheNet\PointsMachine\DB\Gateway\PointSystemZoneGateway;
 
 
 class PointsMachineContainer extends Pimple
@@ -80,7 +82,8 @@ class PointsMachineContainer extends Pimple
         
         if(null === $aTableMap) {
             $aTableMap = array(
-              'pt_system' => 'pt_system'  
+               'pt_system'          => 'pt_system'  
+              ,'pt_system_zone'     => 'pt_system_zone' 
                 
             );
         }
@@ -123,6 +126,37 @@ class PointsMachineContainer extends Pimple
             return $oGateway;
         });
         
+        $oGatewayCol->addGateway('pt_system_zone',function() use ($c, $oSchema, $aTableMap) {
+            $sActualTableName = $aTableMap['pt_system_zone'];
+            $oEvent           = $c->getEventDispatcher();
+            $oLogger          = $c->getAppLogger();
+            $oDatabase        = $c->getDatabaseAdaper();
+            $oGatewayCol      = $c->getGatewayCollection();
+            
+            # Systems Table
+            $table = $oSchema->createTable($sActualTableName);
+            $table->addColumn('episode_id'   ,'integer' ,array("unsigned" => true,'autoincrement' => true));
+            $table->addColumn('zone_id'       ,'guid'    ,array());
+            $table->addColumn('zone_name'     ,'string'  ,array("length" => 100));
+            $table->addColumn('zone_name_slug','string'  ,array("length" => 100));
+            $table->addColumn('system_id'     ,'guid'    ,array("unsigned" => true));
+            $table->addColumn('enabled_from'  ,'datetime',array());
+            $table->addColumn('enabled_to'    ,'datetime',array());
+        
+            $table->setPrimaryKey(array('episode_id'));
+            $table->addUniqueIndex(array('zone_id','enabled_from'),'pr_sys_zone_uk1');
+            $table->addForeignKeyConstraint('pt_system',array('system_id'),array('system_id'),array(),'pt_sys_zone_fk1');
+            
+            $oBuilder = new PointSystemZoneBuilder();
+            $oGateway = new PointSystemZoneGateway($sActualTableName, $oDatabase, $oEvent, $table , null, $oBuilder);
+    
+            
+            $oBuilder->setGateway($oGateway);
+            $oBuilder->setLogger($oLogger);
+            $oGateway->setTableQueryAlias('z');
+            
+            return $oGateway;
+        });
         
         
         $this['gateway_collection'] = $oGatewayCol;    

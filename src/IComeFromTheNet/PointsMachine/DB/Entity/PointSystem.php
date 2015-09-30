@@ -1,6 +1,7 @@
 <?php 
 namespace IComeFromTheNet\PointsMachine\DB\Entity;
 
+use DateTime;
 use IComeFromTheNet\PointsMachine\DB\CommonEntity;
 use IComeFromTheNet\PointsMachine\DB\ActiveRecordInterface;
 

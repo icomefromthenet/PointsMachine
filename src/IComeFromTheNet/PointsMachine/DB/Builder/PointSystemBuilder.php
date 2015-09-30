@@ -2,6 +2,7 @@
 namespace IComeFromTheNet\PointsMachine\DB\Builder;
 
 use IComeFromTheNet\PointsMachine\DB\CommonBuilder;
+use IComeFromTheNet\PointsMachine\DB\Entity\PointSystem;
 
 /**
   *  Builder for PointSystem Entities
@@ -16,20 +17,21 @@ class PointSystemBuilder extends CommonBuilder
     /**
       *  Convert data array into entity
       *
-      *  @return mixed
+      *  @return IComeFromTheNet\PointsMachine\DB\Entity\PointSystem
       *  @param array $data
       *  @access public
       */
     public function build($data)
     {
         $oSystem = new PointSystem($this->oGateway, $this->oLogger);
+        $sAlias = $this->getTableQueryAlias();
         
-        $oSystem->iEpisodeID        = $data['episode_id'];
-        $oSystem->sSystemID         = $data['system_id'];
-        $oSystem->sSystemName       = $data['system_name'];
-        $oSystem->sSystemNameSlug   = $data['system_name_slug'];
-        $oSystem->oEnabledFrom      = $data['enabled_from'];
-        $oSystem->oEnabledTo        = $data['enabled_to'];
+        $oSystem->iEpisodeID        = $this->getField($data,'episode_id',$sAlias);
+        $oSystem->sSystemID         = $this->getField($data,'system_id',$sAlias);
+        $oSystem->sSystemName       = $this->getField($data,'system_name',$sAlias);
+        $oSystem->sSystemNameSlug   = $this->getField($data,'system_name_slug',$sAlias);
+        $oSystem->oEnabledFrom      = $this->getField($data,'enabled_from',$sAlias);
+        $oSystem->oEnabledTo        = $this->getField($data,'enabled_to',$sAlias);
         
         return $oSystem;
     }
@@ -39,8 +41,9 @@ class PointSystemBuilder extends CommonBuilder
       *
       *  @return array
       *  @access public
+      *  @param IComeFromTheNet\PointsMachine\DB\Entity\PointSystem the entity to convert
       */
-    public function demolish($entity)
+    public function demolish($oSystem)
     {
         return array(
           'episode_id'  => $oSystem->iEpisodeID,

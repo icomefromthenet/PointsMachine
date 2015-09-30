@@ -1,6 +1,7 @@
 <?php 
 namespace IComeFromTheNet\PointsMachine\DB;
 
+use DateTime;
 use DBALGateway\Table\AbstractTable;
 use Psr\Log\LoggerInterface;
 
