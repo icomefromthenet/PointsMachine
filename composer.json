@@ -1,0 +1,29 @@
+{
+    "name": "icomefromthenet/pointsmachine",
+    "description": "Library to calculate points values in scoring systems",
+    "require-dev": {
+        "phpunit/phpunit": "4.8.*",
+        "phpunit/dbunit": "1.4.*",
+        "mrkrstphr/dbunit-fixture-arrays" : "@stable"
+    },
+    "require" : {
+        "doctrine/dbal" : "2.5.*",  
+        "pimple/pimple" : "1.1.*",
+        "psr/log"       : "1.0.0",
+        "icomefromthenet/dbal-gateway" : "dev-master",
+        "vlucas/valitron"              : "1.2.*"
+           
+    },
+    "authors": [
+        {
+            "name": "icomefromthenet",
+            "email": "admin@icomefromthenet.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-0": {
+            "IComeFromTheNet\\PointsMachine": "src/"
+        }
+    }
+}
