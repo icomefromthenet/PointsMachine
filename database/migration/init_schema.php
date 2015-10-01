@@ -46,12 +46,12 @@ class init_schema implements EntityInterface
         $table = $sc->createTable("pt_event_type");
         $table->addColumn('episode_id','integer',array("unsigned" => true,'autoincrement' => true));
         $table->addColumn('event_type_id','guid',array());
-        $table->addColumn('event_type_name','string',array("length" => 100));
-        $table->addColumn('event_type_name_slug','string',array("length" => 100));
+        $table->addColumn('event_name','string',array("length" => 100));
+        $table->addColumn('event_name_slug','string',array("length" => 100));
         $table->addColumn('enabled_from','datetime',array());
         $table->addColumn('enabled_to','datetime',array());
         $table->addColumn('rounding_option','smallint',array('default'=> 1,'comment' => 'Rounding method to apply floor|ceil|round'));
-        $table->addColumn('cap_value','integer',array('signed' => true, 'comment' =>'Max value +- that this event type can generate after all calculations have been made'));
+        $table->addColumn('cap_value','float',array('signed' => true, 'comment' =>'Max value +- that this event type can generate after all calculations have been made'));
         
         $table->setPrimaryKey(array('episode_id'));
         $table->addUniqueIndex(array('event_type_id','enabled_from'),'pt_event_type_uiq1');

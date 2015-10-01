@@ -20,5 +20,6 @@ interface ActiveRecordInterface
     
     public function validate(DateTime $oProcessDte);
     
+    
 }
 /* End of File */

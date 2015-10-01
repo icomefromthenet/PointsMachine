@@ -2,25 +2,25 @@
 namespace IComeFromTheNet\PointsMachine\DB\Gateway;
 
 use IComeFromTheNet\PointsMachine\DB\CommonTable;
-use IComeFromTheNet\PointsMachine\DB\Query\PointSystemQuery;
+use IComeFromTheNet\PointsMachine\DB\Query\EventTypeQuery;
 
 /**
- * Table gateway pt_system
+ * Table gateway pt_event_type
  * 
  * @author Lewis Dyer <getintouch@icomefromthenet.com>
  * @since 1.0
  */
-class PointSystemGateway extends CommonTable
+class EventTypeGateway extends CommonTable
 {
     /**
     * Create a new instance of the querybuilder
     *
     * @access public
-    * @return IComeFromTheNet\PointsMachine\DB\Query\PointSystemQuery
+    * @return IComeFromTheNet\PointsMachine\DB\Query\EventTypeQuery
     */
     public function newQueryBuilder()
     {
-        return $this->head = new PointSystemQuery($this->adapter,$this);
+        return $this->head = new EventTypeQuery($this->adapter,$this);
     }
     
     

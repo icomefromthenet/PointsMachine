@@ -2,25 +2,25 @@
 namespace IComeFromTheNet\PointsMachine\DB\Gateway;
 
 use IComeFromTheNet\PointsMachine\DB\CommonTable;
-use IComeFromTheNet\PointsMachine\DB\Query\PointSystemQuery;
+use IComeFromTheNet\PointsMachine\DB\Query\PointSystemZoneQuery;
 
 /**
- * Table gateway pt_system
+ * Table gateway pt_system_zone
  * 
  * @author Lewis Dyer <getintouch@icomefromthenet.com>
  * @since 1.0
  */
-class PointSystemGateway extends CommonTable
+class PointSystemZoneGateway extends CommonTable
 {
     /**
     * Create a new instance of the querybuilder
     *
     * @access public
-    * @return IComeFromTheNet\PointsMachine\DB\Query\PointSystemQuery
+    * @return IComeFromTheNet\PointsMachine\DB\Query\PointSystemZoneQuery
     */
     public function newQueryBuilder()
     {
-        return $this->head = new PointSystemQuery($this->adapter,$this);
+        return $this->head = new PointSystemZoneQuery($this->adapter,$this);
     }
     
     

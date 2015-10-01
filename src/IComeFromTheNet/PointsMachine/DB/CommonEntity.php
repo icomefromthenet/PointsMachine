@@ -127,6 +127,17 @@ abstract class CommonEntity implements ActiveRecordInterface
     
     abstract public function validate(DateTime $oProcessDte);
     
+    //-----------------------------------------------------------------
+    # Extra Validator Helpers
+    
+    abstract public function validateNewEpisode(DateTime $oProcessDte);
+    
+    
+    abstract public function validateNewEntity(DateTime $oProcessDte);
+    
+    
+    abstract public function validateUpdate(DateTime $oProcessDte);
+    
     
 }
 /* End of File */

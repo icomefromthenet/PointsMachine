@@ -25,6 +25,9 @@ class ContainerTest extends TestWithContainer
         
         $oGateway = $oContainer->getGatewayCollection()->getGateway('pt_system_zone');
         $this->assertInstanceOf('IComeFromTheNet\PointsMachine\DB\Gateway\PointSystemZoneGateway',$oGateway);
+         
+        $oGateway = $oContainer->getGatewayCollection()->getGateway('pt_event_type');
+        $this->assertInstanceOf('IComeFromTheNet\PointsMachine\DB\Gateway\EventTypeGateway',$oGateway);
     }
     
     

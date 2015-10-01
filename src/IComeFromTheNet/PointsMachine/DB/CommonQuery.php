@@ -206,6 +206,23 @@ class CommonQuery extends AbstractQuery
         
        return $this;    
     }
+    
+    /**
+     * Return if the eposide has a stop date the precedes the start date
+     * this means we have an invalid range.
+     * 
+     * @return CommonQuery
+     */ 
+    public function whereStartDateProceedsStopDate()
+    {
+        $oGateway = $this->getGateway();
+        $sAlias   = $this->getDefaultAlias();
+        if(false === empty($sAlias)) {
+            $sAlias = $sAlias .'.';
+        }
+        
+        return $this->andWhere($sAlias."enabled_to =< ". $sAlias.'enabled_from');
+    }
 
 }
 /* End of Class */
