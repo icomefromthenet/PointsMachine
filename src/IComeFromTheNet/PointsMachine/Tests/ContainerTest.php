@@ -28,6 +28,13 @@ class ContainerTest extends TestWithContainer
          
         $oGateway = $oContainer->getGatewayCollection()->getGateway('pt_event_type');
         $this->assertInstanceOf('IComeFromTheNet\PointsMachine\DB\Gateway\EventTypeGateway',$oGateway);
+    
+        $oGateway = $oContainer->getGatewayCollection()->getGateway('pt_score_group');
+        $this->assertInstanceOf('IComeFromTheNet\PointsMachine\DB\Gateway\ScoreGroupGateway',$oGateway);
+    
+        $oGateway = $oContainer->getGatewayCollection()->getGateway('pt_score');
+        $this->assertInstanceOf('IComeFromTheNet\PointsMachine\DB\Gateway\ScoreGateway',$oGateway);
+        
     }
     
     

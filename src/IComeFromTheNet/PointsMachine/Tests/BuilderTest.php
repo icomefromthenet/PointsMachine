@@ -105,7 +105,7 @@ class BuilderTest extends TestWithContainer
        
     }
     
-    public function testEventTypes()
+    public function testEventTypesBuilder()
     {
         $oBuilder = $this->getContainer()
                          ->getGatewayCollection()
@@ -142,6 +142,136 @@ class BuilderTest extends TestWithContainer
         $this->assertEquals($oEntity->sEventNameSlug,$aRawEntity['event_name_slug']);
         $this->assertEquals($oEntity->oEnabledFrom,$aRawEntity['enabled_from']);
         $this->assertEquals($oEntity->oEnabledTo,$aRawEntity['enabled_to']);
+        
+        
+    }
+    
+    public function testEventBuilder()    
+    {
+        $oBuilder = $this->getContainer()
+                         ->getGatewayCollection()
+                         ->getGateway('pt_event')
+                         ->getEntityBuilder();
+      
+        $sAlais   = $oBuilder->getTableQueryAlias().'_';
+        
+        # test build
+        
+        $aRawEntity = array(
+            $sAlais.'event_id'      => 1,
+            $sAlais.'event_type_id' => '12FF4301-C20D-A9BB-6BFE-1FEFC41BEF41',
+            $sAlais.'event_created' => new DateTime(),
+            $sAlais.'process_date'  => new DateTime('now +5 day'),
+            $sAlais.'occured_date'  => new DateTime('now -10 day'),
+    
+        );
+        
+        $oEntity = $oBuilder->build($aRawEntity);
+        
+        $this->assertEquals($aRawEntity[$sAlais.'event_id'],$oEntity->iScoringEventID);
+        $this->assertEquals($aRawEntity[$sAlais.'event_type_id'],$oEntity->sEventTypeID);
+        $this->assertEquals($aRawEntity[$sAlais.'event_created'],$oEntity->oCreatedDate);
+        $this->assertEquals($aRawEntity[$sAlais.'process_date'],$oEntity->oProcessDate);
+        $this->assertEquals($aRawEntity[$sAlais.'occured_date'],$oEntity->oOccuredDate);
+    
+        $aRawEntity = $oBuilder->demolish($oEntity);
+        
+        $this->assertEquals($oEntity->iScoringEventID,$aRawEntity['event_id']);
+        $this->assertEquals($oEntity->sEventTypeID,$aRawEntity['event_type_id']);
+        $this->assertEquals($oEntity->oCreatedDate,$aRawEntity['event_created']);
+        $this->assertEquals($oEntity->oProcessDate,$aRawEntity['process_date']);
+        $this->assertEquals($oEntity->oOccuredDate,$aRawEntity['occured_date']);
+    
+        
+    }
+    
+    
+    public function testScoreGroupBuilder()
+    {
+        $oBuilder = $this->getContainer()
+                         ->getGatewayCollection()
+                         ->getGateway('pt_score_group')
+                         ->getEntityBuilder();
+      
+        $sAlais   = $oBuilder->getTableQueryAlias().'_';
+        
+        # test build
+        
+        $aRawEntity = array(
+            $sAlais.'episode_id'    => 1,
+            $sAlais.'score_group_id' =>  '12FF4301-C20D-A9BB-6BFE-1FEFC41BEF41',
+            $sAlais.'group_name' => 'Demo Event A',
+            $sAlais.'group_name_slug' => 'demo_event_a',
+            $sAlais.'enabled_from' => new DateTime(),
+            $sAlais.'enabled_to' => new DateTime('3000-01-01'),
+        );
+        
+        $oEntity = $oBuilder->build($aRawEntity);
+        
+        $this->assertEquals($aRawEntity[$sAlais.'episode_id'],$oEntity->iEpisodeID);
+        $this->assertEquals($aRawEntity[$sAlais.'score_group_id'],$oEntity->sScoreGroupID);
+        $this->assertEquals($aRawEntity[$sAlais.'group_name'],$oEntity->sGroupName);
+        $this->assertEquals($aRawEntity[$sAlais.'group_name_slug'],$oEntity->sGroupNameSlug);
+        $this->assertEquals($aRawEntity[$sAlais.'enabled_from'],$oEntity->oEnabledFrom);
+        $this->assertEquals($aRawEntity[$sAlais.'enabled_to'],$oEntity->oEnabledTo);
+    
+        $aRawEntity = $oBuilder->demolish($oEntity);
+        
+        $this->assertEquals($oEntity->iEpisodeID,$aRawEntity['episode_id']);
+        $this->assertEquals($oEntity->sScoreGroupID,$aRawEntity['score_group_id']);
+        $this->assertEquals($oEntity->sGroupName,$aRawEntity['group_name']);
+        $this->assertEquals($oEntity->sGroupNameSlug,$aRawEntity['group_name_slug']);
+        $this->assertEquals($oEntity->oEnabledFrom,$aRawEntity['enabled_from']);
+        $this->assertEquals($oEntity->oEnabledTo,$aRawEntity['enabled_to']);
+        
+        
+        
+    }
+    
+    public function testScoreBuilder()
+    {
+        $oBuilder = $this->getContainer()
+                         ->getGatewayCollection()
+                         ->getGateway('pt_score')
+                         ->getEntityBuilder();
+      
+        $sAlais   = $oBuilder->getTableQueryAlias().'_';
+        
+        # test build
+        
+        $aRawEntity = array(
+            $sAlais.'episode_id'      => 1,
+            $sAlais.'score_id'        => 'B5D37F95-525F-9E4F-A5B7-F6EA3A269A34',
+            $sAlais.'score_group_id'  => '12FF4301-C20D-A9BB-6BFE-1FEFC41BEF41',
+            $sAlais.'score_name'      => 'Demo Score A',
+            $sAlais.'score_name_slug' => 'demo_score_a',
+            $sAlais.'score_value'     => 100,
+            $sAlais.'enabled_from'    => new DateTime(),
+            $sAlais.'enabled_to'      => new DateTime('3000-01-01'),
+        );
+        
+        $oEntity = $oBuilder->build($aRawEntity);
+        
+        $this->assertEquals($aRawEntity[$sAlais.'episode_id'],$oEntity->iEpisodeID);
+        $this->assertEquals($aRawEntity[$sAlais.'score_id'],$oEntity->sScoreID);
+        $this->assertEquals($aRawEntity[$sAlais.'score_group_id'],$oEntity->sScoreGroupID);
+        $this->assertEquals($aRawEntity[$sAlais.'score_name'],$oEntity->sScoreName);
+        $this->assertEquals($aRawEntity[$sAlais.'score_name_slug'],$oEntity->sScoreNameSlug);
+        $this->assertEquals($aRawEntity[$sAlais.'enabled_from'],$oEntity->oEnabledFrom);
+        $this->assertEquals($aRawEntity[$sAlais.'enabled_to'],$oEntity->oEnabledTo);
+        $this->assertEquals($aRawEntity[$sAlais.'score_value'],$oEntity->fScoreValue);
+    
+        $aRawEntity = $oBuilder->demolish($oEntity);
+        
+        $this->assertEquals($oEntity->iEpisodeID,$aRawEntity['episode_id']);
+        $this->assertEquals($oEntity->sScoreID,$aRawEntity['score_id']);
+        $this->assertEquals($oEntity->sScoreGroupID,$aRawEntity['score_group_id']);
+        $this->assertEquals($oEntity->sScoreName,$aRawEntity['score_name']);
+        $this->assertEquals($oEntity->sScoreNameSlug,$aRawEntity['score_name_slug']);
+        $this->assertEquals($oEntity->oEnabledFrom,$aRawEntity['enabled_from']);
+        $this->assertEquals($oEntity->oEnabledTo,$aRawEntity['enabled_to']);
+        
+        
         
         
     }

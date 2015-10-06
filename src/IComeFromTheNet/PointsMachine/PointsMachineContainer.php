@@ -21,6 +21,13 @@ use IComeFromTheNet\PointsMachine\DB\Builder\EventTypeBuilder;
 use IComeFromTheNet\PointsMachine\DB\Gateway\ScoringEventGateway;
 use IComeFromTheNet\PointsMachine\DB\Builder\ScoringEventBuilder;
 
+use IComeFromTheNet\PointsMachine\DB\Gateway\ScoreGroupGateway;
+use IComeFromTheNet\PointsMachine\DB\Builder\ScoreGroupBuilder;
+
+use IComeFromTheNet\PointsMachine\DB\Gateway\ScoreGateway;
+use IComeFromTheNet\PointsMachine\DB\Builder\ScoreBuilder;
+
+
 
 class PointsMachineContainer extends Pimple
 {
@@ -93,7 +100,10 @@ class PointsMachineContainer extends Pimple
               ,'pt_system_zone'     => 'pt_system_zone' 
               ,'pt_event_type'      => 'pt_event_type'
               ,'pt_event'           => 'pt_event'
-                
+              ,'pt_score_group'     => 'pt_score_group'
+              ,'pt_score'           => 'pt_score'
+              
+              
             );
         }
         $this['table_map']       = $aTableMap;
@@ -210,20 +220,85 @@ class PointsMachineContainer extends Pimple
             $table->addColumn('event_type_id','guid',array("unsigned" => true));
             $table->addColumn('event_created','datetime',array());
             $table->addColumn('process_date','datetime',array('comment' => 'Processing date for the calculator'));
-            
+            $table->addColumn('occured_date','datetime',array('comment' => 'When event occured'));
+      
             $table->setPrimaryKey(array('event_id'));
             $table->addForeignKeyConstraint($aTableMap['pt_event_type'],array('event_type_id'),array('event_type_id'),array(),'pt_event_fk1');
             
-            $oBuilder = new EventTypeBuilder();
-            $oGateway = new EventTypeGateway($sActualTableName, $oDatabase, $oEvent, $table , null, $oBuilder);
+            $oBuilder = new ScoringEventBuilder();
+            $oGateway = new ScoringEventGateway($sActualTableName, $oDatabase, $oEvent, $table , null, $oBuilder);
     
             
             $oBuilder->setGateway($oGateway);
             $oBuilder->setLogger($oLogger);
-            $oGateway->setTableQueryAlias('et');
+            $oGateway->setTableQueryAlias('se');
             
             return $oGateway;
         });
+        
+        $oGatewayCol->addGateway('pt_score_group',function() use ($c, $oSchema, $aTableMap) {
+            $sActualTableName = $aTableMap['pt_score_group'];
+            $oEvent           = $c->getEventDispatcher();
+            $oLogger          = $c->getAppLogger();
+            $oDatabase        = $c->getDatabaseAdaper();
+            $oGatewayCol      = $c->getGatewayCollection();
+            
+            # Transaction Header Table
+            $table = $oSchema->createTable($sActualTableName);
+            $table->addColumn('episode_id','integer',array("unsigned" => true,'autoincrement' => true));
+            $table->addColumn('score_group_id','guid',array());
+            $table->addColumn('group_name','string',array("length" => 100));
+            $table->addColumn('group_name_slug','string',array("length" => 100));
+            $table->addColumn('enabled_from','datetime',array());
+            $table->addColumn('enabled_to','datetime',array());  
+            
+            $table->setPrimaryKey(array('episode_id'));
+            $table->addUniqueIndex(array('score_group_id','enabled_from'),'pt_score_gp_uiq1');
+           
+            
+            $oBuilder = new ScoreGroupBuilder();
+            $oGateway = new ScoreGroupGateway($sActualTableName, $oDatabase, $oEvent, $table , null, $oBuilder);
+    
+            
+            $oBuilder->setGateway($oGateway);
+            $oBuilder->setLogger($oLogger);
+            $oGateway->setTableQueryAlias('sg');
+            
+            return $oGateway;
+        });
+        
+        $oGatewayCol->addGateway('pt_score',function() use ($c, $oSchema, $aTableMap) {
+            $sActualTableName = $aTableMap['pt_score'];
+            $oEvent           = $c->getEventDispatcher();
+            $oLogger          = $c->getAppLogger();
+            $oDatabase        = $c->getDatabaseAdaper();
+            $oGatewayCol      = $c->getGatewayCollection();
+            
+            # Transaction Header Table
+            $table = $oSchema->createTable($sActualTableName);
+            $table->addColumn('episode_id','integer',array("unsigned" => true,'autoincrement' => true));
+            $table->addColumn('score_id','guid',array());
+            $table->addColumn('enabled_from','datetime',array());
+            $table->addColumn('enabled_to','datetime',array());
+            $table->addColumn('score_name','string',array("length" => 100));
+            $table->addColumn('score_name_slug','string',array("length" => 100));
+            $table->addColumn('score_value','float',array('signed' => true,'comment' => 'based value for calculations can be + or -'));
+            $table->addColumn('score_group_id','guid',array("unsigned" => true));
+            
+            $table->setPrimaryKey(array('episode_id'));
+            $table->addUniqueIndex(array('score_id','enabled_from'),'pt_score_uiq1');
+            $table->addForeignKeyConstraint($aTableMap['pt_score_group'],array('score_group_id'),array('score_group_id'),array(),'pt_score_fk1');
+            
+            $oBuilder = new ScoreBuilder();
+            $oGateway = new ScoreGateway($sActualTableName, $oDatabase, $oEvent, $table , null, $oBuilder);
+    
+            $oBuilder->setGateway($oGateway);
+            $oBuilder->setLogger($oLogger);
+            $oGateway->setTableQueryAlias('sc');
+            
+            return $oGateway;
+        });
+        
         
         $this['gateway_collection'] = $oGatewayCol;    
         

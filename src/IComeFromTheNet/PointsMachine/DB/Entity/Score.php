@@ -7,23 +7,30 @@ use IComeFromTheNet\PointsMachine\DB\ActiveRecordInterface;
 use IComeFromTheNet\PointsMachine\PointsMachineException;
 
 /**
- * Entity for the scoring events
+ * Entity for the scores 
  * 
  * @author Lewis Dyer <getintouch@icomefromthenet.com>
  * @since 1.0
  */
-class ScoringEvent extends CommonEntity implements ActiveRecordInterface
+class Score extends CommonEntity implements ActiveRecordInterface
 {
     
-    public $iScoringEventID;
+    public $iEpisodeID;
     
-    public $sEventTypeID;
+    public $sScoreID;
+
+    public $sScoreGroupID;
+
+    public $sScoreName;
     
-    public $oCreatedDate;
+    public $sScoreSlug;
+
+    public $fScoreValue;
+
+    public $oEnabledFrom;
     
-    public $oProcessDate;
+    public $oEnabledTo;
     
-    public $oOccuredDate;
     
     
     public function saveEpisode(DateTime $oProcessDte)

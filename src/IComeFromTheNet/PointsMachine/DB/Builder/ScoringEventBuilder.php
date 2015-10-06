@@ -10,7 +10,7 @@ use IComeFromTheNet\PointsMachine\DB\Entity\ScoringEvent;
   *  @author Lewis Dyer <getintouch@icomefromthenet.com>
   *  @since 0.0.1
   */
-class PointSystemZoneBuilder extends CommonBuilder
+class ScoringEventBuilder extends CommonBuilder
 {
     
     
@@ -26,13 +26,13 @@ class PointSystemZoneBuilder extends CommonBuilder
         $oEvent = new ScoringEvent($this->oGateway, $this->oLogger);
         $sAlias = $this->getTableQueryAlias();
         
-        $oEvent->sScoringEventID = $this->getField($data,'event_id',$sAlias);
+        $oEvent->iScoringEventID = $this->getField($data,'event_id',$sAlias);
         $oEvent->sEventTypeID    = $this->getField($data,'event_type_id',$sAlias);
-        $oEvent->oCreateDate     = $this->getField($data,'event_created',$sAlias);
+        $oEvent->oCreatedDate    = $this->getField($data,'event_created',$sAlias);
         $oEvent->oProcessDate    = $this->getField($data,'process_date',$sAlias);
-        
-        
-        return $oSystem;
+        $oEvent->oOccuredDate    = $this->getField($data,'occured_date',$sAlias);
+         
+        return $oEvent;
     }
     
     /**
@@ -45,10 +45,11 @@ class PointSystemZoneBuilder extends CommonBuilder
     public function demolish($oScoringEvent)
     {
         return array(
-          'event_id'        => $oSystemZone->sScoringEventID,
-          'event_type_id'   => $oSystemZone->sEventTypeID,
-          'event_created'   => $oSystemZone->oCreateDate,
-          'process_date'    => $oSystemZone->oProcessDate,
+          'event_id'        => $oScoringEvent->iScoringEventID,
+          'event_type_id'   => $oScoringEvent->sEventTypeID,
+          'event_created'   => $oScoringEvent->oCreatedDate,
+          'process_date'    => $oScoringEvent->oProcessDate,
+          'occured_date'    => $oScoringEvent->oOccuredDate
         );
         
     }

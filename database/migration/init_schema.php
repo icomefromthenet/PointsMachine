@@ -61,6 +61,8 @@ class init_schema implements EntityInterface
         $table->addColumn('event_type_id','guid',array("unsigned" => true));
         $table->addColumn('event_created','datetime',array());
         $table->addColumn('process_date','datetime',array('comment' => 'Processing date for the calculator'));
+        $table->addColumn('occured_date','datetime',array('comment' => 'When event occured'));
+      
         
         $table->setPrimaryKey(array('event_id'));
         $table->addForeignKeyConstraint('pt_event_type',array('event_type_id'),array('event_type_id'),array(),'pt_event_fk1');
@@ -76,8 +78,8 @@ class init_schema implements EntityInterface
         $table = $sc->createTable("pt_score_group");
         $table->addColumn('episode_id','integer',array("unsigned" => true,'autoincrement' => true));
         $table->addColumn('score_group_id','guid',array());
-        $table->addColumn('score_group_name','string',array("length" => 100));
-        $table->addColumn('score_name_group_slug','string',array("length" => 100));
+        $table->addColumn('group_name','string',array("length" => 100));
+        $table->addColumn('group_name_slug','string',array("length" => 100));
         $table->addColumn('enabled_from','datetime',array());
         $table->addColumn('enabled_to','datetime',array());  
         
