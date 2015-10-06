@@ -50,8 +50,6 @@ class init_schema implements EntityInterface
         $table->addColumn('event_name_slug','string',array("length" => 100));
         $table->addColumn('enabled_from','datetime',array());
         $table->addColumn('enabled_to','datetime',array());
-        $table->addColumn('rounding_option','smallint',array('default'=> 1,'comment' => 'Rounding method to apply floor|ceil|round'));
-        $table->addColumn('cap_value','float',array('signed' => true, 'comment' =>'Max value +- that this event type can generate after all calculations have been made'));
         
         $table->setPrimaryKey(array('episode_id'));
         $table->addUniqueIndex(array('event_type_id','enabled_from'),'pt_event_type_uiq1');
@@ -80,7 +78,6 @@ class init_schema implements EntityInterface
         $table->addColumn('score_group_id','guid',array());
         $table->addColumn('score_group_name','string',array("length" => 100));
         $table->addColumn('score_name_group_slug','string',array("length" => 100));
-        $table->addColumn('is_disabled','smallint',array('default'=> 1,'comment' => 'Is this group in current use'));
         $table->addColumn('enabled_from','datetime',array());
         $table->addColumn('enabled_to','datetime',array());  
         
@@ -160,6 +157,10 @@ class init_schema implements EntityInterface
        $table->addColumn('rule_name_slug','string',array("length" => 100));
        $table->addColumn('enabled_from','datetime',array());
        $table->addColumn('enabled_to','datetime',array());
+       $table->addColumn('multiplier'  ,'float',array("unsigned" => true, 'comment' => 'Value to multiply the base value by'));
+       $table->addColumn('modifier'    ,'integer',array("unsigned" => true, 'comment' => 'value to add to the base'));
+       $table->addColumn('invert_flag' ,'smallint',array("unsigned" => true, 'comment' => 'Operation is inverted ie multiplier becomes a divisor'));
+       
        
        $table->setPrimaryKey(array('episode_id'));
        $table->addUniqueIndex(array('rule_id','enabled_from'),'pt_rule_uiq1');
@@ -209,6 +210,46 @@ class init_schema implements EntityInterface
        
        
    }
+   
+   public function getRuleChain(Connection $db, ASchema $sc)
+   {
+       # Rule Chains
+       $table = $sc->createTable("pt_rule_chain");
+       $table->addColumn('episode_id','integer',array("unsigned" => true,'autoincrement' => true));
+       $table->addColumn('rule_chain_id','guid',array());
+       $table->addColumn('event_type_id','guid',array()); 
+       $table->addColumn('system_id','guid',array()); 
+       $table->addColumn('chain_name','string',array("length" => 100));
+       $table->addColumn('chain_name_slug','string',array("length" => 100));
+       $table->addColumn('rounding_option','smallint',array('default'=> 1,'comment' => 'Rounding method to apply floor|ceil|round'));
+       $table->addColumn('cap_value','float',array('signed' => true, 'comment' =>'Max value +- that this event type can generate after all calculations have been made'));
+     
+       $table->addColumn('enabled_from','datetime',array());
+       $table->addColumn('enabled_to','datetime',array());
+
+       $table->setPrimaryKey(array('episode_id'));
+       $table->addUniqueIndex(array('rule_chain_id','enabled_from'),'pt_rule_chain_uiq1');
+       $table->addForeignKeyConstraint('pt_event_type',array('event_type_id'),array('event_type_id'),array(),'pt_rule_chain_fk1');
+       $table->addForeignKeyConstraint('pt_system',array('system_id'),array('system_id'),array(),'pt_rule_chain_fk2');
+       
+       # Chain memeber table
+       $table = $sc->createTable("pt_chain_member");
+       $table->addColumn('episode_id','integer',array("unsigned" => true,'autoincrement' => true));
+       $table->addColumn('chain_member_id','guid',array());
+       $table->addColumn('rule_chain_id','guid',array()); 
+       $table->addColumn('rule_group_id','guid',array()); 
+       $table->addColumn('orde_seq','integer',array("unsigned" => true));
+       $table->addColumn('enabled_from','datetime',array());
+       $table->addColumn('enabled_to','datetime',array());
+
+    
+       $table->setPrimaryKey(array('episode_id'));
+       $table->addUniqueIndex(array('chain_member_id','enabled_from'),'pt_chain_member_uiq1');
+       $table->addForeignKeyConstraint('pt_rule_chain',array('rule_chain_id'),array('rule_chain_id'),array(),'pt_chain_member_fk1');
+       $table->addForeignKeyConstraint('pt_rule_group',array('rule_group_id'),array('rule_group_id'),array(),'pt_chain_member_fk2');
+       
+       
+   }
     
     public function buildSchema(Connection $db, ASchema $schema)
     {
@@ -217,6 +258,7 @@ class init_schema implements EntityInterface
         $this->getEventsTables($db,$schema);
         $this->getScoresTables($db,$schema);
         $this->getScoringRulesTables($db,$schema);
+        $this->getRuleChain($db,$schema);
         
         return $schema;
     }

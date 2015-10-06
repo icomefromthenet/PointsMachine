@@ -30,8 +30,6 @@ class EventTypeBuilder extends CommonBuilder
         $oEventType->sEventTypeID      = $this->getField($data,'event_type_id',$sAlias);
         $oEventType->sEventName        = $this->getField($data,'event_name',$sAlias);
         $oEventType->sEventNameSlug    = $this->getField($data,'event_name_slug',$sAlias);
-        $oEventType->fCapValue         = $this->getField($data,'cap_value',$sAlias);
-        $oEventType->iRoundingOption   = $this->getField($data,'rounding_option',$sAlias);
         $oEventType->oEnabledFrom      = $this->getField($data,'enabled_from',$sAlias);
         $oEventType->oEnabledTo        = $this->getField($data,'enabled_to',$sAlias);
         
@@ -52,8 +50,6 @@ class EventTypeBuilder extends CommonBuilder
           'event_type_id'   => $oEventType->sEventTypeID,
           'event_name'      => $oEventType->sEventName,
           'event_name_slug' => $oEventType->sEventNameSlug,
-          'rounding_option' => $oEventType->iRoundingOption,
-          'cap_value'       => $oEventType->fCapValue,
           'enabled_from'    => $oEventType->oEnabledFrom,
           'enabled_to'      => $oEventType->oEnabledTo
         );

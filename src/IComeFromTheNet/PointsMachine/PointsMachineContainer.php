@@ -18,6 +18,9 @@ use IComeFromTheNet\PointsMachine\DB\Gateway\PointSystemZoneGateway;
 use IComeFromTheNet\PointsMachine\DB\Gateway\EventTypeGateway;
 use IComeFromTheNet\PointsMachine\DB\Builder\EventTypeBuilder;
 
+use IComeFromTheNet\PointsMachine\DB\Gateway\ScoringEventGateway;
+use IComeFromTheNet\PointsMachine\DB\Builder\ScoringEventBuilder;
+
 
 class PointsMachineContainer extends Pimple
 {
@@ -164,7 +167,7 @@ class PointsMachineContainer extends Pimple
             return $oGateway;
         });
         
-         $oGatewayCol->addGateway('pt_event_type',function() use ($c, $oSchema, $aTableMap) {
+        $oGatewayCol->addGateway('pt_event_type',function() use ($c, $oSchema, $aTableMap) {
             $sActualTableName = $aTableMap['pt_event_type'];
             $oEvent           = $c->getEventDispatcher();
             $oLogger          = $c->getAppLogger();
@@ -179,8 +182,6 @@ class PointsMachineContainer extends Pimple
             $table->addColumn('event_name_slug','string',array("length" => 100));
             $table->addColumn('enabled_from','datetime',array());
             $table->addColumn('enabled_to','datetime',array());
-            $table->addColumn('rounding_option','smallint',array('default'=> 1,'comment' => 'Rounding method to apply floor|ceil|round'));
-            $table->addColumn('cap_value','float',array('signed' => true, 'comment' =>'Max value +- that this event type can generate after all calculations have been made'));
             
             $table->setPrimaryKey(array('episode_id'));
             $table->addUniqueIndex(array('event_type_id','enabled_from'),'pt_event_type_uiq1');
@@ -196,6 +197,33 @@ class PointsMachineContainer extends Pimple
             return $oGateway;
         });
         
+        $oGatewayCol->addGateway('pt_event',function() use ($c, $oSchema, $aTableMap) {
+            $sActualTableName = $aTableMap['pt_event'];
+            $oEvent           = $c->getEventDispatcher();
+            $oLogger          = $c->getAppLogger();
+            $oDatabase        = $c->getDatabaseAdaper();
+            $oGatewayCol      = $c->getGatewayCollection();
+            
+            # Transaction Header Table
+            $table = $oSchema->createTable($sActualTableName);
+            $table->addColumn('event_id','integer',array("unsigned" => true,'autoincrement' => true));
+            $table->addColumn('event_type_id','guid',array("unsigned" => true));
+            $table->addColumn('event_created','datetime',array());
+            $table->addColumn('process_date','datetime',array('comment' => 'Processing date for the calculator'));
+            
+            $table->setPrimaryKey(array('event_id'));
+            $table->addForeignKeyConstraint($aTableMap['pt_event_type'],array('event_type_id'),array('event_type_id'),array(),'pt_event_fk1');
+            
+            $oBuilder = new EventTypeBuilder();
+            $oGateway = new EventTypeGateway($sActualTableName, $oDatabase, $oEvent, $table , null, $oBuilder);
+    
+            
+            $oBuilder->setGateway($oGateway);
+            $oBuilder->setLogger($oLogger);
+            $oGateway->setTableQueryAlias('et');
+            
+            return $oGateway;
+        });
         
         $this['gateway_collection'] = $oGatewayCol;    
         
