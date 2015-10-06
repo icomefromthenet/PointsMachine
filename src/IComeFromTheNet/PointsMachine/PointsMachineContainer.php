@@ -27,6 +27,8 @@ use IComeFromTheNet\PointsMachine\DB\Builder\ScoreGroupBuilder;
 use IComeFromTheNet\PointsMachine\DB\Gateway\ScoreGateway;
 use IComeFromTheNet\PointsMachine\DB\Builder\ScoreBuilder;
 
+use IComeFromTheNet\PointsMachine\DB\Gateway\ScoringGroupGateway;
+use IComeFromTheNet\PointsMachine\DB\Builder\ScoringGroupBuilder;
 
 
 class PointsMachineContainer extends Pimple
@@ -102,6 +104,7 @@ class PointsMachineContainer extends Pimple
               ,'pt_event'           => 'pt_event'
               ,'pt_score_group'     => 'pt_score_group'
               ,'pt_score'           => 'pt_score'
+              ,'pt_rule_group'      => 'pt_rule_group'
               
               
             );
@@ -295,6 +298,42 @@ class PointsMachineContainer extends Pimple
             $oBuilder->setGateway($oGateway);
             $oBuilder->setLogger($oLogger);
             $oGateway->setTableQueryAlias('sc');
+            
+            return $oGateway;
+        });
+        
+        $oGatewayCol->addGateway('pt_rule_group',function() use ($c, $oSchema, $aTableMap) {
+            $sActualTableName = $aTableMap['pt_rule_group'];
+            $oEvent           = $c->getEventDispatcher();
+            $oLogger          = $c->getAppLogger();
+            $oDatabase        = $c->getDatabaseAdaper();
+            $oGatewayCol      = $c->getGatewayCollection();
+            
+            # Transaction Header Table
+            $table = $oSchema->createTable($sActualTableName);
+            $table->addColumn('episode_id','integer',array("unsigned" => true,'autoincrement' => true));
+            $table->addColumn('rule_group_id','guid',array());
+            $table->addColumn('rule_group_name','string',array("length" => 100));
+            $table->addColumn('rule_group_name_slug','string',array("length" => 100));
+            $table->addColumn('enabled_from'  ,'datetime',array());
+            $table->addColumn('enabled_to'    ,'datetime',array());
+            $table->addColumn('max_multiplier','float',array("unsigned" => true, 'comment' => 'Max value of multiplier once all rules are combined in this group allows group capping'));
+            $table->addColumn('min_multiplier','float',array("unsigned" => true, 'comment' => 'Min value of multiplier once all rules are combined in this group allows group capping'));
+            $table->addColumn('max_modifier'  ,'float',array("unsigned" => true, 'comment' => 'Max value of modifier once all rules are combined in this group allows group capping'));
+            $table->addColumn('min_modifier'  ,'float',array("unsigned" => true, 'comment' => 'Min value of modifier once all rules are combined in this group allows group capping'));
+            $table->addColumn('max_count'     ,'integer',array("unsigned" => true, 'comment' => 'Max number of scroing rules that can be used that linked to this group'));
+            $table->addColumn('order_method'  ,'smallint',array("unsigned" => true, 'comment' => 'method of order to use 1= max 0=min'));
+            $table->addColumn('is_mandatory'  ,'smallint',array("unsigned" => true,'comment' => 'Group always be applied unless not linked to system and score groups'));
+           
+            $table->setPrimaryKey(array('episode_id'));
+            $table->addUniqueIndex(array('rule_group_id','enabled_from'),'pt_rule_gp_uiq1');
+                
+            $oBuilder = new ScoringGroupBuilder();
+            $oGateway = new ScoringGroupGateway($sActualTableName, $oDatabase, $oEvent, $table , null, $oBuilder);
+    
+            $oBuilder->setGateway($oGateway);
+            $oBuilder->setLogger($oLogger);
+            $oGateway->setTableQueryAlias('rg');
             
             return $oGateway;
         });

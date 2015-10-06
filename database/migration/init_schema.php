@@ -115,11 +115,10 @@ class init_schema implements EntityInterface
        $table->addColumn('rule_group_name_slug','string',array("length" => 100));
        $table->addColumn('enabled_from'  ,'datetime',array());
        $table->addColumn('enabled_to'    ,'datetime',array());
-       $table->addColumn('group_priority','integer',array("unsigned" => true, 'default' => 0,'comment' => 'Order to apply the lower the value the earlier this group executed'));
        $table->addColumn('max_multiplier','float',array("unsigned" => true, 'comment' => 'Max value of multiplier once all rules are combined in this group allows group capping'));
        $table->addColumn('min_multiplier','float',array("unsigned" => true, 'comment' => 'Min value of multiplier once all rules are combined in this group allows group capping'));
-       $table->addColumn('max_modifier'  ,'integer',array("unsigned" => true, 'comment' => 'Max value of modifier once all rules are combined in this group allows group capping'));
-       $table->addColumn('min_modifier'  ,'integer',array("unsigned" => true, 'comment' => 'Min value of modifier once all rules are combined in this group allows group capping'));
+       $table->addColumn('max_modifier'  ,'float',array("unsigned" => true, 'comment' => 'Max value of modifier once all rules are combined in this group allows group capping'));
+       $table->addColumn('min_modifier'  ,'float',array("unsigned" => true, 'comment' => 'Min value of modifier once all rules are combined in this group allows group capping'));
        $table->addColumn('max_count'     ,'integer',array("unsigned" => true, 'comment' => 'Max number of scroing rules that can be used that linked to this group'));
        $table->addColumn('order_method'  ,'smallint',array("unsigned" => true, 'comment' => 'method of order to use 1= max 0=min'));
        $table->addColumn('is_mandatory'  ,'smallint',array("unsigned" => true,'comment' => 'Group always be applied unless not linked to system and score groups'));

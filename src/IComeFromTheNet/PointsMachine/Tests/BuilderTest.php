@@ -275,6 +275,54 @@ class BuilderTest extends TestWithContainer
         
         
     }
+
+    public function testScoringGroupBuilder()
+    {
+        
+        $oBuilder = $this->getContainer()
+                         ->getGatewayCollection()
+                         ->getGateway('pt_rule_group')
+                         ->getEntityBuilder();
+      
+        $sAlais   = $oBuilder->getTableQueryAlias().'_';
+        
+        # test build
+        
+        $aRawEntity = array(
+            $sAlais.'episode_id'      => 1,
+            $sAlais.'score_id'        => 'B5D37F95-525F-9E4F-A5B7-F6EA3A269A34',
+            $sAlais.'score_group_id'  => '12FF4301-C20D-A9BB-6BFE-1FEFC41BEF41',
+            $sAlais.'score_name'      => 'Demo Score A',
+            $sAlais.'score_name_slug' => 'demo_score_a',
+            $sAlais.'score_value'     => 100,
+            $sAlais.'enabled_from'    => new DateTime(),
+            $sAlais.'enabled_to'      => new DateTime('3000-01-01'),
+        );
+        
+        $oEntity = $oBuilder->build($aRawEntity);
+        
+        $this->assertEquals($aRawEntity[$sAlais.'episode_id'],$oEntity->iEpisodeID);
+        $this->assertEquals($aRawEntity[$sAlais.'score_id'],$oEntity->sScoreID);
+        $this->assertEquals($aRawEntity[$sAlais.'score_group_id'],$oEntity->sScoreGroupID);
+        $this->assertEquals($aRawEntity[$sAlais.'score_name'],$oEntity->sScoreName);
+        $this->assertEquals($aRawEntity[$sAlais.'score_name_slug'],$oEntity->sScoreNameSlug);
+        $this->assertEquals($aRawEntity[$sAlais.'enabled_from'],$oEntity->oEnabledFrom);
+        $this->assertEquals($aRawEntity[$sAlais.'enabled_to'],$oEntity->oEnabledTo);
+        $this->assertEquals($aRawEntity[$sAlais.'score_value'],$oEntity->fScoreValue);
+    
+        $aRawEntity = $oBuilder->demolish($oEntity);
+        
+        $this->assertEquals($oEntity->iEpisodeID,$aRawEntity['episode_id']);
+        $this->assertEquals($oEntity->sScoreID,$aRawEntity['score_id']);
+        $this->assertEquals($oEntity->sScoreGroupID,$aRawEntity['score_group_id']);
+        $this->assertEquals($oEntity->sScoreName,$aRawEntity['score_name']);
+        $this->assertEquals($oEntity->sScoreNameSlug,$aRawEntity['score_name_slug']);
+        $this->assertEquals($oEntity->oEnabledFrom,$aRawEntity['enabled_from']);
+        $this->assertEquals($oEntity->oEnabledTo,$aRawEntity['enabled_to']);
+        
+        
+        
+    }
     
 }
 /* End of Class */
