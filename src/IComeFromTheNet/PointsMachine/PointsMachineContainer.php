@@ -33,6 +33,9 @@ use IComeFromTheNet\PointsMachine\DB\Builder\AdjustmentGroupBuilder;
 use IComeFromTheNet\PointsMachine\DB\Gateway\AdjustmentGroupLimitGateway;
 use IComeFromTheNet\PointsMachine\DB\Builder\AdjustmentGroupLimitBuilder;
 
+use IComeFromTheNet\PointsMachine\DB\Gateway\AdjustmentRuleGateway;
+use IComeFromTheNet\PointsMachine\DB\Builder\AdjustmentRuleBuilder;
+
 
 class PointsMachineContainer extends Pimple
 {
@@ -109,6 +112,7 @@ class PointsMachineContainer extends Pimple
               ,'pt_score'           => 'pt_score'
               ,'pt_rule_group'      => 'pt_rule_group'
               ,'pt_rule_group_limits' => 'pt_rule_group_limits'
+              ,'pt_rule'            => 'pt_rule'
               
               
             );
@@ -374,6 +378,37 @@ class PointsMachineContainer extends Pimple
             return $oGateway;
         });
         
+        $oGatewayCol->addGateway('pt_rule',function() use ($c, $oSchema, $aTableMap) {
+            $sActualTableName = $aTableMap['pt_rule'];
+            $oEvent           = $c->getEventDispatcher();
+            $oLogger          = $c->getAppLogger();
+            $oDatabase        = $c->getDatabaseAdaper();
+            $oGatewayCol      = $c->getGatewayCollection();
+            
+            # Transaction Header Table
+            $table = $oSchema->createTable($sActualTableName);
+            $table->addColumn('episode_id','integer',array("unsigned" => true,'autoincrement' => true));
+            $table->addColumn('rule_id','guid',array());
+            $table->addColumn('rule_name','string',array("length" => 100));
+            $table->addColumn('rule_name_slug','string',array("length" => 100));
+            $table->addColumn('enabled_from','datetime',array());
+            $table->addColumn('enabled_to','datetime',array());
+            $table->addColumn('multiplier'  ,'float',array("unsigned" => true, 'comment' => 'Value to multiply the base value by'));
+            $table->addColumn('modifier'    ,'integer',array("unsigned" => true, 'comment' => 'value to add to the base'));
+            $table->addColumn('invert_flag' ,'smallint',array("unsigned" => true, 'comment' => 'Operation is inverted ie multiplier becomes a divisor'));
+               
+            $table->setPrimaryKey(array('episode_id'));
+            $table->addUniqueIndex(array('rule_id','enabled_from'),'pt_rule_uiq1');
+                
+            $oBuilder = new AdjustmentRuleBuilder();
+            $oGateway = new AdjustmentRuleGateway($sActualTableName, $oDatabase, $oEvent, $table , null, $oBuilder);
+    
+            $oBuilder->setGateway($oGateway);
+            $oBuilder->setLogger($oLogger);
+            $oGateway->setTableQueryAlias('ar');
+            
+            return $oGateway;
+        });
         
         
         

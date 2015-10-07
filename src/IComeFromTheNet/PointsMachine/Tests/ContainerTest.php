@@ -38,8 +38,11 @@ class ContainerTest extends TestWithContainer
         $oGateway = $oContainer->getGatewayCollection()->getGateway('pt_rule_group');
         $this->assertInstanceOf('IComeFromTheNet\PointsMachine\DB\Gateway\AdjustmentGroupGateway',$oGateway);
         
-         $oGateway = $oContainer->getGatewayCollection()->getGateway('pt_rule_group_limits');
+        $oGateway = $oContainer->getGatewayCollection()->getGateway('pt_rule_group_limits');
         $this->assertInstanceOf('IComeFromTheNet\PointsMachine\DB\Gateway\AdjustmentGroupLimitGateway',$oGateway);
+        
+        $oGateway = $oContainer->getGatewayCollection()->getGateway('pt_rule');
+        $this->assertInstanceOf('IComeFromTheNet\PointsMachine\DB\Gateway\AdjustmentRuleGateway',$oGateway);
         
     }
     
