@@ -7,35 +7,17 @@ use IComeFromTheNet\PointsMachine\DB\ActiveRecordInterface;
 use IComeFromTheNet\PointsMachine\PointsMachineException;
 
 /**
- * Entity for the score rule groups
+ * Entity for the Used to limit AdjustmentGroup to a ScoreGroup
  * 
  * @author Lewis Dyer <getintouch@icomefromthenet.com>
  * @since 1.0
  */
-class ScoringGroup extends CommonEntity implements ActiveRecordInterface
+class AdjustmentGroupLimit extends CommonEntity implements ActiveRecordInterface
 {
     
-    public $iEpisodeID;
+    public $sAdjustmentGroupID;
     
-    public $sScoringGroupID;
-    
-    public $sGroupName;
-    
-    public $sGroupNameSlug;
-
-    public $fMaxMultiplier;
-    
-    public $fMinMultiplier;
-    
-    public $fMaxModifier;
-    
-    public $fMinModifier;
-    
-    public $iMaxCount;
-    
-    public $iOrderMethod;
-    
-    public $bIsMandatory;
+    public $sScoreGroupID;
     
     public $oEnabledFrom;
     

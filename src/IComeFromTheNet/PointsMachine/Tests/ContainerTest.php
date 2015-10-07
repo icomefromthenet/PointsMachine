@@ -36,7 +36,10 @@ class ContainerTest extends TestWithContainer
         $this->assertInstanceOf('IComeFromTheNet\PointsMachine\DB\Gateway\ScoreGateway',$oGateway);
         
         $oGateway = $oContainer->getGatewayCollection()->getGateway('pt_rule_group');
-        $this->assertInstanceOf('IComeFromTheNet\PointsMachine\DB\Gateway\ScoringGroupGateway',$oGateway);
+        $this->assertInstanceOf('IComeFromTheNet\PointsMachine\DB\Gateway\AdjustmentGroupGateway',$oGateway);
+        
+         $oGateway = $oContainer->getGatewayCollection()->getGateway('pt_rule_group_scores');
+        $this->assertInstanceOf('IComeFromTheNet\PointsMachine\DB\Gateway\AdjustmentGroupLimitGateway',$oGateway);
         
     }
     

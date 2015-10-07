@@ -5,12 +5,12 @@ use DateTime;
 use IComeFromTheNet\PointsMachine\DB\CommonQuery;
 
 /**
- * Builds Query for Scoring Rule Groups
+ * Builds Query for Adjustment Groups Limits
  * 
  * @author Lewis Dyer <getintouch@icomefromthenet.com>
  * @since 1.0
  */
-class ScoringGroupQuery extends CommonQuery
+class AdjustmentGroupLimitQuery extends CommonQuery
 {
 
    /**
@@ -19,7 +19,7 @@ class ScoringGroupQuery extends CommonQuery
      * @param integer $id  The GUID of this entity
      * @return CommonQuery
      */ 
-    public function filterByScoringGroup($sGUID)
+    public function filterByAdjustmentGroup($sGUID)
     {
         $oGateway = $this->getGateway();
         $sAlias   = $this->getDefaultAlias();
@@ -32,14 +32,15 @@ class ScoringGroupQuery extends CommonQuery
         return $this->andWhere($sAlias."rule_group_id = ".$this->createNamedParameter($sGUID,$paramType));
         
     }
-   
+    
+    
     /**
-     * Filter by a scoring rule entity using name
+     * Filter by a scoring rule entity
      * 
      * @param integer $id  The GUID of this entity
      * @return CommonQuery
      */ 
-    public function filterByGroupNameLike($sSlugName)
+    public function filterByScoreGroup($sGUID)
     {
         $oGateway = $this->getGateway();
         $sAlias   = $this->getDefaultAlias();
@@ -47,11 +48,13 @@ class ScoringGroupQuery extends CommonQuery
             $sAlias = $sAlias .'.';
         }
         
-        $paramType = $oGateway->getMetaData()->getColumn('rule_group_name_slug')->getType();
+        $paramType = $oGateway->getMetaData()->getColumn('score_group_id')->getType();
         
-        return $this->andWhere($sAlias."rule_group_name_slug LIKE ".$this->createNamedParameter($sGUID,$paramType));
+        return $this->andWhere($sAlias."score_group_id = ".$this->createNamedParameter($sGUID,$paramType));
         
     }
+    
+   
 
 }
 /* End of Class */

@@ -27,8 +27,11 @@ use IComeFromTheNet\PointsMachine\DB\Builder\ScoreGroupBuilder;
 use IComeFromTheNet\PointsMachine\DB\Gateway\ScoreGateway;
 use IComeFromTheNet\PointsMachine\DB\Builder\ScoreBuilder;
 
-use IComeFromTheNet\PointsMachine\DB\Gateway\ScoringGroupGateway;
-use IComeFromTheNet\PointsMachine\DB\Builder\ScoringGroupBuilder;
+use IComeFromTheNet\PointsMachine\DB\Gateway\AdjustmentGroupGateway;
+use IComeFromTheNet\PointsMachine\DB\Builder\AdjustmentGroupBuilder;
+
+use IComeFromTheNet\PointsMachine\DB\Gateway\AdjustmentGroupLimitGateway;
+use IComeFromTheNet\PointsMachine\DB\Builder\AdjustmentGroupLimitBuilder;
 
 
 class PointsMachineContainer extends Pimple
@@ -105,6 +108,7 @@ class PointsMachineContainer extends Pimple
               ,'pt_score_group'     => 'pt_score_group'
               ,'pt_score'           => 'pt_score'
               ,'pt_rule_group'      => 'pt_rule_group'
+              ,'pt_rule_group_scores' => 'pt_rule_group_scores'
               
               
             );
@@ -328,8 +332,8 @@ class PointsMachineContainer extends Pimple
             $table->setPrimaryKey(array('episode_id'));
             $table->addUniqueIndex(array('rule_group_id','enabled_from'),'pt_rule_gp_uiq1');
                 
-            $oBuilder = new ScoringGroupBuilder();
-            $oGateway = new ScoringGroupGateway($sActualTableName, $oDatabase, $oEvent, $table , null, $oBuilder);
+            $oBuilder = new AdjustmentGroupBuilder();
+            $oGateway = new AdjustmentGroupGateway($sActualTableName, $oDatabase, $oEvent, $table , null, $oBuilder);
     
             $oBuilder->setGateway($oGateway);
             $oBuilder->setLogger($oLogger);
@@ -337,6 +341,36 @@ class PointsMachineContainer extends Pimple
             
             return $oGateway;
         });
+        
+        $oGatewayCol->addGateway('pt_rule_group_scores',function() use ($c, $oSchema, $aTableMap) {
+            $sActualTableName = $aTableMap['pt_rule_group_scores'];
+            $oEvent           = $c->getEventDispatcher();
+            $oLogger          = $c->getAppLogger();
+            $oDatabase        = $c->getDatabaseAdaper();
+            $oGatewayCol      = $c->getGatewayCollection();
+            
+            # Transaction Header Table
+            $table = $oSchema->createTable($sActualTableName);
+            $table->addColumn('rule_group_id','guid',array());
+            $table->addColumn('score_group_id','guid',array()); 
+            $table->addColumn('enabled_from','datetime',array());
+            $table->addColumn('enabled_to','datetime',array());
+           
+           $table->setPrimaryKey(array('rule_group_id','score_group_id','enabled_from'),'pt_rule_gp_uiq1');
+           $table->addForeignKeyConstraint($aTableMap['pt_rule_group'],array('rule_group_id'),array('rule_group_id'),array(),'pt_rule_gp_score_fk1');
+           $table->addForeignKeyConstraint($aTableMap['pt_score_group'],array('score_group_id'),array('score_group_id'),array(),'pt_rule_gp_score_fk2');
+                  
+            $oBuilder = new AdjustmentGroupLimitBuilder();
+            $oGateway = new AdjustmentGroupLimitGateway($sActualTableName, $oDatabase, $oEvent, $table , null, $oBuilder);
+    
+            $oBuilder->setGateway($oGateway);
+            $oBuilder->setLogger($oLogger);
+            $oGateway->setTableQueryAlias('rgs');
+            
+            return $oGateway;
+        });
+        
+        
         
         
         $this['gateway_collection'] = $oGatewayCol;    

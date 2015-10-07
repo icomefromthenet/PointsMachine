@@ -2,7 +2,7 @@
 namespace IComeFromTheNet\PointsMachine\DB\Builder;
 
 use IComeFromTheNet\PointsMachine\DB\CommonBuilder;
-use IComeFromTheNet\PointsMachine\DB\Entity\ScoringGroup;
+use IComeFromTheNet\PointsMachine\DB\Entity\AdjustmentGroup;
 
 /**
   *  Builder for Scoring Rule Group Entities
@@ -10,24 +10,24 @@ use IComeFromTheNet\PointsMachine\DB\Entity\ScoringGroup;
   *  @author Lewis Dyer <getintouch@icomefromthenet.com>
   *  @since 0.0.1
   */
-class ScoringGroupBuilder extends CommonBuilder
+class AdjustmentGroupBuilder extends CommonBuilder
 {
     
     
     /**
       *  Convert data array into entity
       *
-      *  @return IComeFromTheNet\PointsMachine\DB\Entity\ScoringGroup
+      *  @return IComeFromTheNet\PointsMachine\DB\Entity\AdjustmentGroup
       *  @param array $data
       *  @access public
       */
     public function build($data)
     {
-        $oGroup = new ScoringGroup($this->oGateway, $this->oLogger);
+        $oGroup = new AdjustmentGroup($this->oGateway, $this->oLogger);
         $sAlias = $this->getTableQueryAlias();
         
         $oGroup->iEpisodeID      = $this->getField($data,'episode_id',$sAlias);
-        $oGroup->sScoringGroupID = $this->getField($data,'rule_group_id',$sAlias);
+        $oGroup->sAdjustmentGroupID = $this->getField($data,'rule_group_id',$sAlias);
         $oGroup->sGroupName      = $this->getField($data,'rule_group_name',$sAlias);
         $oGroup->sGroupNameSlug  = $this->getField($data,'rule_group_name_slug',$sAlias);
         $oGroup->fMaxMultiplier  = $this->getField($data,'max_multiplier',$sAlias);
@@ -48,24 +48,24 @@ class ScoringGroupBuilder extends CommonBuilder
       *
       *  @return array
       *  @access public
-      *  @param IComeFromTheNet\PointsMachine\DB\Entity\ScoringGroup    $oScoringGroup   the entity to convert
+      *  @param IComeFromTheNet\PointsMachine\DB\Entity\AdjustmentGroup    $oAdjustmentGroup   the entity to convert
       */
-    public function demolish($oScoringGroup)
+    public function demolish($oAdjustmentGroup)
     {
         return array(
-            'episode_id'           => $oScoringGroup->iEpisodeID,
-            'rule_group_id'         => $oScoringGroup->sScoringGroupID,
-            'rule_group_name'       => $oScoringGroup->sGroupName,
-            'rule_group_name_slug'  => $oScoringGroup->sGroupNameSlug,
-            'enabled_from'          => $oScoringGroup->oEnabledFrom,
-            'enabled_to'            => $oScoringGroup->oEnabledTo,
-            'max_multiplier'        => $oScoringGroup->fMaxMultiplier,
-            'min_multiplier'        => $oScoringGroup->fMinMultiplier,
-            'max_modifier'          => $oScoringGroup->fMaxModifier,
-            'min_modifier'          => $oScoringGroup->fMinModifier,
-            'max_count'             => $oScoringGroup->iMaxCount,
-            'order_method'          => $oScoringGroup->iOrderMethod,
-            'is_mandatory'          => (int) $oScoringGroup->bIsMandatory,
+            'episode_id'           => $oAdjustmentGroup->iEpisodeID,
+            'rule_group_id'         => $oAdjustmentGroup->sAdjustmentGroupID,
+            'rule_group_name'       => $oAdjustmentGroup->sGroupName,
+            'rule_group_name_slug'  => $oAdjustmentGroup->sGroupNameSlug,
+            'enabled_from'          => $oAdjustmentGroup->oEnabledFrom,
+            'enabled_to'            => $oAdjustmentGroup->oEnabledTo,
+            'max_multiplier'        => $oAdjustmentGroup->fMaxMultiplier,
+            'min_multiplier'        => $oAdjustmentGroup->fMinMultiplier,
+            'max_modifier'          => $oAdjustmentGroup->fMaxModifier,
+            'min_modifier'          => $oAdjustmentGroup->fMinModifier,
+            'max_count'             => $oAdjustmentGroup->iMaxCount,
+            'order_method'          => $oAdjustmentGroup->iOrderMethod,
+            'is_mandatory'          => (int) $oAdjustmentGroup->bIsMandatory,
         );
         
     }
