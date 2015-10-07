@@ -5,7 +5,7 @@ use IComeFromTheNet\PointsMachine\DB\CommonTable;
 use IComeFromTheNet\PointsMachine\DB\Query\AdjustmentGroupLimitQuery;
 
 /**
- * Table gateway pt_rule_group_scores
+ * Table gateway pt_rule_group_limits
  * 
  * @author Lewis Dyer <getintouch@icomefromthenet.com>
  * @since 1.0

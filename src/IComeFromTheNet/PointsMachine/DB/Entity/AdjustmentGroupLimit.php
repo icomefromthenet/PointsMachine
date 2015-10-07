@@ -7,7 +7,7 @@ use IComeFromTheNet\PointsMachine\DB\ActiveRecordInterface;
 use IComeFromTheNet\PointsMachine\PointsMachineException;
 
 /**
- * Entity for the Used to limit AdjustmentGroup to a ScoreGroup
+ * Entity for the Used to limit AdjustmentGroup to a ScoreGroup/System
  * 
  * @author Lewis Dyer <getintouch@icomefromthenet.com>
  * @since 1.0
@@ -18,6 +18,8 @@ class AdjustmentGroupLimit extends CommonEntity implements ActiveRecordInterface
     public $sAdjustmentGroupID;
     
     public $sScoreGroupID;
+    
+    public $sSystemID;
     
     public $oEnabledFrom;
     

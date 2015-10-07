@@ -346,7 +346,7 @@ class BuilderTest extends TestWithContainer
         
         $oBuilder = $this->getContainer()
                          ->getGatewayCollection()
-                         ->getGateway('pt_rule_group_scores')
+                         ->getGateway('pt_rule_group_limits')
                          ->getEntityBuilder();
       
         $sAlais   = $oBuilder->getTableQueryAlias().'_';
@@ -356,6 +356,7 @@ class BuilderTest extends TestWithContainer
         $aRawEntity = array(
             $sAlais.'rule_group_id'        => 'B5D37F95-525F-9E4F-A5B7-F6EA3A269A34',
             $sAlais.'score_group_id'       => 'K5D37F95-525F-9E4F-A5B7-F6EA3A269A34',
+            $sAlais.'system_id'            => 'L5D37F95-525F-9E4F-A5B7-F6EA3A269A34',
             $sAlais.'enabled_from'         => new DateTime(),
             $sAlais.'enabled_to'           => new DateTime('3000-01-01'),
         );
@@ -364,6 +365,7 @@ class BuilderTest extends TestWithContainer
         
         $this->assertEquals($aRawEntity[$sAlais.'rule_group_id'],$oEntity->sAdjustmentGroupID);
         $this->assertEquals($aRawEntity[$sAlais.'score_group_id'],$oEntity->sScoreGroupID);
+        $this->assertEquals($aRawEntity[$sAlais.'system_id'],$oEntity->sSystemID);
         $this->assertEquals($aRawEntity[$sAlais.'enabled_from'],$oEntity->oEnabledFrom);
         $this->assertEquals($aRawEntity[$sAlais.'enabled_to'],$oEntity->oEnabledTo);
         
@@ -372,6 +374,7 @@ class BuilderTest extends TestWithContainer
         
         $this->assertEquals($oEntity->sAdjustmentGroupID,$aRawEntity['rule_group_id']);
         $this->assertEquals($oEntity->sScoreGroupID,$aRawEntity['score_group_id']);
+        $this->assertEquals($oEntity->sSystemID,$aRawEntity['system_id']);
         $this->assertEquals($oEntity->oEnabledFrom,$aRawEntity['enabled_from']);
         $this->assertEquals($oEntity->oEnabledTo,$aRawEntity['enabled_to']);
         

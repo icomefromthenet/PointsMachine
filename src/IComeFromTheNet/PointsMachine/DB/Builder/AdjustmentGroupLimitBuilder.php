@@ -28,7 +28,8 @@ class AdjustmentGroupLimitBuilder extends CommonBuilder
     
         
         $oGroup->sAdjustmentGroupID     = $this->getField($data,'rule_group_id',$sAlias);
-        $oGroup->sScoreGroupID     = $this->getField($data,'score_group_id',$sAlias);
+        $oGroup->sScoreGroupID          = $this->getField($data,'score_group_id',$sAlias);
+        $oGroup->sSystemID              = $this->getField($data,'system_id',$sAlias);
         $oGroup->oEnabledFrom           = $this->getField($data,'enabled_from',$sAlias);
         $oGroup->oEnabledTo             = $this->getField($data,'enabled_to',$sAlias);
          
@@ -47,6 +48,7 @@ class AdjustmentGroupLimitBuilder extends CommonBuilder
         return array(
             'rule_group_id'         => $oAdjustmentGroupLimit->sAdjustmentGroupID,
             'score_group_id'        => $oAdjustmentGroupLimit->sScoreGroupID,
+            'system_id'             => $oAdjustmentGroupLimit->sSystemID,
             'enabled_from'          => $oAdjustmentGroupLimit->oEnabledFrom,
             'enabled_to'            => $oAdjustmentGroupLimit->oEnabledTo,
         );

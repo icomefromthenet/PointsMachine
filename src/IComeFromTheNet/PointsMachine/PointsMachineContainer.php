@@ -108,7 +108,7 @@ class PointsMachineContainer extends Pimple
               ,'pt_score_group'     => 'pt_score_group'
               ,'pt_score'           => 'pt_score'
               ,'pt_rule_group'      => 'pt_rule_group'
-              ,'pt_rule_group_scores' => 'pt_rule_group_scores'
+              ,'pt_rule_group_limits' => 'pt_rule_group_limits'
               
               
             );
@@ -342,8 +342,8 @@ class PointsMachineContainer extends Pimple
             return $oGateway;
         });
         
-        $oGatewayCol->addGateway('pt_rule_group_scores',function() use ($c, $oSchema, $aTableMap) {
-            $sActualTableName = $aTableMap['pt_rule_group_scores'];
+        $oGatewayCol->addGateway('pt_rule_group_limits',function() use ($c, $oSchema, $aTableMap) {
+            $sActualTableName = $aTableMap['pt_rule_group_limits'];
             $oEvent           = $c->getEventDispatcher();
             $oLogger          = $c->getAppLogger();
             $oDatabase        = $c->getDatabaseAdaper();
@@ -351,21 +351,25 @@ class PointsMachineContainer extends Pimple
             
             # Transaction Header Table
             $table = $oSchema->createTable($sActualTableName);
+            $table->addColumn('episode_id','integer',array("unsigned" => true,'autoincrement' => true));
             $table->addColumn('rule_group_id','guid',array());
             $table->addColumn('score_group_id','guid',array()); 
+            $table->addColumn('system_id','guid',array()); 
             $table->addColumn('enabled_from','datetime',array());
             $table->addColumn('enabled_to','datetime',array());
            
-           $table->setPrimaryKey(array('rule_group_id','score_group_id','enabled_from'),'pt_rule_gp_uiq1');
-           $table->addForeignKeyConstraint($aTableMap['pt_rule_group'],array('rule_group_id'),array('rule_group_id'),array(),'pt_rule_gp_score_fk1');
-           $table->addForeignKeyConstraint($aTableMap['pt_score_group'],array('score_group_id'),array('score_group_id'),array(),'pt_rule_gp_score_fk2');
-                  
+            $table->setPrimaryKey(array('episode_id'));
+            $table->addUniqueIndex(array('rule_group_id','system_id','score_group_id','enabled_from'),'pt_rule_gp_limit_uiq1');
+            $table->addForeignKeyConstraint($aTableMap['pt_rule_group'],array('rule_group_id'),array('rule_group_id'),array(),'pt_rule_gp_limit_fk1');
+            $table->addForeignKeyConstraint($aTableMap['pt_score_group'],array('score_group_id'),array('score_group_id'),array(),'pt_rule_gp_limit_fk2');
+            $table->addForeignKeyConstraint($aTableMap['pt_system'],array('system_id'),array('system_id'),array(),'pt_rule_gp_limit_fk3');
+                 
             $oBuilder = new AdjustmentGroupLimitBuilder();
             $oGateway = new AdjustmentGroupLimitGateway($sActualTableName, $oDatabase, $oEvent, $table , null, $oBuilder);
     
             $oBuilder->setGateway($oGateway);
             $oBuilder->setLogger($oLogger);
-            $oGateway->setTableQueryAlias('rgs');
+            $oGateway->setTableQueryAlias('rgl');
             
             return $oGateway;
         });

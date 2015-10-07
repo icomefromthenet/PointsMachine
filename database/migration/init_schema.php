@@ -128,26 +128,19 @@ class init_schema implements EntityInterface
        
        
        # Rule Group Scores Groups Relations
-       $table = $sc->createTable("pt_rule_group_scores");
+       $table = $sc->createTable("pt_rule_group_limits");
+       $table->addColumn('episode_id','integer',array("unsigned" => true,'autoincrement' => true));
        $table->addColumn('rule_group_id','guid',array());
        $table->addColumn('score_group_id','guid',array()); 
-       $table->addColumn('enabled_from','datetime',array());
-       $table->addColumn('enabled_to','datetime',array());
-       
-       $table->setPrimaryKey(array('rule_group_id','score_group_id','enabled_from'),'pt_rule_gp_uiq1');
-       $table->addForeignKeyConstraint('pt_rule_group',array('rule_group_id'),array('rule_group_id'),array(),'pt_rule_gp_score_fk1');
-       $table->addForeignKeyConstraint('pt_score_group',array('score_group_id'),array('score_group_id'),array(),'pt_rule_gp_score_fk2');
-       
-       # Rule Group Systems Relations
-       $table = $sc->createTable("pt_rule_group_systems");
-       $table->addColumn('rule_group_id','guid',array());
        $table->addColumn('system_id','guid',array()); 
        $table->addColumn('enabled_from','datetime',array());
        $table->addColumn('enabled_to','datetime',array());
-
-       $table->setPrimaryKey(array('rule_group_id','system_id','enabled_from'));
-       $table->addForeignKeyConstraint('pt_rule_group',array('rule_group_id'),array('rule_group_id'),array(),'pt_rule_group_sys_fk1');
-       $table->addForeignKeyConstraint('pt_system',array('system_id'),array('system_id'),array(),'pt_rule_gp_sys_fk2');
+       
+       $table->setPrimaryKey(array('episode_id'));
+       $table->addUniqueIndex(array('rule_group_id','system_id','score_group_id','enabled_from'),'pt_rule_gp_limit_uiq1');
+       $table->addForeignKeyConstraint('pt_rule_group',array('rule_group_id'),array('rule_group_id'),array(),'pt_rule_gp_limit_fk1');
+       $table->addForeignKeyConstraint('pt_score_group',array('score_group_id'),array('score_group_id'),array(),'pt_rule_gp_limit_fk2');
+       $table->addForeignKeyConstraint('pt_system',array('system_id'),array('system_id'),array(),'pt_rule_gp_limit_fk3');
        
        
        # Rule Tables
