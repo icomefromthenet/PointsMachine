@@ -289,34 +289,51 @@ class BuilderTest extends TestWithContainer
         # test build
         
         $aRawEntity = array(
-            $sAlais.'episode_id'      => 1,
-            $sAlais.'score_id'        => 'B5D37F95-525F-9E4F-A5B7-F6EA3A269A34',
-            $sAlais.'score_group_id'  => '12FF4301-C20D-A9BB-6BFE-1FEFC41BEF41',
-            $sAlais.'score_name'      => 'Demo Score A',
-            $sAlais.'score_name_slug' => 'demo_score_a',
-            $sAlais.'score_value'     => 100,
-            $sAlais.'enabled_from'    => new DateTime(),
-            $sAlais.'enabled_to'      => new DateTime('3000-01-01'),
+            $sAlais.'episode_id'           => 1,
+            $sAlais.'rule_group_id'        => 'B5D37F95-525F-9E4F-A5B7-F6EA3A269A34',
+            $sAlais.'rule_group_name'      => 'Scoring Group A',
+            $sAlais.'rule_group_name_slug' => 'scoring_group_a',
+            $sAlais.'max_multiplier'       => 100,
+            $sAlais.'min_multiplier'       => 1,
+            $sAlais.'max_modifier'         => 200,
+            $sAlais.'min_modifier'         => 2,
+            $sAlais.'max_count'            => 5,
+            $sAlais.'order_method'         => 1,
+            $sAlais.'is_mandatory'         => 1,
+            $sAlais.'enabled_from'         => new DateTime(),
+            $sAlais.'enabled_to'           => new DateTime('3000-01-01'),
         );
         
         $oEntity = $oBuilder->build($aRawEntity);
         
         $this->assertEquals($aRawEntity[$sAlais.'episode_id'],$oEntity->iEpisodeID);
-        $this->assertEquals($aRawEntity[$sAlais.'score_id'],$oEntity->sScoreID);
-        $this->assertEquals($aRawEntity[$sAlais.'score_group_id'],$oEntity->sScoreGroupID);
-        $this->assertEquals($aRawEntity[$sAlais.'score_name'],$oEntity->sScoreName);
-        $this->assertEquals($aRawEntity[$sAlais.'score_name_slug'],$oEntity->sScoreNameSlug);
+        $this->assertEquals($aRawEntity[$sAlais.'rule_group_id'],$oEntity->sScoringGroupID);
+        $this->assertEquals($aRawEntity[$sAlais.'rule_group_name'],$oEntity->sGroupName);
+        $this->assertEquals($aRawEntity[$sAlais.'rule_group_name_slug'],$oEntity->sGroupNameSlug);
+        $this->assertEquals($aRawEntity[$sAlais.'max_multiplier'],$oEntity->fMaxMultiplier);
+        $this->assertEquals($aRawEntity[$sAlais.'min_multiplier'],$oEntity->fMinMultiplier);
+        $this->assertEquals($aRawEntity[$sAlais.'max_modifier'],$oEntity->fMaxModifier);
+        $this->assertEquals($aRawEntity[$sAlais.'min_modifier'],$oEntity->fMinModifier);
+        $this->assertEquals($aRawEntity[$sAlais.'max_count'],$oEntity->iMaxCount);
+        $this->assertEquals($aRawEntity[$sAlais.'order_method'],$oEntity->iOrderMethod);
+        $this->assertTrue($oEntity->bIsMandatory);
         $this->assertEquals($aRawEntity[$sAlais.'enabled_from'],$oEntity->oEnabledFrom);
         $this->assertEquals($aRawEntity[$sAlais.'enabled_to'],$oEntity->oEnabledTo);
-        $this->assertEquals($aRawEntity[$sAlais.'score_value'],$oEntity->fScoreValue);
-    
+        
+        
         $aRawEntity = $oBuilder->demolish($oEntity);
         
         $this->assertEquals($oEntity->iEpisodeID,$aRawEntity['episode_id']);
-        $this->assertEquals($oEntity->sScoreID,$aRawEntity['score_id']);
-        $this->assertEquals($oEntity->sScoreGroupID,$aRawEntity['score_group_id']);
-        $this->assertEquals($oEntity->sScoreName,$aRawEntity['score_name']);
-        $this->assertEquals($oEntity->sScoreNameSlug,$aRawEntity['score_name_slug']);
+        $this->assertEquals($oEntity->sScoringGroupID,$aRawEntity['rule_group_id']);
+        $this->assertEquals($oEntity->sGroupName,$aRawEntity['rule_group_name']);
+        $this->assertEquals($oEntity->sGroupNameSlug,$aRawEntity['rule_group_name_slug']);
+        $this->assertEquals($oEntity->fMaxMultiplier,$aRawEntity['max_multiplier']);
+        $this->assertEquals($oEntity->fMinMultiplier,$aRawEntity['min_multiplier']);
+        $this->assertEquals($oEntity->fMaxModifier,$aRawEntity['max_modifier']);
+        $this->assertEquals($oEntity->fMinModifier,$aRawEntity['min_modifier']);
+        $this->assertEquals($oEntity->iMaxCount,$aRawEntity['max_count']);
+        $this->assertEquals($oEntity->iOrderMethod,$aRawEntity['order_method']);
+        $this->assertEquals($oEntity->bIsMandatory,$aRawEntity['is_mandatory']);
         $this->assertEquals($oEntity->oEnabledFrom,$aRawEntity['enabled_from']);
         $this->assertEquals($oEntity->oEnabledTo,$aRawEntity['enabled_to']);
         
