@@ -5,12 +5,12 @@ use DateTime;
 use IComeFromTheNet\PointsMachine\DB\CommonQuery;
 
 /**
- * Builds Query for Adjustment Rules
+ * Builds Query for Adjustment Zones
  * 
  * @author Lewis Dyer <getintouch@icomefromthenet.com>
  * @since 1.0
  */
-class AdjustmentRuleQuery extends CommonQuery
+class AdjustmentZoneQuery extends CommonQuery
 {
 
    /**
@@ -34,12 +34,12 @@ class AdjustmentRuleQuery extends CommonQuery
     }
     
     /**
-     * Filter by a scoring rule group entity
+     * Filter by a the system zone
      * 
      * @param integer $id  The GUID of this entity
      * @return CommonQuery
      */ 
-    public function filterByAdjustmentGroup($sGUID)
+    public function filterBySystemZone($sGUID)
     {
         $oGateway = $this->getGateway();
         $sAlias   = $this->getDefaultAlias();
@@ -47,31 +47,12 @@ class AdjustmentRuleQuery extends CommonQuery
             $sAlias = $sAlias .'.';
         }
         
-        $paramType = $oGateway->getMetaData()->getColumn('rule_group_id')->getType();
+        $paramType = $oGateway->getMetaData()->getColumn('system_zone_id')->getType();
         
-        return $this->andWhere($sAlias."rule_group_id = ".$this->createNamedParameter($sGUID,$paramType));
-        
-    }
-   
-    /**
-     * Filter by a scoring rule entity using name
-     * 
-     * @param integer $id  The GUID of this entity
-     * @return CommonQuery
-     */ 
-    public function filterByNameLike($sSlugName)
-    {
-        $oGateway = $this->getGateway();
-        $sAlias   = $this->getDefaultAlias();
-        if(false === empty($sAlias)) {
-            $sAlias = $sAlias .'.';
-        }
-        
-        $paramType = $oGateway->getMetaData()->getColumn('rule_name_slug')->getType();
-        
-        return $this->andWhere($sAlias."rule_name_slug LIKE ".$this->createNamedParameter($sGUID,$paramType));
+        return $this->andWhere($sAlias."system_zone_id = ".$this->createNamedParameter($sGUID,$paramType));
         
     }
+  
 
 }
 /* End of Class */

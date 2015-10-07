@@ -28,6 +28,7 @@ class AdjustmentRuleBuilder extends CommonBuilder
         
         $oRule->iEpisodeID      = $this->getField($data,'episode_id',$sAlias);
         $oRule->sAdjustmentRuleID = $this->getField($data,'rule_id',$sAlias);
+        $oRule->sAdjustmentGroupID = $this->getField($data,'rule_group_id',$sAlias);
         $oRule->sRuleName       = $this->getField($data,'rule_name',$sAlias);
         $oRule->sRuleNameSlug   = $this->getField($data,'rule_name_slug',$sAlias);
         $oRule->fMultiplier     = $this->getField($data,'multiplier',$sAlias);
@@ -51,6 +52,7 @@ class AdjustmentRuleBuilder extends CommonBuilder
         return array(
             'episode_id'      => $oAdjustmentRule->iEpisodeID,
             'rule_id'         => $oAdjustmentRule->sAdjustmentRuleID,
+            'rule_group_id'   => $oAdjustmentRule->sAdjustmentGroupID,
             'rule_name'       => $oAdjustmentRule->sRuleName,
             'rule_name_slug'  => $oAdjustmentRule->sRuleNameSlug,
             'enabled_from'    => $oAdjustmentRule->oEnabledFrom,

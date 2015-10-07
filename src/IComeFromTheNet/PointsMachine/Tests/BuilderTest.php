@@ -395,6 +395,7 @@ class BuilderTest extends TestWithContainer
         $aRawEntity = array(
             $sAlais.'episode_id'      => 1,
             $sAlais.'rule_id'         => 'B5D37F95-525F-9E4F-A5B7-F6EA3A269A34',
+            $sAlais.'rule_group_id'   => 'C5D37F95-525F-9E4F-A5B7-F6EA3A269A34',
             $sAlais.'rule_name'       => 'Demo Adj Rule',
             $sAlais.'rule_name_slug'  => 'demo_adj_rule',
             $sAlais.'multiplier'      => 1.5,
@@ -408,6 +409,7 @@ class BuilderTest extends TestWithContainer
         
         $this->assertEquals($aRawEntity[$sAlais.'episode_id'],$oEntity->iEpisodeID);
         $this->assertEquals($aRawEntity[$sAlais.'rule_id'],$oEntity->sAdjustmentRuleID);
+        $this->assertEquals($aRawEntity[$sAlais.'rule_group_id'],$oEntity->sAdjustmentGroupID);
         $this->assertEquals($aRawEntity[$sAlais.'rule_name'],$oEntity->sRuleName);
         $this->assertEquals($aRawEntity[$sAlais.'rule_name_slug'],$oEntity->sRuleNameSlug);
         $this->assertEquals($aRawEntity[$sAlais.'multiplier'],$oEntity->fMultiplier);
@@ -420,6 +422,7 @@ class BuilderTest extends TestWithContainer
         
         $this->assertEquals($oEntity->iEpisodeID,$aRawEntity['episode_id']);
         $this->assertEquals($oEntity->sAdjustmentRuleID,$aRawEntity['rule_id']);
+        $this->assertEquals($oEntity->sAdjustmentGroupID,$aRawEntity['rule_group_id']);
         $this->assertEquals($oEntity->sRuleName,$aRawEntity['rule_name']);
         $this->assertEquals($oEntity->sRuleNameSlug,$aRawEntity['rule_name_slug']);
         $this->assertEquals($oEntity->fMultiplier,$aRawEntity['multiplier']);
@@ -429,5 +432,44 @@ class BuilderTest extends TestWithContainer
         $this->assertEquals($oEntity->oEnabledTo,$aRawEntity['enabled_to']);
         
     }
+    
+    public function testAdjustmentZoneBuilder()
+    {
+         $oBuilder = $this->getContainer()
+                         ->getGatewayCollection()
+                         ->getGateway('pt_rule_sys_zone')
+                         ->getEntityBuilder();
+      
+        $sAlais   = $oBuilder->getTableQueryAlias().'_';
+        
+        # test build
+        
+        $aRawEntity = array(
+            $sAlais.'episode_id'      => 1,
+            $sAlais.'rule_id'         => 'B5D37F95-525F-9E4F-A5B7-F6EA3A269A34',
+            $sAlais.'system_zone_id'   => 'C5D37F95-525F-9E4F-A5B7-F6EA3A269A34',
+            $sAlais.'enabled_from'    => new DateTime(),
+            $sAlais.'enabled_to'      => new DateTime('3000-01-01'),
+        );
+        
+        $oEntity = $oBuilder->build($aRawEntity);
+        
+        $this->assertEquals($aRawEntity[$sAlais.'episode_id'],$oEntity->iEpisodeID);
+        $this->assertEquals($aRawEntity[$sAlais.'rule_id'],$oEntity->sAdjustmentRuleID);
+        $this->assertEquals($aRawEntity[$sAlais.'system_zone_id'],$oEntity->sSystemZoneID);
+        $this->assertEquals($aRawEntity[$sAlais.'enabled_from'],$oEntity->oEnabledFrom);
+        $this->assertEquals($aRawEntity[$sAlais.'enabled_to'],$oEntity->oEnabledTo);
+        
+        $aRawEntity = $oBuilder->demolish($oEntity);
+        
+        $this->assertEquals($oEntity->iEpisodeID,$aRawEntity['episode_id']);
+        $this->assertEquals($oEntity->sAdjustmentRuleID,$aRawEntity['rule_id']);
+        $this->assertEquals($oEntity->sSystemZoneID,$aRawEntity['system_zone_id']);
+        $this->assertEquals($oEntity->oEnabledFrom,$aRawEntity['enabled_from']);
+        $this->assertEquals($oEntity->oEnabledTo,$aRawEntity['enabled_to']);
+        
+    }
+    
+    
 }
 /* End of Class */

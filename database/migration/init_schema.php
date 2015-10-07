@@ -147,6 +147,7 @@ class init_schema implements EntityInterface
        $table = $sc->createTable("pt_rule");
        $table->addColumn('episode_id','integer',array("unsigned" => true,'autoincrement' => true));
        $table->addColumn('rule_id','guid',array());
+       $table->addColumn('rule_group_id','guid',array());
        $table->addColumn('rule_name','string',array("length" => 100));
        $table->addColumn('rule_name_slug','string',array("length" => 100));
        $table->addColumn('enabled_from','datetime',array());
@@ -157,17 +158,20 @@ class init_schema implements EntityInterface
        
        
        $table->setPrimaryKey(array('episode_id'));
-       $table->addUniqueIndex(array('rule_id','enabled_from'),'pt_rule_uiq1');
-       
+       $table->addUniqueIndex(array('rule_id','rule_group_id','enabled_from'),'pt_rule_uiq1');
+       $table->addForeignKeyConstraint('pt_rule_group',array('rule_group_id'),array('rule_group_id'),array(),'pt_rule_fk1');
+    
        
        # Rule System Zones
        $table = $sc->createTable("pt_rule_sys_zone");
+       $table->addColumn('episode_id','integer',array("unsigned" => true,'autoincrement' => true));
        $table->addColumn('rule_id','guid',array());
        $table->addColumn('zone_id','guid',array()); 
        $table->addColumn('enabled_from','datetime',array());
        $table->addColumn('enabled_to','datetime',array());
 
-       $table->setPrimaryKey(array('zone_id','rule_id','enabled_from'));
+       $table->setPrimaryKey(array('episode_id'));
+       $table->addUniqueIndex(array('zone_id','rule_id','enabled_from'),'pt_rule_sys_zone_uiq1');
        $table->addForeignKeyConstraint('pt_rule',array('rule_id'),array('rule_id'),array(),'pt_rule_sys_zone_fk1');
        $table->addForeignKeyConstraint('pt_system_zone',array('zone_id'),array('zone_id'),array(),'pt_rule_sys_zone_fk2');
        

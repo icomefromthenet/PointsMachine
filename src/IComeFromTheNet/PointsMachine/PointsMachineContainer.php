@@ -36,6 +36,9 @@ use IComeFromTheNet\PointsMachine\DB\Builder\AdjustmentGroupLimitBuilder;
 use IComeFromTheNet\PointsMachine\DB\Gateway\AdjustmentRuleGateway;
 use IComeFromTheNet\PointsMachine\DB\Builder\AdjustmentRuleBuilder;
 
+use IComeFromTheNet\PointsMachine\DB\Gateway\AdjustmentZoneGateway;
+use IComeFromTheNet\PointsMachine\DB\Builder\AdjustmentZoneBuilder;
+
 
 class PointsMachineContainer extends Pimple
 {
@@ -112,7 +115,8 @@ class PointsMachineContainer extends Pimple
               ,'pt_score'           => 'pt_score'
               ,'pt_rule_group'      => 'pt_rule_group'
               ,'pt_rule_group_limits' => 'pt_rule_group_limits'
-              ,'pt_rule'            => 'pt_rule'
+              ,'pt_rule'             => 'pt_rule'
+              ,'pt_rule_sys_zone'    => 'pt_rule_sys_zone'
               
               
             );
@@ -389,6 +393,7 @@ class PointsMachineContainer extends Pimple
             $table = $oSchema->createTable($sActualTableName);
             $table->addColumn('episode_id','integer',array("unsigned" => true,'autoincrement' => true));
             $table->addColumn('rule_id','guid',array());
+            $table->addColumn('rule_group_id','guid',array());
             $table->addColumn('rule_name','string',array("length" => 100));
             $table->addColumn('rule_name_slug','string',array("length" => 100));
             $table->addColumn('enabled_from','datetime',array());
@@ -398,8 +403,9 @@ class PointsMachineContainer extends Pimple
             $table->addColumn('invert_flag' ,'smallint',array("unsigned" => true, 'comment' => 'Operation is inverted ie multiplier becomes a divisor'));
                
             $table->setPrimaryKey(array('episode_id'));
-            $table->addUniqueIndex(array('rule_id','enabled_from'),'pt_rule_uiq1');
-                
+            $table->addUniqueIndex(array('rule_id','rule_group_id','enabled_from'),'pt_rule_uiq1');
+            $table->addForeignKeyConstraint($aTableMap['pt_rule_group'],array('rule_group_id'),array('rule_group_id'),array(),'pt_rule_fk1');
+          
             $oBuilder = new AdjustmentRuleBuilder();
             $oGateway = new AdjustmentRuleGateway($sActualTableName, $oDatabase, $oEvent, $table , null, $oBuilder);
     
@@ -410,7 +416,35 @@ class PointsMachineContainer extends Pimple
             return $oGateway;
         });
         
-        
+        $oGatewayCol->addGateway('pt_rule_sys_zone',function() use ($c, $oSchema, $aTableMap) {
+            $sActualTableName = $aTableMap['pt_rule_sys_zone'];
+            $oEvent           = $c->getEventDispatcher();
+            $oLogger          = $c->getAppLogger();
+            $oDatabase        = $c->getDatabaseAdaper();
+            $oGatewayCol      = $c->getGatewayCollection();
+            
+            # Transaction Header Table
+            $table = $oSchema->createTable($sActualTableName);
+            $table->addColumn('episode_id','integer',array("unsigned" => true,'autoincrement' => true));
+            $table->addColumn('rule_id','guid',array());
+            $table->addColumn('zone_id','guid',array()); 
+            $table->addColumn('enabled_from','datetime',array());
+            $table->addColumn('enabled_to','datetime',array());
+            
+            $table->setPrimaryKey(array('episode_id'));
+            $table->addUniqueIndex(array('zone_id','rule_id','enabled_from'),'pt_rule_sys_zone_uiq1');
+            $table->addForeignKeyConstraint($aTableMap['pt_rule'],array('rule_id'),array('rule_id'),array(),'pt_rule_sys_zone_fk1');
+            $table->addForeignKeyConstraint($aTableMap['pt_system_zone'],array('zone_id'),array('zone_id'),array(),'pt_rule_sys_zone_fk2');
+
+            $oBuilder = new AdjustmentZoneBuilder();
+            $oGateway = new AdjustmentZoneGateway($sActualTableName, $oDatabase, $oEvent, $table , null, $oBuilder);
+    
+            $oBuilder->setGateway($oGateway);
+            $oBuilder->setLogger($oLogger);
+            $oGateway->setTableQueryAlias('az');
+            
+            return $oGateway;
+        });
         
         $this['gateway_collection'] = $oGatewayCol;    
         

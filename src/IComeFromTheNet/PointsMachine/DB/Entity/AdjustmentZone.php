@@ -7,29 +7,19 @@ use IComeFromTheNet\PointsMachine\DB\ActiveRecordInterface;
 use IComeFromTheNet\PointsMachine\PointsMachineException;
 
 /**
- * Entity for the Adjustemt Rules
+ * Entity for the Adjustemt Zones
  * 
  * @author Lewis Dyer <getintouch@icomefromthenet.com>
  * @since 1.0
  */
-class AdjustmentRule extends CommonEntity implements ActiveRecordInterface
+class AdjustmentZone extends CommonEntity implements ActiveRecordInterface
 {
     
     public $iEpisodeID;
     
     public $sAdjustmentRuleID;
     
-    public $sAdjustmentGroupID;
-    
-    public $sRuleName;
-    
-    public $sRuleNameSlug;
-
-    public $fMultiplier;
-
-    public $fModifier;
-    
-    public $bInvertFlag;
+    public $sSystemZoneID;
     
     public $oEnabledFrom;
     
