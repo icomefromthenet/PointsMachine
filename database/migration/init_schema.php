@@ -193,6 +193,7 @@ class init_schema implements EntityInterface
        $table->addColumn('score_modifier'  ,'float',array());
        $table->addColumn('score_multiplier','float',array());
        
+       $table->addColumn('created_date'    ,'datetime',array());
        $table->addColumn('processing_date' ,'datetime',array());
        $table->addColumn('occured_date'    ,'datetime' ,array());
        
