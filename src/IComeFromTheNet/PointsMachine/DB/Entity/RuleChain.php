@@ -7,45 +7,34 @@ use IComeFromTheNet\PointsMachine\DB\ActiveRecordInterface;
 use IComeFromTheNet\PointsMachine\PointsMachineException;
 
 /**
- * Entity for the Calculation Transactions
+ * Entity for the Rule Chains
  * 
  * @author Lewis Dyer <getintouch@icomefromthenet.com>
  * @since 1.0
  */
-class Calculation extends CommonEntity implements ActiveRecordInterface
+class RuleChain extends CommonEntity implements ActiveRecordInterface
 {
     
-    public $iProcessID;
+    public $iEpisodeID;
     
-    public $iAdjustmentRuleID;
+    public $sRuleChainID;
+    
+    public $sEventTypeID;
+    
+    public $sSystemID;
+    
+    public $sChainName;
+    
+    public $sChainNameSlug;
 
-    public $iAdjustmentGroupID;
+    public $iRoundingOption;
     
-    public $iScoreID;
+    public $fCapValue;
     
-    public $iScoreGroupID;
+    public $oEnabledFrom;
     
-    public $iSystemID;
+    public $oEnabledTo;
     
-    public $iSystemZoneID;
-    
-    public $iEventTypeID;
-    
-    public $iScoringEventID;
-    
-    public $fScoreBase;
-    
-    public $fScoreBalance;
-    
-    public $fScoreModifier;
-    
-    public $fScoreMultiplier;
-    
-    public $oCreatedDate;
-    
-    public $oProcessingDate;
-    
-    public $oOccuredDate;
     
     
     public function saveEpisode(DateTime $oProcessDte)

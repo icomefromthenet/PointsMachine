@@ -39,6 +39,12 @@ use IComeFromTheNet\PointsMachine\DB\Builder\AdjustmentRuleBuilder;
 use IComeFromTheNet\PointsMachine\DB\Gateway\AdjustmentZoneGateway;
 use IComeFromTheNet\PointsMachine\DB\Builder\AdjustmentZoneBuilder;
 
+use IComeFromTheNet\PointsMachine\DB\Gateway\CalculationGateway;
+use IComeFromTheNet\PointsMachine\DB\Builder\CalculationBuilder;
+
+use IComeFromTheNet\PointsMachine\DB\Gateway\RuleChainGateway;
+use IComeFromTheNet\PointsMachine\DB\Builder\RuleChainBuilder;
+
 
 class PointsMachineContainer extends Pimple
 {
@@ -117,6 +123,8 @@ class PointsMachineContainer extends Pimple
               ,'pt_rule_group_limits' => 'pt_rule_group_limits'
               ,'pt_rule'             => 'pt_rule'
               ,'pt_rule_sys_zone'    => 'pt_rule_sys_zone'
+              ,'pt_scoring_transaction' => 'pt_scoring_transaction'
+              ,'pt_rule_chain'       => 'pt_rule_chain'
               
               
             );
@@ -442,6 +450,92 @@ class PointsMachineContainer extends Pimple
             $oBuilder->setGateway($oGateway);
             $oBuilder->setLogger($oLogger);
             $oGateway->setTableQueryAlias('az');
+            
+            return $oGateway;
+        });
+        
+        $oGatewayCol->addGateway('pt_scoring_transaction',function() use ($c, $oSchema, $aTableMap) {
+            $sActualTableName = $aTableMap['pt_scoring_transaction'];
+            $oEvent           = $c->getEventDispatcher();
+            $oLogger          = $c->getAppLogger();
+            $oDatabase        = $c->getDatabaseAdaper();
+            $oGatewayCol      = $c->getGatewayCollection();
+            
+            # Transaction Header Table
+            $table = $oSchema->createTable($sActualTableName);
+            $table->addColumn('process_id','integer',array("unsigned" => true,'autoincrement' => true));
+            $table->addColumn('rule_id'       ,'integer',array("unsigned" => true));
+            $table->addColumn('rule_group_id' ,'integer',array("unsigned" => true,'default'=>null));
+            $table->addColumn('score_id'      ,'integer',array("unsigned" => true));
+            $table->addColumn('score_group_id','integer',array("unsigned" => true,'default'=>null));
+            $table->addColumn('system_id'     ,'integer',array("unsigned" => true));
+            $table->addColumn('zone_id'       ,'integer',array("unsigned" => true));
+            $table->addColumn('event_type_id' ,'integer',array("unsigned" => true));
+            $table->addColumn('event_id'      ,'integer',array("unsigned" => true));
+            
+            $table->addColumn('score_base'      ,'float',array());
+            $table->addColumn('score_balance'   ,'float',array());
+            $table->addColumn('score_modifier'  ,'float',array());
+            $table->addColumn('score_multiplier','float',array());
+            
+            $table->addColumn('created_date'    ,'datetime',array());
+            $table->addColumn('processing_date' ,'datetime',array());
+            $table->addColumn('occured_date'    ,'datetime' ,array());
+            
+            $table->setPrimaryKey(array('process_id'));
+            $table->addForeignKeyConstraint($aTableMap['pt_rule']       ,array('rule_id')       ,array('episode_id') ,array(), 'pt_tran_rule_fk1');
+            $table->addForeignKeyConstraint($aTableMap['pt_rule_group'] ,array('rule_group_id') ,array('episode_id') ,array(), 'pt_tran_rule_gp_fk2');
+            $table->addForeignKeyConstraint($aTableMap['pt_system']     ,array('system_id')     ,array('episode_id') ,array(), 'pt_tran_sys_fk3');
+            $table->addForeignKeyConstraint($aTableMap['pt_system_zone'],array('zone_id')       ,array('episode_id') ,array(), 'pt_tran_sys_zone_fk4');
+            $table->addForeignKeyConstraint($aTableMap['pt_score']      ,array('score_id')      ,array('episode_id') ,array(), 'pt_tran_score_fk5');
+            $table->addForeignKeyConstraint($aTableMap['pt_score_group'],array('score_group_id'),array('episode_id') ,array(), 'pt_tran_score_gp_fk6');
+            $table->addForeignKeyConstraint($aTableMap['pt_event_type'] ,array('event_type_id') ,array('episode_id') ,array(), 'pt_tran_event_type_fk7');
+            $table->addForeignKeyConstraint($aTableMap['pt_event']      ,array('event_id')      ,array('event_id')    ,array(), 'pt_tran_event_fk8');
+   
+           
+            $oBuilder = new CalculationBuilder();
+            $oGateway = new CalculationGateway($sActualTableName, $oDatabase, $oEvent, $table , null, $oBuilder);
+    
+            $oBuilder->setGateway($oGateway);
+            $oBuilder->setLogger($oLogger);
+            $oGateway->setTableQueryAlias('t');
+            
+            return $oGateway;
+        });
+        
+        $oGatewayCol->addGateway('pt_rule_chain',function() use ($c, $oSchema, $aTableMap) {
+            $sActualTableName = $aTableMap['pt_rule_chain'];
+            $oEvent           = $c->getEventDispatcher();
+            $oLogger          = $c->getAppLogger();
+            $oDatabase        = $c->getDatabaseAdaper();
+            $oGatewayCol      = $c->getGatewayCollection();
+            
+            # Transaction Header Table
+            $table = $oSchema->createTable($sActualTableName);
+            $table->addColumn('episode_id','integer',array("unsigned" => true,'autoincrement' => true));
+            $table->addColumn('rule_chain_id','guid',array());
+            $table->addColumn('event_type_id','guid',array()); 
+            $table->addColumn('system_id','guid',array()); 
+            $table->addColumn('chain_name','string',array("length" => 100));
+            $table->addColumn('chain_name_slug','string',array("length" => 100));
+            $table->addColumn('rounding_option','smallint',array('default'=> 1,'comment' => 'Rounding method to apply floor|ceil|round'));
+            $table->addColumn('cap_value','float',array('signed' => true, 'comment' =>'Max value +- that this event type can generate after all calculations have been made'));
+            
+            $table->addColumn('enabled_from','datetime',array());
+            $table->addColumn('enabled_to','datetime',array());
+            
+            $table->setPrimaryKey(array('episode_id'));
+            $table->addUniqueIndex(array('rule_chain_id','enabled_from'),'pt_rule_chain_uiq1');
+            $table->addForeignKeyConstraint($aTableMap['pt_event_type'],array('event_type_id'),array('event_type_id'),array(),'pt_rule_chain_fk1');
+            $table->addForeignKeyConstraint($aTableMap['pt_system'],array('system_id'),array('system_id'),array(),'pt_rule_chain_fk2');
+            
+           
+            $oBuilder = new RuleChainBuilder();
+            $oGateway = new RuleChainGateway($sActualTableName, $oDatabase, $oEvent, $table , null, $oBuilder);
+    
+            $oBuilder->setGateway($oGateway);
+            $oBuilder->setLogger($oLogger);
+            $oGateway->setTableQueryAlias('t');
             
             return $oGateway;
         });

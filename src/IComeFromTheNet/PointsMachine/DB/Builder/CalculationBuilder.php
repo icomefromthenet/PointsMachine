@@ -33,8 +33,8 @@ class CalculationBuilder extends CommonBuilder
         $oRule->iScoreGroupID       = $this->getField($data,'score_group_id',$sAlias); 
         $oRule->iSystemID           = $this->getField($data,'system_id',$sAlias); 
         $oRule->iSystemZoneID       = $this->getField($data,'zone_id',$sAlias); 
-        $oRule->iEventType          = $this->getField($data,'event_type_id',$sAlias); 
-        $oRule->iScoringEvent       = $this->getField($data,'event_id',$sAlias); 
+        $oRule->iEventTypeID        = $this->getField($data,'event_type_id',$sAlias); 
+        $oRule->iScoringEventID     = $this->getField($data,'event_id',$sAlias); 
         $oRule->fScoreBase          = $this->getField($data,'score_base',$sAlias); 
         $oRule->fScoreBalance       = $this->getField($data,'score_balance',$sAlias);     
         $oRule->fScoreModifier      = $this->getField($data,'score_modifier',$sAlias); 
@@ -56,22 +56,22 @@ class CalculationBuilder extends CommonBuilder
     public function demolish($oCalculation)
     {
         return array(
-            'process_id'    =>$oRule->iProcessID,
-            'rule_id'       => $oRule->iAdjustmentRuleID, 
-            'rule_group_id' => $oRule->iAdjustmentGroupID
-            'score_id'      => $oRule->iScoreID, 
-            'score_group_id'=> $oRule->iScoreGroupID,
-            'system_id'     => $oRule->iSystemID,
-            'zone_id'       => $oRule->iSystemZoneID,
-            'event_type_id' =>$oRule->iEventType,
-            'event_id'      => $oRule->iScoringEvent,
-            'score_base'    => $oRule->fScoreBase,
-            'score_balance' => $oRule->fScoreBalance,
-            'score_modifier'=> $oRule->fScoreModifier,
-            'score_multiplier' => $oRule->fScoreMultiplier,
-            'created_date'  => $oRule->oCreatedDate,
-            'processing_date'=> $oRule->oProcessingDate,
-            'occured_date'   => $oRule->oOccuredDate ,
+            'process_id'    =>$oCalculation->iProcessID,
+            'rule_id'       => $oCalculation->iAdjustmentRuleID, 
+            'rule_group_id' => $oCalculation->iAdjustmentGroupID,
+            'score_id'      => $oCalculation->iScoreID, 
+            'score_group_id'=> $oCalculation->iScoreGroupID,
+            'system_id'     => $oCalculation->iSystemID,
+            'zone_id'       => $oCalculation->iSystemZoneID,
+            'event_type_id' => $oCalculation->iEventTypeID,
+            'event_id'      => $oCalculation->iScoringEventID,
+            'score_base'    => $oCalculation->fScoreBase,
+            'score_balance' => $oCalculation->fScoreBalance,
+            'score_modifier'=> $oCalculation->fScoreModifier,
+            'score_multiplier' => $oCalculation->fScoreMultiplier,
+            'created_date'  => $oCalculation->oCreatedDate,
+            'processing_date'=> $oCalculation->oProcessingDate,
+            'occured_date'   => $oCalculation->oOccuredDate,
         );
         
     }

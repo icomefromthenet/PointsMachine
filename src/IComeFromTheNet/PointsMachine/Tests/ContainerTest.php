@@ -47,6 +47,13 @@ class ContainerTest extends TestWithContainer
         $oGateway = $oContainer->getGatewayCollection()->getGateway('pt_rule_sys_zone');
         $this->assertInstanceOf('IComeFromTheNet\PointsMachine\DB\Gateway\AdjustmentZoneGateway',$oGateway);
         
+        $oGateway = $oContainer->getGatewayCollection()->getGateway('pt_scoring_transaction');
+        $this->assertInstanceOf('IComeFromTheNet\PointsMachine\DB\Gateway\CalculationGateway',$oGateway);
+        
+        $oGateway = $oContainer->getGatewayCollection()->getGateway('pt_rule_chain');
+        $this->assertInstanceOf('IComeFromTheNet\PointsMachine\DB\Gateway\RuleChainGateway',$oGateway);
+        
+        
     }
     
     

@@ -10,7 +10,7 @@ use DateTime;
  * @author Lewis Dyer <getintouch@icomefromthenet.com>
  * @since 1.0
  */
-class CalculationsQuery
+class CalculationQuery
 {
 
    /**
