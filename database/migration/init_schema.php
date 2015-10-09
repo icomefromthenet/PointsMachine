@@ -237,7 +237,7 @@ class init_schema implements EntityInterface
        $table->addColumn('chain_member_id','guid',array());
        $table->addColumn('rule_chain_id','guid',array()); 
        $table->addColumn('rule_group_id','guid',array()); 
-       $table->addColumn('orde_seq','integer',array("unsigned" => true));
+       $table->addColumn('order_seq','integer',array("unsigned" => true));
        $table->addColumn('enabled_from','datetime',array());
        $table->addColumn('enabled_to','datetime',array());
 

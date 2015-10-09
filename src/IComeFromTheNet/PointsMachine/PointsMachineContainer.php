@@ -45,6 +45,9 @@ use IComeFromTheNet\PointsMachine\DB\Builder\CalculationBuilder;
 use IComeFromTheNet\PointsMachine\DB\Gateway\RuleChainGateway;
 use IComeFromTheNet\PointsMachine\DB\Builder\RuleChainBuilder;
 
+use IComeFromTheNet\PointsMachine\DB\Gateway\RuleChainMemberGateway;
+use IComeFromTheNet\PointsMachine\DB\Builder\RuleChainMemberBuilder;
+
 
 class PointsMachineContainer extends Pimple
 {
@@ -113,19 +116,19 @@ class PointsMachineContainer extends Pimple
         
         if(null === $aTableMap) {
             $aTableMap = array(
-               'pt_system'          => 'pt_system'  
-              ,'pt_system_zone'     => 'pt_system_zone' 
-              ,'pt_event_type'      => 'pt_event_type'
-              ,'pt_event'           => 'pt_event'
-              ,'pt_score_group'     => 'pt_score_group'
-              ,'pt_score'           => 'pt_score'
-              ,'pt_rule_group'      => 'pt_rule_group'
-              ,'pt_rule_group_limits' => 'pt_rule_group_limits'
-              ,'pt_rule'             => 'pt_rule'
-              ,'pt_rule_sys_zone'    => 'pt_rule_sys_zone'
+               'pt_system'              => 'pt_system'  
+              ,'pt_system_zone'         => 'pt_system_zone' 
+              ,'pt_event_type'          => 'pt_event_type'
+              ,'pt_event'               => 'pt_event'
+              ,'pt_score_group'         => 'pt_score_group'
+              ,'pt_score'               => 'pt_score'
+              ,'pt_rule_group'          => 'pt_rule_group'
+              ,'pt_rule_group_limits'   => 'pt_rule_group_limits'
+              ,'pt_rule'                => 'pt_rule'
+              ,'pt_rule_sys_zone'       => 'pt_rule_sys_zone'
               ,'pt_scoring_transaction' => 'pt_scoring_transaction'
-              ,'pt_rule_chain'       => 'pt_rule_chain'
-              
+              ,'pt_rule_chain'          => 'pt_rule_chain'
+              ,'pt_chain_member'        => 'pt_chain_member'
               
             );
         }
@@ -532,6 +535,39 @@ class PointsMachineContainer extends Pimple
            
             $oBuilder = new RuleChainBuilder();
             $oGateway = new RuleChainGateway($sActualTableName, $oDatabase, $oEvent, $table , null, $oBuilder);
+    
+            $oBuilder->setGateway($oGateway);
+            $oBuilder->setLogger($oLogger);
+            $oGateway->setTableQueryAlias('t');
+            
+            return $oGateway;
+        });
+        
+        $oGatewayCol->addGateway('pt_chain_member',function() use ($c, $oSchema, $aTableMap) {
+            $sActualTableName = $aTableMap['pt_chain_member'];
+            $oEvent           = $c->getEventDispatcher();
+            $oLogger          = $c->getAppLogger();
+            $oDatabase        = $c->getDatabaseAdaper();
+            $oGatewayCol      = $c->getGatewayCollection();
+            
+            # Transaction Header Table
+            $table = $oSchema->createTable($sActualTableName);
+            $table->addColumn('episode_id','integer',array("unsigned" => true,'autoincrement' => true));
+            $table->addColumn('chain_member_id','guid',array());
+            $table->addColumn('rule_chain_id','guid',array()); 
+            $table->addColumn('rule_group_id','guid',array()); 
+            $table->addColumn('order_seq','integer',array("unsigned" => true));
+            $table->addColumn('enabled_from','datetime',array());
+            $table->addColumn('enabled_to','datetime',array());
+            
+            
+            $table->setPrimaryKey(array('episode_id'));
+            $table->addUniqueIndex(array('chain_member_id','enabled_from'),'pt_chain_member_uiq1');
+            $table->addForeignKeyConstraint($aTableMap['pt_rule_chain'],array('rule_chain_id'),array('rule_chain_id'),array(),'pt_chain_member_fk1');
+            $table->addForeignKeyConstraint($aTableMap['pt_rule_group'],array('rule_group_id'),array('rule_group_id'),array(),'pt_chain_member_fk2');
+
+            $oBuilder = new RuleChainMemberBuilder();
+            $oGateway = new RuleChainMemberGateway($sActualTableName, $oDatabase, $oEvent, $table , null, $oBuilder);
     
             $oBuilder->setGateway($oGateway);
             $oBuilder->setLogger($oLogger);

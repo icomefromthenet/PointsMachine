@@ -53,6 +53,9 @@ class ContainerTest extends TestWithContainer
         $oGateway = $oContainer->getGatewayCollection()->getGateway('pt_rule_chain');
         $this->assertInstanceOf('IComeFromTheNet\PointsMachine\DB\Gateway\RuleChainGateway',$oGateway);
         
+        $oGateway = $oContainer->getGatewayCollection()->getGateway('pt_chain_member');
+        $this->assertInstanceOf('IComeFromTheNet\PointsMachine\DB\Gateway\RuleChainMemberGateway',$oGateway);
+        
         
     }
     
