@@ -52,6 +52,7 @@ class PointSystemQuery extends CommonQuery
         return $this->andWhere($sAlias."system_name_slug LIKE ".$this->createNamedParameter($sGUID,$paramType));
         
     }
+    
 
 }
 /* End of Class */

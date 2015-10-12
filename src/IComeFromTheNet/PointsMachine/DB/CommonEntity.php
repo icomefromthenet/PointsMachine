@@ -119,13 +119,13 @@ abstract class CommonEntity implements ActiveRecordInterface
     // -------------------------------------------------------------
     #  ActiveRecordInterface
     
-    abstract public function saveEpisode(DateTime $oProcessDte);
     
+    public function save(DateTime $oProcessDte);
     
-    abstract public function deleteEpisode(DateTime $oProcessDte);
+    public function remove(DateTime $oProcessDte);
     
+    public function update(DateTime $oProcessDte);
     
-    abstract public function validate(DateTime $oProcessDte);
     
     //-----------------------------------------------------------------
     # Extra Validator Helpers

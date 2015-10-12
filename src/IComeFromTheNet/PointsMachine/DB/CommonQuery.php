@@ -29,7 +29,7 @@ class CommonQuery extends AbstractQuery
         
         $paramType = $oGateway->getMetaData()->getColumn('episode_id')->getType();
         
-        return $this->andWhere($sAlias."episode_id = ".$this->createNamedParameter($id,$paramType));
+        return $this->andWhere($this->expr()->eq($sAlias."episode_id",$this->createNamedParameter($id,$paramType)));
         
     }
     
@@ -50,7 +50,7 @@ class CommonQuery extends AbstractQuery
         $paramType = $oGateway->getMetaData()->getColumn('enabled_from')->getType();
         
         
-        return $this->andWhere($sAlias."enabled_from < ".$this->createNamedParameter($oDate,$paramType));
+        return $this->andWhere($this->expr()->lt($sAlias."enabled_from",$this->createNamedParameter($oDate,$paramType)));
     }
     
     /**
@@ -70,7 +70,7 @@ class CommonQuery extends AbstractQuery
         $paramType = $oGateway->getMetaData()->getColumn('enabled_from')->getType();
         
         
-        return $this->andWhere($sAlias."enabled_from <= ".$this->createNamedParameter($oDate,$paramType));
+        return $this->andWhere($this->expr()->lte($sAlias."enabled_from",$this->createNamedParameter($oDate,$paramType)));
     }
     
      /**
@@ -90,7 +90,7 @@ class CommonQuery extends AbstractQuery
         $paramType = $oGateway->getMetaData()->getColumn('enabled_from')->getType();
         
         
-        return $this->andWhere($sAlias."enabled_from > ".$this->createNamedParameter($oDate,$paramType));
+        return $this->andWhere($this->expr()->gt($sAlias."enabled_from",$this->createNamedParameter($oDate,$paramType)));
     }
     
     /**
@@ -110,7 +110,7 @@ class CommonQuery extends AbstractQuery
         $paramType = $oGateway->getMetaData()->getColumn('enabled_from')->getType();
         
         
-        return $this->andWhere($sAlias."enabled_from >= ".$this->createNamedParameter($oDate,$paramType));
+        return $this->andWhere($this->expr()->gte($sAlias."enabled_from",$this->createNamedParameter($oDate,$paramType)));
     }
    
     /**
@@ -130,7 +130,7 @@ class CommonQuery extends AbstractQuery
         $paramType = $oGateway->getMetaData()->getColumn('enabled_to')->getType();
         
         
-        return $this->andWhere($sAlias."enabled_to < ".$this->createNamedParameter($oDate,$paramType));
+        return $this->andWhere($this->expr()->lt($sAlias."enabled_to",$this->createNamedParameter($oDate,$paramType)));
     }
     
     /**
@@ -150,7 +150,7 @@ class CommonQuery extends AbstractQuery
         $paramType = $oGateway->getMetaData()->getColumn('enabled_to')->getType();
         
         
-        return $this->andWhere($sAlias."enabled_to <= ".$this->createNamedParameter($oDate,$paramType));
+        return $this->andWhere($this->expr()->lte($sAlias."enabled_to",$this->createNamedParameter($oDate,$paramType)));
     }
     
     /**
@@ -170,7 +170,7 @@ class CommonQuery extends AbstractQuery
         $paramType = $oGateway->getMetaData()->getColumn('enabled_to')->getType();
         
         
-        return $this->andWhere($sAlias."enabled_to > ".$this->createNamedParameter($oDate,$paramType));
+        return $this->andWhere($this->expr()->gt($sAlias."enabled_to",$this->createNamedParameter($oDate,$paramType)));
     }
     
     /**
@@ -189,8 +189,7 @@ class CommonQuery extends AbstractQuery
         
         $paramType = $oGateway->getMetaData()->getColumn('enabled_to')->getType();
         
-        
-        return $this->andWhere($sAlias."enabled_to >= ".$this->createNamedParameter($oDate,$paramType));
+        return $this->andWhere($this->expr()->gte($sAlias."enabled_to",$this->createNamedParameter($oDate,$paramType)));
     }
     
     /**
@@ -221,7 +220,33 @@ class CommonQuery extends AbstractQuery
             $sAlias = $sAlias .'.';
         }
         
-        return $this->andWhere($sAlias."enabled_to =< ". $sAlias.'enabled_from');
+        return $this->andWhere($this->expr()->lte($sAlias."enabled_to", $sAlias.'enabled_from'));
+    }
+    
+    /**
+     * Require the enabled date to fall after NOW 
+     * 
+     * @return CommonQuery
+     */ 
+    public function whereEnabledAfterNow()
+    {
+        return $this->andWhere($this->expr()->gt($sAlias."enabled_to",$oGateway->getAdapater()
+                                                                 ->getDatabasePlatform()
+                                                                 ->getNowExpression()));
+        
+    }
+    
+     /**
+     * Require the enabled date to fall ON or After NOW 
+     * 
+     * @return CommonQuery
+     */ 
+    public function whereEnabledAfterAndOnNow()
+    {
+        return $this->andWhere($this->expr()->gte($sAlias."enabled_to",$oGateway->getAdapater()
+                                                                 ->getDatabasePlatform()
+                                                                 ->getNowExpression()));
+        
     }
 
 }
