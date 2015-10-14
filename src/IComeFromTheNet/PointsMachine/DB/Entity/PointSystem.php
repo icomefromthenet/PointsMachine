@@ -57,7 +57,7 @@ class PointSystem extends CommonEntity implements ActiveRecordInterface
                          ->end()
                        ->insert(); 
     
-                 if($bSuccess) {
+                if($bSuccess) {
                     $this->aLastResult['result'] = true;
                     $this->aLastResult['msg']    = 'Inserted new Points System Episode';
                     
@@ -70,9 +70,27 @@ class PointSystem extends CommonEntity implements ActiveRecordInterface
                 
                 
             } else {
-                # new episode on a existing entity
+                # There are no cal columns that need to be version so update
+                # on the non key columns
                 
-               
+                $bSuccess = $oGateway->updateQuery()
+                            ->start()
+                                ->addColumn('system_name'     , $aDatabaseData['system_name'])
+                                ->addColumn('system_name_slug', $aDatabaseData['system_name_slug'])
+                            ->where()
+                                ->filterBySystem($aDatabaseData['system_id'])
+                            ->end()
+                            ->update();
+                
+                
+                if($bSuccess) {
+                    $this->aLastResult['result'] = true;
+                    $this->aLastResult['msg']    = 'Updated All the Points System Episodes';
+                    
+                } else {
+                    $this->aLastResult['result'] = false;
+                    $this->aLastResult['msg']    = 'Unable to update Points System Episods';
+                }
                 
             }
             

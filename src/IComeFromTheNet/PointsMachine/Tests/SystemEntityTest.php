@@ -16,7 +16,7 @@ class SystemEntityTest extends TestWithContainer
     
     public function getDataSet()
     {
-      return new ArrayDataSet(__DIR__.'/'.'ExampleSystemFixture.php');
+      return new ArrayDataSet(__DIR__.'/fixture/'.'example-system.php');
     }
     
     
@@ -48,59 +48,50 @@ class SystemEntityTest extends TestWithContainer
         $this->assertTrue($aResult['result']);
         $this->assertEquals('Inserted new Points System Episode',$aResult['msg']);
         $this->assertTrue($bResult);
+
         
-        //Build the result set that we expect
-        //where merging the default example set with new entity and removing tables we dont want checked
-        
-        $aResultData = new SimpleArrayDataSet([
-            'pt_system' => 
-                [
-                    [
-                        'episode_id' => null
-                        ,'system_id'  => $sSystemId
-                        ,'system_name' => $sSystemName
-                        ,'system_name_slug' => $sSystemSlug
-                        ,'enabled_from' => $sEnabledFrom
-                        ,'enabled_to'   => $sEnabledTo
-                    ]
-                ]
-            
-        ]);
-        
-        
-        $oCompositeDs = new PHPUnit_Extensions_Database_DataSet_CompositeDataSet();
-        $oCompositeDs->addDataSet($this->getDataSet());
-        $oCompositeDs->addDataSet($aResultData);
-        
-        $oExpectedDataSet = new PHPUnit_Extensions_Database_DataSet_DataSetFilter($oCompositeDs);
-        $oExpectedDataSet->addExcludeTables([
-               'pt_system_zone'         => 'pt_system_zone' 
-              ,'pt_event_type'          => 'pt_event_type'
-              ,'pt_event'               => 'pt_event'
-              ,'pt_score_group'         => 'pt_score_group'
-              ,'pt_score'               => 'pt_score'
-              ,'pt_rule_group'          => 'pt_rule_group'
-              ,'pt_rule_group_limits'   => 'pt_rule_group_limits'
-              ,'pt_rule'                => 'pt_rule'
-              ,'pt_rule_sys_zone'       => 'pt_rule_sys_zone'
-              ,'pt_scoring_transaction' => 'pt_scoring_transaction'
-              ,'pt_rule_chain'          => 'pt_rule_chain'
-              ,'pt_chain_member'        => 'pt_chain_member'
-              
-        ]);
-        
-        $oExpectedDataSet->setExcludeColumnsForTable('pt_system', array('episode_id'));
-        
-        // Build Dataset that compare against in the database
-        
-        $oQuerydataSet = new PHPUnit_Extensions_Database_DataSet_QueryDataSet($this->getConnection());
-        $oQuerydataSet->addTable('pt_system', 'SELECT system_id, system_id, system_name, system_name_slug, enabled_from, enabled_to FROM pt_system');
-        
-        
-        $this->assertDataSetsEqual($oExpectedDataSet, $oQuerydataSet);
+        $this->assertTablesEqual((new ArrayDataSet(__DIR__.'/fixture/'.'system-create.php'))->getTable('pt_system'), $this->getConnection()->createDataSet()->getTable('pt_system'));
         
     }
     
+    public function testEntityUpdate()
+    {
+        $oContainer = $this->getContainer();
+        $oGateway   = $oContainer->getGatewayCollection()->getGateway('pt_system');
+        $oLogger    = $oContainer->getAppLogger();
+        $oProcessingDate = new DateTime();
+        
+        # this is a non temporal update, this won't change the version.
+
+
+        $sNewName = 'Test Donations System';
+        $sNewSlug = 'test_donations_system';
+        $sExistingSystemID   = '9B753E70-881B-F53E-2D46-8151BED1BBAF';
+        $iExistingEpisode = 1;
+        
+        $oEntity = new PointSystem($oGateway,$oLogger);
+        
+        $oEntity->sSystemID = $sExistingSystemID;
+        $oEntity->sSystemName =$sNewName;
+        $oEntity->sSystemNameSlug = $sNewSlug;
+        $oEntity->iEpisodeID = $iExistingEpisode;
+        
+        $bResult = $oEntity->save($oProcessingDate);
+        $aResult = $oEntity->getLastQueryResult();
+        
+        $this->assertTrue($bResult);
+        $this->assertTrue($aResult['result']);
+        $this->assertEquals('Updated All the Points System Episodes',$aResult['msg']);
+        
+        $this->assertTablesEqual((new ArrayDataSet(__DIR__.'/fixture/'.'system-update.php'))->getTable('pt_system'), $this->getConnection()->createDataSet()->getTable('pt_system'));
+        
+    }
+    
+    public function testDeleteFailes()
+    {
+        
+        
+    }
     
     
 }
