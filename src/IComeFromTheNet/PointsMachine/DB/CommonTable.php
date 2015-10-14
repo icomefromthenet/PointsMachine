@@ -3,6 +3,7 @@ namespace IComeFromTheNet\PointsMachine\DB;
 
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Schema\Column;
+use Doctrine\DBAL\Types\Type as AbstractType;
 use DBALGateway\Table\AbstractTable;
 use DBALGateway\Table\TableInterface;
 use DBALGateway\Table\TableEvent;
@@ -18,6 +19,11 @@ use DBALGateway\Exception as GatewayException;
 abstract class CommonTable extends AbstractTable implements TableInterface
 {
     
+    public function getAdapter()
+    {
+        return $this->getAdapater();
+    }
+    
     /**
      * Proxy the bound query builder to DBAL::fetchColumn
      * 
@@ -32,7 +38,12 @@ abstract class CommonTable extends AbstractTable implements TableInterface
         
         try {
             
-            $result = $this->head->getQuery()->fetchColumn($iColumn);
+            $sSql = $this->head->getSql();
+            $aParam = $this->head->getParameters();
+            
+            $result = $this->getAdapter()
+                           ->executeQuery($sSql,$aParam,array())
+                           ->fetchColumn($iColumn);
 
         } catch(DBALException $e) {
             throw new GatewayException($e->getMessage());
@@ -45,6 +56,25 @@ abstract class CommonTable extends AbstractTable implements TableInterface
         return $result;  
     }
     
+    /**
+     * Return the now date from the db server
+     * 
+     * @return DateTime
+     * @access public
+     */ 
+    public function getNow()
+    {
+        $sNow = $this->newQueryBuilder()
+                ->select($this->getAdapter()->getDatabasePlatform()->getCurrentDateSQL())
+                ->from($this->getMetaData()->getName())
+                ->end()
+                ->fetchColumn(0);
+        
+                
+        $oDateColumn = AbstractType::getType(AbstractType::DATE);   
+
+        return $oDateColumn->convertToPHPValue($sNow,$this->getAdapter()->getDatabasePlatform());
+    }
     
 }
 /* End of Class */

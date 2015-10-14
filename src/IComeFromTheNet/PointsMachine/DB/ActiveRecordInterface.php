@@ -12,13 +12,15 @@ use DateTime;
 interface ActiveRecordInterface 
 {
     
-    public function saveEpisode(DateTime $oProcessDte);
+    public function save(DateTime $oProcessDte);
     
     
-    public function deleteEpisode(DateTime $oProcessDte);
+    public function remove(DateTime $oProcessDte);
+    
+    public function updateAll(DateTime $oProcessDte);
     
     
-    public function validate(DateTime $oProcessDte);
+    public function validate(DateTime $oProcessDte, $sOpt);
     
     
 }

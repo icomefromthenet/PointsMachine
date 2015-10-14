@@ -29,67 +29,50 @@ class PointSystem extends CommonEntity implements ActiveRecordInterface
     
     
     
-    public function saveEpisode(DateTime $oProcessDte)
+    public function save(DateTime $oProcessDte)
     {
-        $bSaved            = false;
+        $bSuccess          = false;
         $this->aLastResult = array( 'result' => '','msg' =>'');
         $oGateway          = $this->getTableGateway();
         $oBuilder          = $oGateway->getEntityBuilder();
         
+                
         try {
         
-            if(false === empty($this->iEpisodeID) && false === empty($this->sSystemID)) {
-                # update exsiting allowed columns e.g name
+            $this->oEnabledFrom = $oGateway->getNow();
+            $this->oEnabledTo   = DateTime::createFromFormat('d-m-Y','01-01-3000');
+            $aDatabaseData     = $oBuilder->demolish($this);
+        
+        
+            if(true === empty($this->iEpisodeID)) {
                 
-                $aDatabaseData = $oBuilder->demolish($this);
-                
-                $bSuccess = $oGateway->updateQuery()
-                         ->start()
-                            ->addColumn('system_name'     , $aDatabaseData['system_name'])
-                            ->addColumn('system_name_slug', $aDatabaseData['system_name_slug'])
-                         ->where()
-                            ->filterByEpisode($aDatabaseData['episode_id'])
-                            ->filterBySystem($aDatabaseData['system_id'])
-                         ->end()
-                       ->update(); 
-    
-                if($bSuccess) {
-                    $this->aLastResult['result'] = true;
-                    $this->aLastResult['msg']    = 'Updated the non calculation columns for this Points System';
-                } else {
-                    $this->aLastResult['result'] = false;
-                    $this->aLastResult['msg']    = 'Unable to find Points System Episode or no changes in data';
-                }
-                
-            } elseif(false === empty($this->iEpisodeID) && true === empty($this->sSystemID)) {
-                # save new episode, update existing episode with end date
-                $aDatabaseData = $oBuilder->demolish($this); 
-                    
-                
-                
-            } else {
-                # new episode on a new entity
-                $aDatabaseData = $oBuilder->demolish($this);
-                
-                $sSystemId = uniqid('system_');
-                
+                # new episode on new entity
                 $bSuccess = $oGateway->insertQuery()
                          ->start()
-                            ->addColumn('episode_id',$sSystemId)
-                            ->addColumn('system_id',null)
-                            
+                            ->addColumn('system_id'       , $aDatabaseData['system_id'])
                             ->addColumn('system_name'     , $aDatabaseData['system_name'])
                             ->addColumn('system_name_slug', $aDatabaseData['system_name_slug'])
+                            ->addColumn('enabled_from'    , $aDatabaseData['enabled_from'])
+                            ->addColumn('enabled_to'      , $aDatabaseData['enabled_to'])
                          ->end()
                        ->insert(); 
-                       
+    
                  if($bSuccess) {
                     $this->aLastResult['result'] = true;
                     $this->aLastResult['msg']    = 'Inserted new Points System Episode';
+                    
+                    $this->iEpisodeID = $oGateway->lastInsertId();
+                    
                 } else {
                     $this->aLastResult['result'] = false;
                     $this->aLastResult['msg']    = 'Unable to insert Points System Episode.';
                 }
+                
+                
+            } else {
+                # new episode on a existing entity
+                
+               
                 
             }
             
@@ -100,19 +83,14 @@ class PointSystem extends CommonEntity implements ActiveRecordInterface
             $this->aLastResult['msg'] = $e->getMessage();
         }
         
-        return $bSaved;
+        return $bSuccess;
     }
     
-    public function deleteEpisode(DateTime $oProcessDte)
+    public function remove(DateTime $oProcessDte)
     {
         if(false === empty($this->iEpisodeID) && false === empty($this->sSystemID)) {
             
-            # do the update setting the assigned date or the processing date
-            $oDate = $oProcessDte;
             
-            if(false === empty($this->oEnabledTo)) {
-                $oDate = $this->oEnabledTo;
-            } 
             
             $this->aLastResult = array( 'result' => '','msg' =>'');
             $oGateway          = $this->getTableGateway();
@@ -127,6 +105,7 @@ class PointSystem extends CommonEntity implements ActiveRecordInterface
                           ->where()
                             ->filterByEpisode($aDatabaseData['episode_id'])
                             ->filterBySystem($aDatabaseData['system_id'])
+                            ->whereEnabledAfterNow()
                          ->end()
                        ->update(); 
     
@@ -177,40 +156,36 @@ class PointSystem extends CommonEntity implements ActiveRecordInterface
         return $this->aLastResult['result'];
     }
     
-    public function validate(DateTime $oProcessDte)
-    {
-        if(false === empty($this->iEpisodeID) && false === empty($this->sSystemID)) {
-            # update exsiting allowed columns e.g name
-            return $this->validateUpdate($oProcessDte);
-        } elseif(false === empty($this->iEpisodeID) && true === empty($this->sSystemID)) {
-            # save new episode, update existing episode with end date
-            return $this->validateNewEpisode($oProcessDte);
-        } else {
-            # new episode on a new entity
-            return $this->validateNewEntity($oProcessDte);
-        }
-         
-    }
-    
-    public function validateNewEpisode(DateTime $oProcessDte)
+    public function updateAll(DateTime $oProcessDte)
     {
         
         
     }
     
-    
-    public function validateNewEntity(DateTime $oProcessDte)
+    public function validate(DateTime $oProcessDte,$sOpt)
     {
+
+    }
+    
+    
+    
+    protected function validateNewEpisode(DateTime $oProcessDte)
+    {
+    
         
+    }
+    
+    protected function validateNewEntity(DateTime $oProcessDte)
+    {
         
     }
     
     
-    public function validateUpdate(DateTime $oProcessDte)
+    protected function validateUpdate(DateTime $oProcessDte)
     {
         
-        
     }
+    
     
 }
 /* End of File */

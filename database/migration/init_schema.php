@@ -17,8 +17,8 @@ class init_schema implements EntityInterface
         $table->addColumn('system_id','guid',array());
         $table->addColumn('system_name','string',array("length" => 100));
         $table->addColumn('system_name_slug','string',array("length" => 100));
-        $table->addColumn('enabled_from','datetime',array());
-        $table->addColumn('enabled_to','datetime',array());
+        $table->addColumn('enabled_from','date',array());
+        $table->addColumn('enabled_to','date',array());
     
         $table->setPrimaryKey(array('episode_id'));
         $table->addUniqueIndex(array('system_id','enabled_from'),'pt_system_uiq1');
@@ -30,8 +30,8 @@ class init_schema implements EntityInterface
         $table->addColumn('zone_name'     ,'string'  ,array("length" => 100));
         $table->addColumn('zone_name_slug','string'  ,array("length" => 100));
         $table->addColumn('system_id'     ,'guid'    ,array("unsigned" => true));
-        $table->addColumn('enabled_from'  ,'datetime',array());
-        $table->addColumn('enabled_to'    ,'datetime',array());
+        $table->addColumn('enabled_from'  ,'date',array());
+        $table->addColumn('enabled_to'    ,'date',array());
     
         $table->setPrimaryKey(array('episode_id'));
         $table->addUniqueIndex(array('zone_id','enabled_from'),'pr_sys_zone_uk1');
@@ -48,8 +48,8 @@ class init_schema implements EntityInterface
         $table->addColumn('event_type_id','guid',array());
         $table->addColumn('event_name','string',array("length" => 100));
         $table->addColumn('event_name_slug','string',array("length" => 100));
-        $table->addColumn('enabled_from','datetime',array());
-        $table->addColumn('enabled_to','datetime',array());
+        $table->addColumn('enabled_from','date',array());
+        $table->addColumn('enabled_to','date',array());
         
         $table->setPrimaryKey(array('episode_id'));
         $table->addUniqueIndex(array('event_type_id','enabled_from'),'pt_event_type_uiq1');
@@ -60,8 +60,8 @@ class init_schema implements EntityInterface
         $table->addColumn('event_id','integer',array("unsigned" => true,'autoincrement' => true));
         $table->addColumn('event_type_id','guid',array("unsigned" => true));
         $table->addColumn('event_created','datetime',array());
-        $table->addColumn('process_date','datetime',array('comment' => 'Processing date for the calculator'));
-        $table->addColumn('occured_date','datetime',array('comment' => 'When event occured'));
+        $table->addColumn('process_date','date',array('comment' => 'Processing date for the calculator'));
+        $table->addColumn('occured_date','date',array('comment' => 'When event occured'));
       
         
         $table->setPrimaryKey(array('event_id'));
@@ -80,8 +80,8 @@ class init_schema implements EntityInterface
         $table->addColumn('score_group_id','guid',array());
         $table->addColumn('group_name','string',array("length" => 100));
         $table->addColumn('group_name_slug','string',array("length" => 100));
-        $table->addColumn('enabled_from','datetime',array());
-        $table->addColumn('enabled_to','datetime',array());  
+        $table->addColumn('enabled_from','date',array());
+        $table->addColumn('enabled_to','date',array());  
         
         $table->setPrimaryKey(array('episode_id'));
         $table->addUniqueIndex(array('score_group_id','enabled_from'),'pt_score_gp_uiq1');
@@ -91,8 +91,8 @@ class init_schema implements EntityInterface
         $table = $sc->createTable("pt_score");
         $table->addColumn('episode_id','integer',array("unsigned" => true,'autoincrement' => true));
         $table->addColumn('score_id','guid',array());
-        $table->addColumn('enabled_from','datetime',array());
-        $table->addColumn('enabled_to','datetime',array());
+        $table->addColumn('enabled_from','date',array());
+        $table->addColumn('enabled_to','date',array());
         $table->addColumn('score_name','string',array("length" => 100));
         $table->addColumn('score_name_slug','string',array("length" => 100));
         $table->addColumn('score_value','float',array('signed' => true,'comment' => 'based value for calculations can be + or -'));
@@ -113,8 +113,8 @@ class init_schema implements EntityInterface
        $table->addColumn('rule_group_id','guid',array());
        $table->addColumn('rule_group_name','string',array("length" => 100));
        $table->addColumn('rule_group_name_slug','string',array("length" => 100));
-       $table->addColumn('enabled_from'  ,'datetime',array());
-       $table->addColumn('enabled_to'    ,'datetime',array());
+       $table->addColumn('enabled_from'  ,'date',array());
+       $table->addColumn('enabled_to'    ,'date',array());
        $table->addColumn('max_multiplier','float',array("unsigned" => true, 'comment' => 'Max value of multiplier once all rules are combined in this group allows group capping','notnull' => false));
        $table->addColumn('min_multiplier','float',array("unsigned" => true, 'comment' => 'Min value of multiplier once all rules are combined in this group allows group capping','notnull' => false));
        $table->addColumn('max_modifier'  ,'float',array("unsigned" => true, 'comment' => 'Max value of modifier once all rules are combined in this group allows group capping','notnull' => false));
@@ -133,8 +133,8 @@ class init_schema implements EntityInterface
        $table->addColumn('rule_group_id','guid',array());
        $table->addColumn('score_group_id','guid',array('notnull' => false)); 
        $table->addColumn('system_id','guid',array('notnull' => false)); 
-       $table->addColumn('enabled_from','datetime',array());
-       $table->addColumn('enabled_to','datetime',array());
+       $table->addColumn('enabled_from','date',array());
+       $table->addColumn('enabled_to','date',array());
        
        $table->setPrimaryKey(array('episode_id'));
        $table->addUniqueIndex(array('rule_group_id','system_id','score_group_id','enabled_from'),'pt_rule_gp_limit_uiq1');
@@ -150,8 +150,8 @@ class init_schema implements EntityInterface
        $table->addColumn('rule_group_id','guid',array());
        $table->addColumn('rule_name','string',array("length" => 100));
        $table->addColumn('rule_name_slug','string',array("length" => 100));
-       $table->addColumn('enabled_from','datetime',array());
-       $table->addColumn('enabled_to','datetime',array());
+       $table->addColumn('enabled_from','date',array());
+       $table->addColumn('enabled_to','date',array());
        $table->addColumn('multiplier'  ,'float',array("unsigned" => true, 'comment' => 'Value to multiply the base value by','notnull' => false));
        $table->addColumn('modifier'    ,'integer',array("unsigned" => true, 'comment' => 'value to add to the base','notnull' => false));
        $table->addColumn('invert_flag' ,'smallint',array("unsigned" => true, 'comment' => 'Operation is inverted ie multiplier becomes a divisor','notnull' => false));
@@ -167,8 +167,8 @@ class init_schema implements EntityInterface
        $table->addColumn('episode_id','integer',array("unsigned" => true,'autoincrement' => true));
        $table->addColumn('rule_id','guid',array());
        $table->addColumn('zone_id','guid',array()); 
-       $table->addColumn('enabled_from','datetime',array());
-       $table->addColumn('enabled_to','datetime',array());
+       $table->addColumn('enabled_from','date',array());
+       $table->addColumn('enabled_to','date',array());
 
        $table->setPrimaryKey(array('episode_id'));
        $table->addUniqueIndex(array('zone_id','rule_id','enabled_from'),'pt_rule_sys_zone_uiq1');
@@ -193,9 +193,9 @@ class init_schema implements EntityInterface
        $table->addColumn('score_modifier'  ,'float',array());
        $table->addColumn('score_multiplier','float',array());
        
-       $table->addColumn('created_date'    ,'datetime',array());
-       $table->addColumn('processing_date' ,'datetime',array());
-       $table->addColumn('occured_date'    ,'datetime' ,array());
+       $table->addColumn('created_date'    ,'date',array());
+       $table->addColumn('processing_date' ,'date',array());
+       $table->addColumn('occured_date'    ,'date' ,array());
        
        $table->setPrimaryKey(array('process_id'));
        $table->addForeignKeyConstraint('pt_rule'       ,array('rule_id')       ,array('episode_id') ,array(), 'pt_tran_rule_fk1');
@@ -223,8 +223,8 @@ class init_schema implements EntityInterface
        $table->addColumn('rounding_option','smallint',array('notnull' => false, 'default'=> 1,'comment' => 'Rounding method to apply floor|ceil|round'));
        $table->addColumn('cap_value','float',array('notnull' => false,'signed' => true, 'comment' =>'Max value +- that this event type can generate after all calculations have been made'));
      
-       $table->addColumn('enabled_from','datetime',array());
-       $table->addColumn('enabled_to','datetime',array());
+       $table->addColumn('enabled_from','date',array());
+       $table->addColumn('enabled_to','date',array());
 
        $table->setPrimaryKey(array('episode_id'));
        $table->addUniqueIndex(array('rule_chain_id','enabled_from'),'pt_rule_chain_uiq1');
@@ -238,8 +238,8 @@ class init_schema implements EntityInterface
        $table->addColumn('rule_chain_id','guid',array()); 
        $table->addColumn('rule_group_id','guid',array()); 
        $table->addColumn('order_seq','integer',array("unsigned" => true));
-       $table->addColumn('enabled_from','datetime',array());
-       $table->addColumn('enabled_to','datetime',array());
+       $table->addColumn('enabled_from','date',array());
+       $table->addColumn('enabled_to','date',array());
 
     
        $table->setPrimaryKey(array('episode_id'));
