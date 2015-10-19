@@ -54,6 +54,26 @@ class AdjustmentGroupLimitQuery extends CommonQuery
         
     }
     
+    
+    /**
+     * Filter by a system entity
+     * 
+     * @param integer $id  The GUID of this entity
+     * @return CommonQuery
+     */ 
+    public function filterBySystem($sGUID)
+    {
+        $oGateway = $this->getGateway();
+        $sAlias   = $this->getDefaultAlias();
+        if(false === empty($sAlias)) {
+            $sAlias = $sAlias .'.';
+        }
+        
+        $paramType = $oGateway->getMetaData()->getColumn('system_id')->getType();
+        
+        return $this->andWhere($sAlias."system_id = ".$this->createNamedParameter($sGUID,$paramType));
+        
+    }
    
 
 }

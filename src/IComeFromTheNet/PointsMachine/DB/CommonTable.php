@@ -4,7 +4,7 @@ namespace IComeFromTheNet\PointsMachine\DB;
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Types\Type as AbstractType;
-use DBALGateway\Table\AbstractTable;
+use DBALGateway\Table\SchemaAwareTable;
 use DBALGateway\Table\TableInterface;
 use DBALGateway\Table\TableEvent;
 use DBALGateway\Table\TableEvents;
@@ -16,7 +16,7 @@ use DBALGateway\Exception as GatewayException;
  * @author Lewis Dyer <getintouch@icomefromthenet.com>
  * @since 1.0
  */
-abstract class CommonTable extends AbstractTable implements TableInterface
+abstract class CommonTable extends SchemaAwareTable implements TableInterface
 {
     
     public function getAdapter()
@@ -40,9 +40,11 @@ abstract class CommonTable extends AbstractTable implements TableInterface
             
             $sSql = $this->head->getSql();
             $aParam = $this->head->getParameters();
+            $aTypes = $this->head->getParameterTypes();
+            
             
             $result = $this->getAdapter()
-                           ->executeQuery($sSql,$aParam,array())
+                           ->executeQuery($sSql,$aParam,$aTypes)
                            ->fetchColumn($iColumn);
 
         } catch(DBALException $e) {
@@ -75,6 +77,8 @@ abstract class CommonTable extends AbstractTable implements TableInterface
 
         return $oDateColumn->convertToPHPValue($sNow,$this->getAdapter()->getDatabasePlatform());
     }
+    
+    
     
 }
 /* End of Class */

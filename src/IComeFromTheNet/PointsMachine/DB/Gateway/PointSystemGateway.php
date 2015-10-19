@@ -24,6 +24,5 @@ class PointSystemGateway extends CommonTable
     }
     
     
-    
 }
 /* End of Class */

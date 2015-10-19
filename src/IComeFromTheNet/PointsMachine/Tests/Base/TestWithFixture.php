@@ -4,7 +4,9 @@ namespace IComeFromTheNet\PointsMachine\Tests\Base;
 use \PDO;
 use \PHPUnit_Extensions_Database_Operation_Composite;
 use \PHPUnit_Extensions_Database_TestCase;
+use Mrkrstphr\DbUnit\DataSet\ArrayDataSet;
 use IComeFromTheNet\PointsMachine\Tests\Base\DBOperationSetEnv;
+
 
 class TestWithFixture extends PHPUnit_Extensions_Database_TestCase
 {
@@ -29,6 +31,11 @@ class TestWithFixture extends PHPUnit_Extensions_Database_TestCase
     */
     private $conn = null;
     
+    /**
+     * Holder to common fixtures in a singl TestCase
+     */ 
+    protected $aFixtures = array();
+    
     
     final public function getConnection()
     {
@@ -51,9 +58,21 @@ class TestWithFixture extends PHPUnit_Extensions_Database_TestCase
     }
     
     
-    public function getDataSet()
-    {
-       
+    public function getDataSet($fixtures = array()) {
+    
+        if (empty($fixtures)) {
+            $fixtures = $this->aFixtures;
+        }
+        
+        $fixturePath = realpath((__DIR__) . DIRECTORY_SEPARATOR .'..' . DIRECTORY_SEPARATOR . 'fixture');
+        
+        $aPaths = array();
+        
+        foreach ($fixtures as $fixture) {
+            $aPaths[] =  $fixturePath . DIRECTORY_SEPARATOR . "$fixture";
+        }
+    
+        return new ArrayDataSet($aPaths);
     }
     
     
@@ -85,6 +104,17 @@ class TestWithFixture extends PHPUnit_Extensions_Database_TestCase
         
     }
     
+    /**
+     * Used to load a new dataset in method and have it applied to database
+     * 
+     * @return void
+     */ 
+    public function loadDataSet($dataSet) {
+        // set the new dataset
+        $this->getDatabaseTester()->setDataSet($dataSet);
+        // call setUp which adds the rows
+        $this->getDatabaseTester()->onSetUp();
+    }
         
    
 }

@@ -14,14 +14,19 @@ use PHPUnit_Extensions_Database_DataSet_QueryDataSet;
 class SystemEntityTest extends TestWithContainer
 {
     
-    public function getDataSet()
-    {
-      return new ArrayDataSet(__DIR__.'/fixture/'.'example-system.php');
-    }
+    protected $aFixtures = ['example-system.php','system-before.php'];
     
     
+    /*
     public function testEntitySave()
     {
+        
+        $oExpectedDataset = $this->getDataSet(array_merge($this->aFixtures
+                                                            ,['system-create-after.php'])
+                                                            )
+                                ->getTable('pt_system');
+        
+        
         $oContainer = $this->getContainer();
         $oGateway   = $oContainer->getGatewayCollection()->getGateway('pt_system');
         $oLogger    = $oContainer->getAppLogger();
@@ -50,12 +55,19 @@ class SystemEntityTest extends TestWithContainer
         $this->assertTrue($bResult);
 
         
-        $this->assertTablesEqual((new ArrayDataSet(__DIR__.'/fixture/'.'system-create.php'))->getTable('pt_system'), $this->getConnection()->createDataSet()->getTable('pt_system'));
+        $this->assertTablesEqual($oExpectedDataset, $this->getConnection()->createDataSet()->getTable('pt_system'));
         
-    }
+    } */
     
     public function testEntityUpdate()
     {
+        
+       $oExpectedDataset = $this->getDataSet(array_merge($this->aFixtures
+                                                            ,['system-update-after.php'])
+                                                            )
+                                ->getTable('pt_system');
+        
+        
         $oContainer = $this->getContainer();
         $oGateway   = $oContainer->getGatewayCollection()->getGateway('pt_system');
         $oLogger    = $oContainer->getAppLogger();
@@ -66,7 +78,7 @@ class SystemEntityTest extends TestWithContainer
 
         $sNewName = 'Test Donations System';
         $sNewSlug = 'test_donations_system';
-        $sExistingSystemID   = '9B753E70-881B-F53E-2D46-8151BED1BBAF';
+        $sExistingSystemID   = '5CC68937-12BF-C9B9-97E0-3745649101F4';
         $iExistingEpisode = 1;
         
         $oEntity = new PointSystem($oGateway,$oLogger);
@@ -83,16 +95,90 @@ class SystemEntityTest extends TestWithContainer
         $this->assertTrue($aResult['result']);
         $this->assertEquals('Updated All the Points System Episodes',$aResult['msg']);
         
-        $this->assertTablesEqual((new ArrayDataSet(__DIR__.'/fixture/'.'system-update.php'))->getTable('pt_system'), $this->getConnection()->createDataSet()->getTable('pt_system'));
+        $this->assertTablesEqual($oExpectedDataset,$this->getConnection()->createDataSet()->getTable('pt_system'));
         
     }
     
-    public function testDeleteFailes()
+    /**
+     *
+     * @expectedException IComeFromTheNet\PointsMachine\PointsMachineException
+     * @expectedExceptionMessage Require and Episode Id and Entity Id to delete and episode
+     * 
+     */ 
+    public function testRemoveFailsWhenMissingEpisodeData()
     {
+        $oContainer = $this->getContainer();
+        $oGateway   = $oContainer->getGatewayCollection()->getGateway('pt_system');
+        $oLogger    = $oContainer->getAppLogger();
+        $oProcessingDate = new DateTime();
         
+        # this is a non temporal update, this won't change the version.
+
+        $oEntity = new PointSystem($oGateway,$oLogger);
+        
+        $sExistingSystemID   =
+        $iExistingEpisode = 1;
+        
+        $oEntity->sSystemID =  '9B753E70-881B-F53E-2D46-8151BED1BBAF';
+        $oEntity->iEpisodeID = null;
+        
+        $oEntity->remove($oProcessingDate);
+    }
+    
+    /*
+    public function testRemoveFailsOnRelationsKeyCheck()
+    {
+        $oExpectedDataset = $this->getDataSet(array_merge($this->aFixtures
+                                                            ,['system-remove-after.php'])
+                                                            )
+                                ->getTable('pt_system');
+        
+        
+        $oContainer = $this->getContainer();
+        $oGateway   = $oContainer->getGatewayCollection()->getGateway('pt_system');
+        $oLogger    = $oContainer->getAppLogger();
+        $oProcessingDate = new DateTime();
+        $oRuleChainGateway     = $oGateway->getGatewayCollection()->getGateway('pt_rule_chain');
+        $oSystemZoneGateway    = $oGateway->getGatewayCollection()->getGateway('pt_system_zone');
+        $oAdjGroupLimitGateway = $oGateway->getGatewayCollection()->getGateway('pt_rule_group_limits');
+        
+         
+                
+        $aTablesFailed[] = $oSystemZoneGateway->getMetaData()->getName();   
+        $aTablesFailed[] = $oAdjGroupLimitGateway->getMetaData()->getName();   
+        $aTablesFailed[] = $oRuleChainGateway->getMetaData()->getName();   
+    
+        
+        
+        # this is a non temporal update, this won't change the version.
+
+        $oEntity = new PointSystem($oGateway,$oLogger);
+        
+        $sExistingSystemID   =
+        $iExistingEpisode = 1;
+        
+        $oEntity->sSystemID =  '9B753E70-881B-F53E-2D46-8151BED1BBAF';
+        $oEntity->iEpisodeID = 1;
+        
+        $bResult = $oEntity->remove($oProcessingDate);
+        $aResult = $oEntity->getLastQueryResult();
+        
+        $this->assertFalse($bResult);
+        $this->assertFalse($aResult['result']);
+        
+        $this->assertRegExp('/'.$aTablesFailed[0].'/', $aResult['msg']);
+        $this->assertRegExp('/'.$aTablesFailed[1].'/', $aResult['msg']);
+        $this->assertRegExp('/'.$aTablesFailed[2].'/', $aResult['msg']);
         
     }
     
-    
+    public function testRemoveSucessful()
+    {
+       # add another record for us to remove 
+       $this->loadDataSet(array('example-system.php','system-remove-before.php')) ;
+       
+        
+      $this->assertTablesEqual((new ArrayDataSet(__DIR__.'/fixture/'.'system-remove-after.php'))->getTable('pt_system'), $this->getConnection()->createDataSet()->getTable('pt_system'));
+    } */
 }
 /* End of File */

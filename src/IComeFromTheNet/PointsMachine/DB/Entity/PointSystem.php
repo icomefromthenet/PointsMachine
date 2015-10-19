@@ -108,64 +108,64 @@ class PointSystem extends CommonEntity implements ActiveRecordInterface
     {
         if(false === empty($this->iEpisodeID) && false === empty($this->sSystemID)) {
             
-            
-            
-            $this->aLastResult = array( 'result' => '','msg' =>'');
-            $oGateway          = $this->getTableGateway();
-            $oBuilder          = $oGateway->getEntityBuilder();
-            $oDatabase         = $this->oGateway->getAdapter();
+            $oGateway              = $this->getTableGateway();
+            $oRuleChainGateway     = $oGateway->getGatewayCollection()->getGateway('pt_rule_chain');
+            $oSystemZoneGateway    = $oGateway->getGatewayCollection()->getGateway('pt_system_zone');
+            $oAdjGroupLimitGateway = $oGateway->getGatewayCollection()->getGateway('pt_rule_group_limits');
+            $oBuilder              = $oGateway->getEntityBuilder();
         
+            $this->oEnabledTo   = $oGateway->getNow();
+            $this->aLastResult     = array( 'result' => '','msg' =>'');
+            
+             
             $aDatabaseData = $oBuilder->demolish($this);   
            
-            $bSuccess = $oGateway->updateQuery()
-                         ->start()
-                            ->addColumn('enabled_to' , $aDatabaseData['enabled_to'])
-                          ->where()
-                            ->filterByEpisode($aDatabaseData['episode_id'])
-                            ->filterBySystem($aDatabaseData['system_id'])
-                            ->whereEnabledAfterNow()
-                         ->end()
-                       ->update(); 
-    
-            if($bSuccess) {
-                $this->aLastResult['result'] = true;
-                $this->aLastResult['msg']    = 'Deleted this episode';
-            } else {
-                $this->aLastResult['result'] = false;
-                $this->aLastResult['msg']    = 'Unable to delete this episode';
-            }
+            # Check for Referential integrity in time 
+            $bReqSystemZone = $oSystemZoneGateway->checkParentSystemRequired($this->sSystemID,$this->oEnabledTo);
+            $bReqAdjGroup   =   $oAdjGroupLimitGateway->checkParentSystemRequired($this->sSystemID,$this->oEnabledTo);
+            $bReqRuleChain  = $oAdjGroupLimitGateway->checkParentSystemRequired($this->sSystemID,$this->oEnabledTo);
            
-            
-            # check that removed date follows the enabled date
-            $iInvalid = $oGateway->newQueryBuilder()
-                     ->select('1')
-                     ->from($oGateway->getMetaData()->getName())
-                     ->filterBySystem($this->sSystemID)
-                     ->filterByEpisode($this->iEpisodeID)
-                     ->whereStartDateProceedsStopDate()
-                   ->end()
-                   ->findColumn(1);
-                   
-            if($iInvalid == 1) {
+           
+            if(true === in_array(true,array($bReqSystemZone, $bReqAdjGroup, $bReqRuleChain))) {
                 $this->aLastResult['result'] = false;
-                $this->aLastResult['msg']    = 'This entities episode has stop date that occurs before it start date and is there for invalid';
-                $oDatabase->rollback();            
-            } else {       
-            
-                # check that no overlaps with other episodes of this entity
-                  $iInvalid = $oGateway->newQueryBuilder()
-                     ->select('1')
-                     ->from($oGateway->getMetaData()->getName())
-                     ->filterBySystem($this->sSystemID)
-                     ->andWhere('')
-                   ->end()
-                   ->findColumn(1);
-            
-            
-                # check that date not precede the last transaction date for this entity
+                $this->aLastResult['msg']    = 'Temporal Referential integrity violated check SystemZone, AdjustmentGroup or RuleChain';
+                
+                $aTablesFailed = array();
+                
+                if($bReqSystemZone) {
+                    $aTablesFailed[] = $oSystemZoneGateway->getMetaData()->getName();   
+                }
+                
+                if($bReqAdjGroup) {
+                    $aTablesFailed[] = $oAdjGroupLimitGateway->getMetaData()->getName();   
+                }
+                
+                if($bReqRuleChain) {
+                    $aTablesFailed[] = $oRuleChainGateway->getMetaData()->getName();   
+                }
+                
+                $this->aLastResult['msg'] = ' '.implode(',',$aTablesFailed);
+                
+            } else {
+                
+                $bSuccess = $oGateway->updateQuery()
+                             ->start()
+                                ->addColumn('enabled_to' , $aDatabaseData['enabled_to'])
+                              ->where()
+                                ->filterByEpisode($aDatabaseData['episode_id'])
+                                ->filterBySystem($aDatabaseData['system_id'])
+                                ->whereEnabledAfterNow()
+                             ->end()
+                           ->update(); 
+        
+                if($bSuccess) {
+                    $this->aLastResult['result'] = true;
+                    $this->aLastResult['msg']    = 'Deleted this episode';
+                } else {
+                    $this->aLastResult['result'] = false;
+                    $this->aLastResult['msg']    = 'Unable to delete this episode';
+                }
             }
-            
-            
         }
         else {
             throw new PointsMachineException('Require and Episode Id and Entity Id to delete and episode');

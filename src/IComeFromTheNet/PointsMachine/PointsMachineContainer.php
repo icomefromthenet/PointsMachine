@@ -48,6 +48,8 @@ use IComeFromTheNet\PointsMachine\DB\Builder\RuleChainBuilder;
 use IComeFromTheNet\PointsMachine\DB\Gateway\RuleChainMemberGateway;
 use IComeFromTheNet\PointsMachine\DB\Builder\RuleChainMemberBuilder;
 
+use IComeFromTheNet\PointsMachine\Compiler\Driver\DriverInterface;
+use IComeFromTheNet\PointsMachine\Compiler\Driver\MYSQLDriver;
 
 class PointsMachineContainer extends Pimple
 {
@@ -64,6 +66,7 @@ class PointsMachineContainer extends Pimple
         $this['database'] = $oAdapter;
         $this['logger'] = $oLogger;
         $this['event'] = $oDispatcher;
+        $this['result_table_name'] = 'pt_result_table';
     }
     
     
@@ -109,6 +112,15 @@ class PointsMachineContainer extends Pimple
         return $this['gateway_collection'];
     }
     
+    /**
+     * Return the Table DDL driver
+     * 
+     * @return IComeFromTheNet\PointsMachine\Compiler\Driver\DriverInterface
+     */ 
+    public function getMySQLTableDriver()
+    {
+        return $this['mysql_table_driver'];
+    }
     
     public function boot(DateTime $oProcessingDate, $aTableMap = null)
     {
@@ -141,6 +153,8 @@ class PointsMachineContainer extends Pimple
         $oSchema     = new Schema();
         $oGatewayCol = new GatewayProxyCollection($oSchema);
         
+        $this['gateway_collection'] = $oGatewayCol;    
+        
         $oGatewayCol->addGateway('pt_system',function() use ($c, $oSchema, $aTableMap) {
             $sActualTableName = $aTableMap['pt_system'];
             $oEvent           = $c->getEventDispatcher();
@@ -167,6 +181,7 @@ class PointsMachineContainer extends Pimple
             $oBuilder->setGateway($oGateway);
             $oBuilder->setLogger($oLogger);
             $oGateway->setTableQueryAlias('s');
+            $oGateway->setGatewayCollection($c->getGatewayCollection());
             
             return $oGateway;
         });
@@ -199,6 +214,7 @@ class PointsMachineContainer extends Pimple
             $oBuilder->setGateway($oGateway);
             $oBuilder->setLogger($oLogger);
             $oGateway->setTableQueryAlias('z');
+            $oGateway->setGatewayCollection($c->getGatewayCollection());
             
             return $oGateway;
         });
@@ -229,6 +245,7 @@ class PointsMachineContainer extends Pimple
             $oBuilder->setGateway($oGateway);
             $oBuilder->setLogger($oLogger);
             $oGateway->setTableQueryAlias('et');
+            $oGateway->setGatewayCollection($c->getGatewayCollection());
             
             return $oGateway;
         });
@@ -258,6 +275,7 @@ class PointsMachineContainer extends Pimple
             $oBuilder->setGateway($oGateway);
             $oBuilder->setLogger($oLogger);
             $oGateway->setTableQueryAlias('se');
+            $oGateway->setGatewayCollection($c->getGatewayCollection());
             
             return $oGateway;
         });
@@ -289,6 +307,7 @@ class PointsMachineContainer extends Pimple
             $oBuilder->setGateway($oGateway);
             $oBuilder->setLogger($oLogger);
             $oGateway->setTableQueryAlias('sg');
+            $oGateway->setGatewayCollection($c->getGatewayCollection());
             
             return $oGateway;
         });
@@ -321,6 +340,7 @@ class PointsMachineContainer extends Pimple
             $oBuilder->setGateway($oGateway);
             $oBuilder->setLogger($oLogger);
             $oGateway->setTableQueryAlias('sc');
+            $oGateway->setGatewayCollection($c->getGatewayCollection());
             
             return $oGateway;
         });
@@ -357,6 +377,7 @@ class PointsMachineContainer extends Pimple
             $oBuilder->setGateway($oGateway);
             $oBuilder->setLogger($oLogger);
             $oGateway->setTableQueryAlias('rg');
+            $oGateway->setGatewayCollection($c->getGatewayCollection());
             
             return $oGateway;
         });
@@ -389,6 +410,7 @@ class PointsMachineContainer extends Pimple
             $oBuilder->setGateway($oGateway);
             $oBuilder->setLogger($oLogger);
             $oGateway->setTableQueryAlias('rgl');
+            $oGateway->setGatewayCollection($c->getGatewayCollection());
             
             return $oGateway;
         });
@@ -423,6 +445,7 @@ class PointsMachineContainer extends Pimple
             $oBuilder->setGateway($oGateway);
             $oBuilder->setLogger($oLogger);
             $oGateway->setTableQueryAlias('ar');
+            $oGateway->setGatewayCollection($c->getGatewayCollection());
             
             return $oGateway;
         });
@@ -453,6 +476,7 @@ class PointsMachineContainer extends Pimple
             $oBuilder->setGateway($oGateway);
             $oBuilder->setLogger($oLogger);
             $oGateway->setTableQueryAlias('az');
+            $oGateway->setGatewayCollection($c->getGatewayCollection());
             
             return $oGateway;
         });
@@ -502,6 +526,7 @@ class PointsMachineContainer extends Pimple
             $oBuilder->setGateway($oGateway);
             $oBuilder->setLogger($oLogger);
             $oGateway->setTableQueryAlias('t');
+            $oGateway->setGatewayCollection($c->getGatewayCollection());
             
             return $oGateway;
         });
@@ -539,6 +564,7 @@ class PointsMachineContainer extends Pimple
             $oBuilder->setGateway($oGateway);
             $oBuilder->setLogger($oLogger);
             $oGateway->setTableQueryAlias('t');
+            $oGateway->setGatewayCollection($c->getGatewayCollection());
             
             return $oGateway;
         });
@@ -572,11 +598,19 @@ class PointsMachineContainer extends Pimple
             $oBuilder->setGateway($oGateway);
             $oBuilder->setLogger($oLogger);
             $oGateway->setTableQueryAlias('t');
+            $oGateway->setGatewayCollection($c->getGatewayCollection());
             
             return $oGateway;
         });
         
-        $this['gateway_collection'] = $oGatewayCol;    
+      
+       $this['mysql_table_driver'] = $this->share(function($c){
+           $oDatabase = $c->getDatabaseAdaper();
+           $sResultTableName = $c['result_table_name'];
+           
+           return new MYSQLDriver($oDatabase,$sResultTableName);
+           
+       });
         
     }
     

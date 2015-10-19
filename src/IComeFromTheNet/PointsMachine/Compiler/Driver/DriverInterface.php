@@ -16,9 +16,9 @@ interface DriverInterface
      * 
      * @access public
      * @return boolean if the table was created
-     * @param string    $sNewTableName
+     
      */ 
-    public function createTable($sNewTableName);
+    public function createTable();
     
     
     /**
@@ -26,9 +26,9 @@ interface DriverInterface
      * 
      * @return void
      * @access public
-     * @param string    $sTableName
+     
      */ 
-    public function truncateTable($sTableName);
+    public function truncateTable();
     
     
     /**
@@ -36,24 +36,10 @@ interface DriverInterface
      * 
      * @access public
      * @return bool if table removed
-     * @param string    $sTableName
+     
      */ 
-    public function removeTable($sTableName);
+    public function removeTable();
     
-    
-    /**
-     * Copy the select columns from existing table into a new 
-     * table.
-     * 
-     * Assume the dest table exists.
-     * 
-     * @access public
-     * @return integer number of affected rows
-     * @param string    $sCloneTableName
-     * @param string    $sNewTableName
-     * @param array     $aColumns
-     */ 
-    public function cloneTable($sCloneTableName,$sNewTableName,$aColumns);
     
     
     /**
@@ -62,6 +48,14 @@ interface DriverInterface
      * @return Doctrine\DBAL\Connection
      */ 
     public function getDatabaseAdaper();
+    
+    /**
+     * Return the table schema object
+     * 
+     * @return DBALGateway\Metadata\Table
+     */ 
+    public function getTableMeta();
+    
     
 }
 /* End of Class */

@@ -24,6 +24,5 @@ class AdjustmentGroupGateway extends CommonTable
     }
     
     
-    
 }
 /* End of Class */
