@@ -50,6 +50,7 @@ use IComeFromTheNet\PointsMachine\DB\Builder\RuleChainMemberBuilder;
 
 use IComeFromTheNet\PointsMachine\Compiler\Driver\DriverInterface;
 use IComeFromTheNet\PointsMachine\Compiler\Driver\MYSQLDriver;
+use IComeFromTheNet\PointsMachine\Compiler\Driver\DriverFactory;
 
 class PointsMachineContainer extends Pimple
 {
@@ -117,9 +118,19 @@ class PointsMachineContainer extends Pimple
      * 
      * @return IComeFromTheNet\PointsMachine\Compiler\Driver\DriverInterface
      */ 
-    public function getMySQLTableDriver()
+    public function getTableDriver()
     {
-        return $this['mysql_table_driver'];
+        return $this['table_driver'];
+    }
+    
+    /**
+     * Return the DDL Table factory 
+     * 
+     * @return IComeFromTheNet\PointsMachine\Compiler\Driver\DriverFactory
+     */ 
+    public function getTableFactory()
+    {
+        return $this['table_factory'];
     }
     
     public function boot(DateTime $oProcessingDate, $aTableMap = null)
@@ -604,11 +615,17 @@ class PointsMachineContainer extends Pimple
         });
         
       
-       $this['mysql_table_driver'] = $this->share(function($c){
+       $this['table_factory'] = $this->share(function($c){
+          return new DriverFactory();
+       });
+      
+       $this['table_driver'] = $this->share(function($c){
            $oDatabase = $c->getDatabaseAdaper();
            $sResultTableName = $c['result_table_name'];
+           $oFactory = $c->getTableFactory();
+           $sClass = $oFactory->getDriverClass($oDatabase->getDriver()); 
            
-           return new MYSQLDriver($oDatabase,$sResultTableName);
+           return new $sClass($oDatabase,$sResultTableName);
            
        });
         

@@ -20,7 +20,7 @@ class MySqlDriverTest extends TestWithContainer
     {
         $oContainer = $this->getContainer();
         
-        $oDriver = $oContainer->getMySQLTableDriver();
+        $oDriver = $oContainer->getTableDriver();
         
         $this->assertInstanceOf('IComeFromTheNet\PointsMachine\Compiler\Driver\DriverInterface',$oDriver);
        
@@ -31,7 +31,7 @@ class MySqlDriverTest extends TestWithContainer
     {
         $oContainer = $this->getContainer();
         
-        $oDriver = $oContainer->getMySQLTableDriver();
+        $oDriver = $oContainer->getTableDriver();
         
         $this->assertEquals($oContainer->getDatabaseAdaper(),$oDriver->getDatabaseAdaper());
         $this->assertInstanceOf('DBALGateway\Metadata\Table',$oDriver->getTableMeta());
@@ -42,7 +42,7 @@ class MySqlDriverTest extends TestWithContainer
     {
         $oContainer = $this->getContainer();
         
-        $oDriver = $oContainer->getMySQLTableDriver();
+        $oDriver = $oContainer->getTableDriver();
         
         $sTableName = $oDriver->getTableMeta()->getName();
         
@@ -53,7 +53,7 @@ class MySqlDriverTest extends TestWithContainer
     public function testTableFunctions()
     {
         $oContainer = $this->getContainer();
-        $oDriver   = $oContainer->getMySQLTableDriver();
+        $oDriver   = $oContainer->getTableDriver();
         $oDatabase = $oContainer->getDatabaseAdaper();
         $oDriver->createTable();
      
