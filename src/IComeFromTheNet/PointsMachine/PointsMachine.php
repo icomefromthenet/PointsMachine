@@ -43,10 +43,10 @@ class PointsMachine
      */ 
     protected $sPointSystemZoneId;
     
-    /**
-     * @var IComeFromTheNet\PointsMachine\Compiler\Driver\DriverInterface
-     */ 
-    protected $oTableDriver;
+   /**
+    * @var integer the event instance id
+    */ 
+    protected $iEventInstanceId;
     
     /**
      * Return this libs container
@@ -60,41 +60,71 @@ class PointsMachine
     }
     
     
-    protected function insertSeeds()
+    protected function seedTmpTables()
     {
         $oContainer        = $this->getContainer();     
         $oDatabase         = $oContainer->getDatabaseAdaper();
-        $oDriver           = $this->oTableDriver;
-        $oTableMeta        = $oDriver->getTableMeta();
+        $oTmpScoreGateway  = $oContainer->getGatewayCollection()->getGateway('pt_result_score');
+        $oTmpRuleGateway   = $oContainer->getGatewayCollection()->getGateway('pt_result_rule');
         
-        # try and drop the table just incase and create it again    .
-        try {
-            $oDriver->removeTable();
-        } catch (Exception $e) {
+        # Create the tmp tables
+        $oTmpScoreGateway->getTableMaker()->createTable();
+        $oTmpRuleGateway->getTableMaker()->createTable();
+        
+        # insert score seeds
+        foreach($this->aScores as $sScore) {
             
-        } finally  {
-            $oDriver->createTable();    
+            $bSuccess = $oTmpScoreGateway->insertQuery()
+             ->start()
+                ->addColumn('score_id',$sScore)
+                
+             ->end()
+            ->insert(); 
+    
+            if(!$bSuccess) {
+                throw new PointsMachineException('Unable to insert score seed');
+            }
+                
+            
+        }
+        
+        
+        # insert Adj Rules Seeds
+        foreach($this->aAdjustmentRules as $sAdjustmentRuleId) {
+        
+             $bSuccess = $oTmpRuleGateway->insertQuery()
+             ->start()
+                ->addColumn('rule_id',$sAdjustmentRuleId)
+                
+             ->end()
+            ->insert(); 
+    
+            if(!$bSuccess) {
+                throw new PointsMachineException('Unable to insert adjustment rule seed');
+            }
+            
         }
         
         
         
-        $oSTH = $oDatabase->prepare("
-        
-        ");
-        
-        //$oSTH->bindValue('','',$oTableMeta->getColumn('enabled_to')->getType())   
-        
-        
-        $oSTH->execute();
         
     }
     
+    /**
+     * Generate an event Instance
+     * 
+     * @return void
+     * @access protected
+     */ 
+    protected function generateEventInstance()
+    {
+        
+    }
     
     
     public function __construct(PointsMachineContainer $oContainer)
     {
         $this->oContainer   = $oContainer;
-        $this->oTableDriver = $oContainer->getTableDriver();
         
     }
     
@@ -115,6 +145,8 @@ class PointsMachine
         $this->sPointSystemZoneId = null;
         $this->aScores          = array();
         $this->aAdjustmentRules = array();
+        $this->iEventInstanceId = null;
+        
         
     }
 
@@ -124,13 +156,15 @@ class PointsMachine
         # verify the necessary params
         
         
-        
-        # verify the scores and rules exist we don't care if they are valid at processing time 
-        # only that a record exists. 
-        
+        # generate and instance
+        $this->generateEventInstance();
         
         
         # seed result table
+        $this->seedTmpTables();
+        
+        
+        # execute the calculator complier
         
         
     }

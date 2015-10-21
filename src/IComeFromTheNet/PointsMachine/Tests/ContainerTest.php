@@ -56,6 +56,17 @@ class ContainerTest extends TestWithContainer
         $oGateway = $oContainer->getGatewayCollection()->getGateway('pt_chain_member');
         $this->assertInstanceOf('IComeFromTheNet\PointsMachine\DB\Gateway\RuleChainMemberGateway',$oGateway);
         
+        $oGateway = $oContainer->getGatewayCollection()->getGateway('pt_result_score');
+        $this->assertInstanceOf('IComeFromTheNet\PointsMachine\Compiler\Gateway\TmpScoresGateway',$oGateway);
+        $this->assertInstanceOf('IComeFromTheNet\PointsMachine\Compiler\Driver\DriverInterface',$oGateway->getTableMaker());
+        
+        $oGateway = $oContainer->getGatewayCollection()->getGateway('pt_result_rule');
+        $this->assertInstanceOf('IComeFromTheNet\PointsMachine\Compiler\Gateway\TmpAdjRuleGateway',$oGateway);
+        $this->assertInstanceOf('IComeFromTheNet\PointsMachine\Compiler\Driver\DriverInterface',$oGateway->getTableMaker());
+        
+        $oGateway = $oContainer->getGatewayCollection()->getGateway('pt_result_result');
+        $this->assertInstanceOf('IComeFromTheNet\PointsMachine\Compiler\Gateway\TmpResultsGateway',$oGateway);
+        $this->assertInstanceOf('IComeFromTheNet\PointsMachine\Compiler\Driver\DriverInterface',$oGateway->getTableMaker());
         
     }
     

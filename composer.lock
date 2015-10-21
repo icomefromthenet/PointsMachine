@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "453efb93a017d33ac5677eb193ac7f61",
-    "content-hash": "bc1505d6ff3d9fb854cf742723c6c04b",
+    "hash": "45e6b4dce130eb6063fbc1697e2e0be9",
+    "content-hash": "fe91cacc117eefc56175efdf640e90fc",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -290,12 +290,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/dbal.git",
-                "reference": "34b0c9e6df50c7eff71257a9c8670e69efc1d439"
+                "reference": "b9ec927612c8b26b51cf23e22ff2e278024578ce"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/dbal/zipball/34b0c9e6df50c7eff71257a9c8670e69efc1d439",
-                "reference": "34b0c9e6df50c7eff71257a9c8670e69efc1d439",
+                "url": "https://api.github.com/repos/doctrine/dbal/zipball/b9ec927612c8b26b51cf23e22ff2e278024578ce",
+                "reference": "b9ec927612c8b26b51cf23e22ff2e278024578ce",
                 "shasum": ""
             },
             "require": {
@@ -353,7 +353,7 @@
                 "persistence",
                 "queryobject"
             ],
-            "time": "2015-09-16 16:29:38"
+            "time": "2015-10-16 09:01:17"
         },
         {
             "name": "doctrine/inflector",
@@ -482,12 +482,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/icomefromthenet/DBALGateway.git",
-                "reference": "eaccd5cc56dd39697499a0e2ba20c3ef88a70239"
+                "reference": "c82d02aa5f6704985b90bd2fe3e2c46b2f42e058"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/icomefromthenet/DBALGateway/zipball/eaccd5cc56dd39697499a0e2ba20c3ef88a70239",
-                "reference": "eaccd5cc56dd39697499a0e2ba20c3ef88a70239",
+                "url": "https://api.github.com/repos/icomefromthenet/DBALGateway/zipball/c82d02aa5f6704985b90bd2fe3e2c46b2f42e058",
+                "reference": "c82d02aa5f6704985b90bd2fe3e2c46b2f42e058",
                 "shasum": ""
             },
             "require": {
@@ -525,20 +525,20 @@
                 "doctine",
                 "gateway"
             ],
-            "time": "2015-09-28 02:19:14"
+            "time": "2015-10-13 23:25:27"
         },
         {
             "name": "monolog/monolog",
-            "version": "1.17.1",
+            "version": "1.17.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Seldaek/monolog.git",
-                "reference": "0524c87587ab85bc4c2d6f5b41253ccb930a5422"
+                "reference": "bee7f0dc9c3e0b69a6039697533dca1e845c8c24"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/0524c87587ab85bc4c2d6f5b41253ccb930a5422",
-                "reference": "0524c87587ab85bc4c2d6f5b41253ccb930a5422",
+                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/bee7f0dc9c3e0b69a6039697533dca1e845c8c24",
+                "reference": "bee7f0dc9c3e0b69a6039697533dca1e845c8c24",
                 "shasum": ""
             },
             "require": {
@@ -552,10 +552,11 @@
                 "aws/aws-sdk-php": "^2.4.9",
                 "doctrine/couchdb": "~1.0@dev",
                 "graylog2/gelf-php": "~1.0",
+                "jakub-onderka/php-parallel-lint": "0.9",
                 "php-console/php-console": "^3.1.3",
                 "phpunit/phpunit": "~4.5",
                 "phpunit/phpunit-mock-objects": "2.3.0",
-                "raven/raven": "~0.11",
+                "raven/raven": "^0.13",
                 "ruflin/elastica": ">=0.90 <3.0",
                 "swiftmailer/swiftmailer": "~5.3",
                 "videlalvaro/php-amqplib": "~2.4"
@@ -601,7 +602,7 @@
                 "logging",
                 "psr-3"
             ],
-            "time": "2015-08-31 09:17:37"
+            "time": "2015-10-14 12:51:02"
         },
         {
             "name": "pimple/pimple",
@@ -1310,12 +1311,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "00194eb95989190a73198390ceca081ad3441a7f"
+                "reference": "a4513c4864856627b0193bdc0b2e00f0b7a70331"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/00194eb95989190a73198390ceca081ad3441a7f",
-                "reference": "00194eb95989190a73198390ceca081ad3441a7f",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/a4513c4864856627b0193bdc0b2e00f0b7a70331",
+                "reference": "a4513c4864856627b0193bdc0b2e00f0b7a70331",
                 "shasum": ""
             },
             "require": {
@@ -1374,7 +1375,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2015-10-12 03:36:47"
+            "time": "2015-10-21 08:48:49"
         },
         {
             "name": "phpunit/phpunit-mock-objects",

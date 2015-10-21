@@ -52,6 +52,10 @@ use IComeFromTheNet\PointsMachine\Compiler\Driver\DriverInterface;
 use IComeFromTheNet\PointsMachine\Compiler\Driver\MYSQLDriver;
 use IComeFromTheNet\PointsMachine\Compiler\Driver\DriverFactory;
 
+use IComeFromTheNet\PointsMachine\Compiler\Gateway\TmpAdjRuleGateway;
+use IComeFromTheNet\PointsMachine\Compiler\Gateway\TmpResultsGateway;
+use IComeFromTheNet\PointsMachine\Compiler\Gateway\TmpScoresGateway;
+
 class PointsMachineContainer extends Pimple
 {
     
@@ -67,7 +71,6 @@ class PointsMachineContainer extends Pimple
         $this['database'] = $oAdapter;
         $this['logger'] = $oLogger;
         $this['event'] = $oDispatcher;
-        $this['result_table_name'] = 'pt_result_table';
     }
     
     
@@ -118,9 +121,14 @@ class PointsMachineContainer extends Pimple
      * 
      * @return IComeFromTheNet\PointsMachine\Compiler\Driver\DriverInterface
      */ 
-    public function getTableDriver()
+    public function getTableDriver($oTable)
     {
-        return $this['table_driver'];
+        $oDatabase = $this->getDatabaseAdaper();
+        $oFactory  = $this->getTableFactory();
+        $sClass    = $oFactory->getDriverClass($oDatabase->getDriver()); 
+           
+        return new $sClass($oDatabase,$oTable);
+      
     }
     
     /**
@@ -152,6 +160,10 @@ class PointsMachineContainer extends Pimple
               ,'pt_scoring_transaction' => 'pt_scoring_transaction'
               ,'pt_rule_chain'          => 'pt_rule_chain'
               ,'pt_chain_member'        => 'pt_chain_member'
+              // tmp result tables
+              ,'pt_result_score'        => 'pt_result_score'
+              ,'pt_result_rule'         => 'pt_result_rule'
+              ,'pt_result_result'       => 'pt_result_result'
               
             );
         }
@@ -614,20 +626,167 @@ class PointsMachineContainer extends Pimple
             return $oGateway;
         });
         
+        $oGatewayCol->addGateway('pt_result_score',function() use($c, $oSchema, $aTableMap) {
+            $sActualTableName = $aTableMap['pt_result_score'];
+            $oEvent           = $c->getEventDispatcher();
+            $oLogger          = $c->getAppLogger();
+            $oDatabase        = $c->getDatabaseAdaper();
+            $oGatewayCol      = $c->getGatewayCollection();
+           
+       
+            $oTable = $oSchema->createTable($sActualTableName);
+            $oTable->addOption('temporary',true); 
+            $oTable->addOption('engine','Memory');
+            $oTable->addColumn('slot_id','integer',array("unsigned" => true, 'autoincrement' => true, 'comment' => 'Calculation Slot surrogate key'));
+            $oTable->addColumn('score_ep','integer',array('notnull' => false,"unsigned" => true, 'comment' => 'Calculation Slot surrogate key'));
+            $oTable->addColumn('score_group_ep','integer',array('notnull' => false, "unsigned" => true,'comment' =>'The Score Episode'));
+            $oTable->addColumn('system_ep','integer', array('notnull' => true, "unsigned" => true, 'comment' =>'The Points System Episode'));
+            $oTable->addColumn('system_zone_ep','integer',array('notnull' => false, "unsigned" => true, 'comment' =>'The Points System Zone Episode'));
+            $oTable->addColumn('score_id'         ,'guid' ,array('notnull' => true,  'comment' =>'The Score Entity'));
+            $oTable->addColumn('score_group_id'   ,'guid' ,array('notnull' => false, 'comment' =>'The Score Group Entity'));
+            $oTable->addColumn('system_id'        ,'guid' ,array('notnull' => true, 'comment' =>'The Points System Entity'));
+            $oTable->addColumn('system_zone_id'   ,'guid' ,array('notnull' => false, 'comment' =>'The Points System Zone Entity'));
+            $oTable->addColumn('event_type_id'    ,'guid' ,array('notnull' => true, 'comment' =>'The Event Type Entity'));
+            $oTable->addColumn('event_id'         ,'integer'  ,array('notnull' => true, "unsigned" => true,  'comment' => 'The Event Instance Entity'));
+            $oTable->addColumn('processing_date'  ,'date'     ,array('notnull' => true,  'comment' => 'What NOW() should be' ));
+            $oTable->addColumn('score_base'       ,'float',array('notnull' => false, "unsigned" => false,'comment' =>'Base Score Value' ));
+            
+            $oTable->setPrimaryKey(array('slot_id'));
+            
+            $oDriver          = $c->getTableDriver($oTable);
+            
+            $oGateway         = new TmpScoresGateway($sActualTableName, $oDatabase, $oEvent, $oTable , null, null);
+    
+            $oGateway->setTableQueryAlias('rs');
+            $oGateway->setGatewayCollection($c->getGatewayCollection());
+            $oGateway->setTableMaker($oDriver);
+            
+            return $oGateway;
+            
+        });
+        
+        
+        $oGatewayCol->addGateway('pt_result_rule',function() use($c, $oSchema, $aTableMap) {
+            $sActualTableName = $aTableMap['pt_result_rule'];
+            $oEvent           = $c->getEventDispatcher();
+            $oLogger          = $c->getAppLogger();
+            $oDatabase        = $c->getDatabaseAdaper();
+            $oGatewayCol      = $c->getGatewayCollection();
+           
+       
+            $oTable = $oSchema->createTable($sActualTableName);
+            $oTable->addOption('temporary',true); 
+            $oTable->addOption('engine','Memory');
+            $oTable->addColumn('slot_id','integer',array("unsigned" => true, 'autoincrement' => true, 'comment' => 'Calculation Slot surrogate key'));
+            $oTable->addColumn('system_ep','integer', array('notnull' => true, "unsigned" => true, 'comment' =>'The Points System Episode'));
+            $oTable->addColumn('system_zone_ep','integer',array('notnull' => false, "unsigned" => true, 'comment' =>'The Points System Zone Episode'));
+            $oTable->addColumn('rule_ep','integer',array('notnull' => false, "unsigned" => true, 'comment' =>'The Adj Rule Episode'));
+            $oTable->addColumn('rule_group_ep','integer'   ,array('notnull' => false, "unsigned" => true, 'comment' =>'The Adj Rule Group Episode'));
+            $oTable->addColumn('rule_chain_ep','integer'   ,array('notnull' => false, "unsigned" => true, 'comment' =>'The Rule Chain Episode'));
+            $oTable->addColumn('chain_member_ep','integer' ,array('notnull' => false, "unsigned" => true, 'comment' =>'The Rule Chain Member Episode'));
+            $oTable->addColumn('system_id'        ,'guid' ,array('notnull' => true, 'comment' =>'The Points System Entity'));
+            $oTable->addColumn('system_zone_id'   ,'guid' ,array('notnull' => false, 'comment' =>'The Points System Zone Entity'));
+            $oTable->addColumn('event_type_id'    ,'guid' ,array('notnull' => true, 'comment' =>'The Event Type Entity'));
+            $oTable->addColumn('rule_id'          ,'guid' ,array('notnull' => false, 'comment' =>'The Adj Rule Entity'));
+            $oTable->addColumn('rule_group_id'    ,'guid' ,array('notnull' => false, 'comment' =>'The Adj Group Entity'));
+            $oTable->addColumn('rule_chain_id'    ,'guid' ,array('notnull' => false,  'comment' =>'The Rule Chain Entity'));
+            $oTable->addColumn('chain_member_id'  ,'guid' ,array('notnull' => false, 'comment' =>'The Rule Chain Entity'));
+            $oTable->addColumn('event_id'         ,'integer'  ,array('notnull' => true, "unsigned" => true,  'comment' => 'The Event Instance Entity'));
+            $oTable->addColumn('processing_date'  ,'date'     ,array('notnull' => true,  'comment' => 'What NOW() should be' ));
+            $oTable->addColumn('rule_order_seq'   ,'integer'  ,array('notnull' => false, 'comment' => 'Adj Rule order inside a group'  ));
+            $oTable->addColumn('group_order_seq'  ,'integer'  ,array('notnull' => false, 'comment' => 'Adj Group order in a chain' ));
+            $oTable->addColumn('score_modifier'   ,'float',array('notnull' => false, "unsigned" => false,'comment' => 'Modifier Value' ));
+            $oTable->addColumn('score_multiplier' ,'float',array('notnull' => false, "unsigned" => false,'comment' => 'Multiplier Value'));
+            $oTable->addColumn('cap_remaining'    ,'float',array('notnull' => false, "unsigned" => true, 'comment' => 'Remaining Cap'));
+        
+        
+            
+            $oTable->setPrimaryKey(array('slot_id'));
+            
+            $oDriver          = $c->getTableDriver($oTable);
+            
+            $oGateway         = new TmpAdjRuleGateway($sActualTableName, $oDatabase, $oEvent, $oTable , null, null);
+    
+            $oGateway->setTableQueryAlias('rs');
+            $oGateway->setGatewayCollection($c->getGatewayCollection());
+            $oGateway->setTableMaker($oDriver);
+            
+            return $oGateway;
+            
+        });
+        $oGatewayCol->addGateway('pt_result_result',function() use($c, $oSchema, $aTableMap) {
+            $sActualTableName = $aTableMap['pt_result_result'];
+            $oEvent           = $c->getEventDispatcher();
+            $oLogger          = $c->getAppLogger();
+            $oDatabase        = $c->getDatabaseAdaper();
+            $oGatewayCol      = $c->getGatewayCollection();
+           
+       
+            $oTable = $oSchema->createTable($sActualTableName);
+            $oTable->addOption('temporary',true); 
+            $oTable->addOption('engine','Memory');
+            
+            
+            # pk of table
+            $oTable->addColumn('slot_id','integer',array("unsigned" => true, 'autoincrement' => true, 'comment' => 'Calculation Slot surrogate key'));
+           
+            
+            # Episode References
+            $oTable->addColumn('score_ep','integer',array('notnull' => true,"unsigned" => true, 'comment' => 'Calculation Slot surrogate key'));
+            $oTable->addColumn('score_group_ep','integer',array('notnull' => false, "unsigned" => true,'comment' =>'The Score Episode'));
+            $oTable->addColumn('system_ep','integer', array('notnull' => true, "unsigned" => true, 'comment' =>'The Points System Episode'));
+            $oTable->addColumn('system_zone_ep','integer',array('notnull' => false, "unsigned" => true, 'comment' =>'The Points System Zone Episode'));
+            $oTable->addColumn('rule_ep','integer',array('notnull' => false, "unsigned" => true, 'comment' =>'The Adj Rule Episode'));
+            
+            $oTable->addColumn('rule_group_ep','integer'   ,array('notnull' => false, "unsigned" => true, 'comment' =>'The Adj Rule Group Episode'));
+            $oTable->addColumn('rule_chain_ep','integer'   ,array('notnull' => false, "unsigned" => true, 'comment' =>'The Rule Chain Episode'));
+            $oTable->addColumn('chain_member_ep','integer' ,array('notnull' => false, "unsigned" => true, 'comment' =>'The Rule Chain Member Episode'));
+            
+            # Entity References
+            $oTable->addColumn('score_id'         ,'guid' ,array('notnull' => true,  'comment' =>'The Score Entity'));
+            $oTable->addColumn('score_group_id'   ,'guid' ,array('notnull' => false, 'comment' =>'The Score Group Entity'));
+            $oTable->addColumn('system_id'        ,'guid' ,array('notnull' => true, 'comment' =>'The Points System Entity'));
+            $oTable->addColumn('system_zone_id'   ,'guid' ,array('notnull' => false, 'comment' =>'The Points System Zone Entity'));
+            $oTable->addColumn('event_type_id'    ,'guid' ,array('notnull' => true, 'comment' =>'The Event Type Entity'));
+            $oTable->addColumn('rule_id'          ,'guid' ,array('notnull' => false, 'comment' =>'The Adj Rule Entity'));
+            $oTable->addColumn('rule_group_id'    ,'guid' ,array('notnull' => false, 'comment' =>'The Adj Group Entity'));
+            $oTable->addColumn('rule_chain_id'    ,'guid' ,array('notnull' => false,  'comment' =>'The Rule Chain Entity'));
+            $oTable->addColumn('chain_member_id'  ,'guid' ,array('notnull' => false, 'comment' =>'The Rule Chain Entity'));
+            
+            # Normal Fields
+            $oTable->addColumn('event_id'         ,'integer'  ,array('notnull' => true, "unsigned" => true,  'comment' => 'The Event Instance Entity'));
+            $oTable->addColumn('processing_date'  ,'date'     ,array('notnull' => true,  'comment' => 'What NOW() should be' ));
+            $oTable->addColumn('rule_order_seq'   ,'integer'  ,array('notnull' => false, 'comment' => 'Adj Rule order inside a group'  ));
+            $oTable->addColumn('group_order_seq'  ,'integer'  ,array('notnull' => false, 'comment' => 'Adj Group order in a chain' ));
+            
+            $oTable->addColumn('score_base'       ,'float',array('notnull' => false, "unsigned" => false,'comment' =>'Base Score Value' ));
+            $oTable->addColumn('score_modifier'   ,'float',array('notnull' => false, "unsigned" => false,'comment' => 'Modifier Value' ));
+            $oTable->addColumn('score_multiplier' ,'float',array('notnull' => false, "unsigned" => false,'comment' => 'Multiplier Value'));
+            $oTable->addColumn('cap_remaining'    ,'float',array('notnull' => false, "unsigned" => true, 'comment' => 'Remaining Cap'));
+
+        
+            
+            $oTable->setPrimaryKey(array('slot_id'));
+            
+            $oDriver          = $c->getTableDriver($oTable);
+            
+            $oGateway         = new TmpResultsGateway($sActualTableName, $oDatabase, $oEvent, $oTable , null, null);
+    
+            $oGateway->setTableQueryAlias('rs');
+            $oGateway->setGatewayCollection($c->getGatewayCollection());
+            $oGateway->setTableMaker($oDriver);
+            
+            return $oGateway;
+            
+        });
+        
+        
       
        $this['table_factory'] = $this->share(function($c){
           return new DriverFactory();
        });
       
-       $this['table_driver'] = $this->share(function($c){
-           $oDatabase = $c->getDatabaseAdaper();
-           $sResultTableName = $c['result_table_name'];
-           $oFactory = $c->getTableFactory();
-           $sClass = $oFactory->getDriverClass($oDatabase->getDriver()); 
-           
-           return new $sClass($oDatabase,$sResultTableName);
-           
-       });
+       
         
     }
     
