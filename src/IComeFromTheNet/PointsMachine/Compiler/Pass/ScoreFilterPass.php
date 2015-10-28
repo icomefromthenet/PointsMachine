@@ -190,8 +190,8 @@ class ScoreFilterPass extends AbstractPass
         
         $sSql  = 'DELETE FROM '.$sScoreTmpTable. ' ';
         $sSql  .='WHERE system_ep IS NULL ';
-        $sSql  .='OR event_type_id IS NULL ';
-        $sSql  .='OR score_id IS NULL ';
+        $sSql  .='OR event_type_ep IS NULL ';
+        $sSql  .='OR score_ep IS NULL ';
         
         $oDatabase->executeUpdate($sSql);
         

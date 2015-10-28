@@ -39,6 +39,20 @@ return [
             ] 
             
         ]
+        
+        ,'pt_event_type' => 
+        [
+            /* Expired Event Type */
+            [
+                'episode_id' => 3
+                ,'event_type_id' => '3DF73708-CE68-C20E-F831-A8C0013F0241'
+                ,'event_name' => 'Expired Event Type A'
+                ,'event_name_slug' => 'expired_event_type_a'
+                ,'enabled_from' => (new DateTime('now - 7 day'))->format('Y-m-d')
+                ,'enabled_to'  =>  (new DateTime('now'))->format('Y-m-d')
+            ]
+          
+        ]
     
     /* Score values in tmp table */    
     
@@ -103,7 +117,40 @@ return [
         
         
         /* This record points to expired score */
-       
+        ,[
+             'slot_id' => 4
+            ,'score_ep' => null
+            ,'score_group_ep' => null
+            ,'system_ep'  => null
+            ,'system_zone_ep' => null
+            ,'event_type_ep' => null
+            ,'score_id'  => '1CCAAACA-4E67-9D18-8738-8E84A954B4A6' // Expired Score A
+            ,'score_group_id' => 'B1FEA3E0-1568-6C33-2519-14FBCC13BCED'
+            ,'system_id' => '9B753E70-881B-F53E-2D46-8151BED1BBAF'
+            ,'system_zone_id' => '03D119A2-1B66-423C-401F-7CE384450CE5'
+            ,'event_type_id' =>  'AE825846-3F9B-5FF7-D414-F46890E5C733' // Donation Event Type
+            ,'event_id' => 1
+            ,'processing_date' => (new DateTime('now'))->format('Y-m-d')
+            ,'score_base' =>  null
+        ]
+        
+         /* Expired Event Type */
+        ,[
+             'slot_id' => 5
+            ,'score_ep' => null
+            ,'score_group_ep' => null
+            ,'system_ep'  => null
+            ,'system_zone_ep' => null
+            ,'event_type_ep' => null
+            ,'score_id'  => '755D1FFF-A190-9F70-21A1-3BCFAB7A60AA'
+            ,'score_group_id' => null
+            ,'system_id' => '9B753E70-881B-F53E-2D46-8151BED1BBAF'
+            ,'system_zone_id' => '03D119A2-1B66-423C-401F-7CE384450CE5'
+            ,'event_type_id' =>  '3DF73708-CE68-C20E-F831-A8C0013F0241' // Expired Event Type
+            ,'event_id' => 1
+            ,'processing_date' => (new DateTime('now'))->format('Y-m-d')
+            ,'score_base' =>  null
+        ]
         
         
     ]
