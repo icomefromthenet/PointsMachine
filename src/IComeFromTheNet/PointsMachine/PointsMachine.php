@@ -4,10 +4,15 @@ namespace IComeFromTheNet\PointsMachine;
 use Exception;
 use DateTime;
 use IComeFromTheNet\PointsMachine\PointsMachineContainer;
-
+use Valitron\Validator;
 
 class PointsMachine
 {
+    /**
+     * @var array of validation errors
+     */ 
+    protected $aLastValidationErrors;
+    
     /**
      * @var IComeFromTheNet\PointsMachine\PointsMachineContainer 
      */ 
@@ -49,6 +54,11 @@ class PointsMachine
     protected $iEventInstanceId;
     
     /**
+     * @var DateTime the date this event occured.
+     */ 
+    protected $oOccuredDate;
+    
+    /**
      * Return this libs container
      * 
      * @return IComeFromTheNet\PointsMachine\PointsMachineContainer
@@ -77,7 +87,11 @@ class PointsMachine
             $bSuccess = $oTmpScoreGateway->insertQuery()
              ->start()
                 ->addColumn('score_id',$sScore)
-                
+                ->addColumn('system_id',$this->sPointSystemId)
+                ->addColumn('system_zone_id',$this->sPointSystemZoneId)
+                ->addColumn('event_type_id',$this->sEventTypeId)
+                ->addColumn('event_id',$this->iEventInstanceId)
+                ->addColumn('processing_date',$this->oProcessingDate)
              ->end()
             ->insert(); 
     
@@ -94,7 +108,8 @@ class PointsMachine
         
              $bSuccess = $oTmpRuleGateway->insertQuery()
              ->start()
-                ->addColumn('rule_id',$sAdjustmentRuleId)
+                ->addColumn('event_type_id',$this->sEventTypeId)
+                ->addColumn('')
                 
              ->end()
             ->insert(); 
@@ -118,7 +133,54 @@ class PointsMachine
      */ 
     protected function generateEventInstance()
     {
+        $oContainer = $this->getContainer();
+        $oGateway   = $oContainer->getGatewayCollection()->getGateway('pt_event');
         
+        $bSuccess = $oGateway->insertQuery()
+                            ->start()
+                                ->addColumn('event_type_id',$this->sEventTypeId)
+                                ->addColumn('process_date',$this->oProcessingDate)
+                                ->addColumn('occured_date',$this->oOccuredDate)
+                            ->end()
+                    ->insert();
+        
+        if(true === $bSuccess) {
+                
+        } else {
+            throw new PointsMachineException('Unable to create an event instance');
+        }
+        
+        $this->iEventInstanceId = $oGateway->lastInsertId();
+        
+    }
+    
+    
+    protected function executeCompiler()
+    {
+        
+        
+    }
+    
+    protected function validate()
+    {
+        $oV = new Validator([
+             'EventType'        => $this->sEventTypeId
+            ,'PointSystem'      => $this->sPointSystemId
+            ,'PointSystemZone'  => $this->sPointSystemZoneId
+            ,'ProcessingDate'   => $this->oProcessingDate
+            ,'OccuredDate'      => $this->oOccuredDate
+        ]);
+    
+        $oV->rule('required', ['EventType', 'PointSystem','ProcessingDate']);
+        $oV->rule('regex',['EventType','PointSystemZone','PointSystem'],"/^\{?[A-Z0-9]{8}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{12}\}?$/");
+
+        
+        if(false === $oV->validate()) {
+            $this->aLastValidationErrors = $oV->errors();
+            throw new PointsMachineException('Validation Error unable to continue');
+        } 
+        
+        return;
     }
     
     
@@ -139,14 +201,15 @@ class PointsMachine
      */ 
     public function newRound()
     {
-        $this->oProcessingDate  = null;
-        $this->sEventTypeId     = null;
-        $this->sPointSystemId    = null;
-        $this->sPointSystemZoneId = null;
-        $this->aScores          = array();
-        $this->aAdjustmentRules = array();
-        $this->iEventInstanceId = null;
-        
+        $this->oProcessingDate       = null;
+        $this->sEventTypeId          = null;
+        $this->sPointSystemId        = null;
+        $this->sPointSystemZoneId    = null;
+        $this->aScores               = array();
+        $this->aAdjustmentRules      = array();
+        $this->iEventInstanceId      = null;
+        $this->oOccuredDate          = null;
+        $this->aLastValidationErrors = null;
         
     }
 
@@ -154,7 +217,14 @@ class PointsMachine
     {
         
         # verify the necessary params
+        $this->validate();
         
+        
+        if(true === empty($this->oOccuredDate)) {
+            $this->oOccuredDate = $this->oProcessingDate;
+        }
+        
+        # fetch the now date
         
         # generate and instance
         $this->generateEventInstance();
@@ -165,7 +235,7 @@ class PointsMachine
         
         
         # execute the calculator complier
-        
+        $this->executeCompiler();
         
     }
 
@@ -205,6 +275,18 @@ class PointsMachine
 
     // --------------------------------------------------------------
     # Public Properties
+    
+    
+    /**
+     * Return the last validation errors
+     * 
+     * @return array 
+     * @access public
+     */ 
+    public function getLastValidationError()
+    {
+        return $this->aLastValidationErrors;
+    }
     
     /**
      * Set the Event Type for the Round
@@ -257,6 +339,17 @@ class PointsMachine
     public function setPointSystemZone($sPointSystemZoneId)
     {
         $this->sPointSystemZoneId = $sPointSystemZoneId;
+    }
+    
+    /**
+     * Sets the Occured date of this event.
+     * 
+     * @param DateTime $oOccuredDate
+     * @return void
+     */ 
+    public function setOccuredDate($oOccuredDate)
+    {
+        $this->oOccuredDate = $oOccuredDate;
     }
     
 }

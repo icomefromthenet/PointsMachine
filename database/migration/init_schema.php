@@ -59,7 +59,6 @@ class init_schema implements EntityInterface
         $table = $sc->createTable("pt_event");
         $table->addColumn('event_id','integer',array("unsigned" => true,'autoincrement' => true));
         $table->addColumn('event_type_id','guid',array("unsigned" => true));
-        $table->addColumn('event_created','datetime',array());
         $table->addColumn('process_date','date',array('comment' => 'Processing date for the calculator'));
         $table->addColumn('occured_date','date',array('comment' => 'When event occured'));
       

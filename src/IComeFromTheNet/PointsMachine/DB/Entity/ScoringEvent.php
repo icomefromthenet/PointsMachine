@@ -19,8 +19,6 @@ class ScoringEvent extends CommonEntity implements ActiveRecordInterface
     
     public $sEventTypeID;
     
-    public $oCreatedDate;
-    
     public $oProcessDate;
     
     public $oOccuredDate;

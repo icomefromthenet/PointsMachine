@@ -28,7 +28,6 @@ class ScoringEventBuilder extends CommonBuilder
         
         $oEvent->iScoringEventID = $this->getField($data,'event_id',$sAlias);
         $oEvent->sEventTypeID    = $this->getField($data,'event_type_id',$sAlias);
-        $oEvent->oCreatedDate    = $this->getField($data,'event_created',$sAlias);
         $oEvent->oProcessDate    = $this->getField($data,'process_date',$sAlias);
         $oEvent->oOccuredDate    = $this->getField($data,'occured_date',$sAlias);
          
@@ -47,7 +46,6 @@ class ScoringEventBuilder extends CommonBuilder
         return array(
           'event_id'        => $oScoringEvent->iScoringEventID,
           'event_type_id'   => $oScoringEvent->sEventTypeID,
-          'event_created'   => $oScoringEvent->oCreatedDate,
           'process_date'    => $oScoringEvent->oProcessDate,
           'occured_date'    => $oScoringEvent->oOccuredDate
         );

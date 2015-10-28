@@ -40,10 +40,7 @@ class TestWithFixture extends PHPUnit_Extensions_Database_TestCase
     final public function getConnection()
     {
         if ($this->conn === null) {
-            if (self::$pdo == null) {
-                self::$pdo = new PDO($GLOBALS['DEMO_DATABASE_DSN'], $GLOBALS['DEMO_DATABASE_USER'], $GLOBALS['DEMO_DATABASE_PASSWORD'] );
-            }
-            $this->conn = $this->createDefaultDBConnection(self::$pdo, $GLOBALS['DEMO_DATABASE_SCHEMA']);
+            $this->conn = $this->createDefaultDBConnection($this->getDoctrineConnection()->getWrappedConnection(), $GLOBALS['DEMO_DATABASE_SCHEMA']);
         }
         return $this->conn;
     }

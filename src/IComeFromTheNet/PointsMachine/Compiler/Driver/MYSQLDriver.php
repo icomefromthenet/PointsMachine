@@ -45,6 +45,7 @@ class MYSQLDriver implements DriverInterface
             $aSql =  $oDatabase->getDatabasePlatform()
                                 ->getCreateTableSQL($oTable);
             
+            
             foreach($aSql as $sSql) {
                 $oDatabase->executeUpdate($sSql);    
             }

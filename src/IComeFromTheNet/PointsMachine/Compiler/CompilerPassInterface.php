@@ -9,30 +9,34 @@ use \DateTime;
  * All passes are run in consecutive fashion. 
  * 
  * @author Lewis Dyer <getintouch@icomefromthenet.com>
- * @since 0.1
+ * @since 1.0
  */ 
 interface CompilerPassInterface
 {
     
-    public function execute($sResultTableName, DateTime $oProcessingDate);
-    
-    
-    public function getDatabaseAdaper();
-    
     /**
+     * Executes this pass.
      * 
-     * 
+     * @return boolean true if sucessful.
      */ 
-    public function getProcessingTableName();
+    public function execute(DateTime $oProcessingDate, CompileResult $oResult);
     
     
     /**
-     * Driver which abstracts the temp table managment
-     * 
-     * @return 
-     */
-    public function getTableOperationsDriver();
+     * Return the database adapter
+     *  
+     * @return Doctrine\DBAL\Connection
+     */ 
+    public function getDatabaseAdaper();
+   
+  
     
+    /**
+     * Gets the table gateway proxy collection
+     * 
+     * @return DBALGateway\Table\GatewayProxyCollection
+     */ 
+    public function getGatewayCollection();
     
 }
 /* End of Class */

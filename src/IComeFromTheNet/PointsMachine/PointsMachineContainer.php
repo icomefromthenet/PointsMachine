@@ -141,6 +141,17 @@ class PointsMachineContainer extends Pimple
         return $this['table_factory'];
     }
     
+    /**
+     * Return the map of internal table names
+     * to actual table names
+     *  
+     * @return array[internal => actual]
+     */ 
+    public function getTableMap()
+    {
+        return $this['table_map'];
+    }
+    
     public function boot(DateTime $oProcessingDate, $aTableMap = null)
     {
         $this['processing_date'] = $oProcessingDate;
@@ -284,7 +295,6 @@ class PointsMachineContainer extends Pimple
             $table = $oSchema->createTable($sActualTableName);
             $table->addColumn('event_id','integer',array("unsigned" => true,'autoincrement' => true));
             $table->addColumn('event_type_id','guid',array("unsigned" => true));
-            $table->addColumn('event_created','datetime',array());
             $table->addColumn('process_date','date',array('comment' => 'Processing date for the calculator'));
             $table->addColumn('occured_date','date',array('comment' => 'When event occured'));
       
@@ -640,8 +650,9 @@ class PointsMachineContainer extends Pimple
             $oTable->addColumn('slot_id','integer',array("unsigned" => true, 'autoincrement' => true, 'comment' => 'Calculation Slot surrogate key'));
             $oTable->addColumn('score_ep','integer',array('notnull' => false,"unsigned" => true, 'comment' => 'Calculation Slot surrogate key'));
             $oTable->addColumn('score_group_ep','integer',array('notnull' => false, "unsigned" => true,'comment' =>'The Score Episode'));
-            $oTable->addColumn('system_ep','integer', array('notnull' => true, "unsigned" => true, 'comment' =>'The Points System Episode'));
+            $oTable->addColumn('system_ep','integer', array('notnull' => false, "unsigned" => true, 'comment' =>'The Points System Episode'));
             $oTable->addColumn('system_zone_ep','integer',array('notnull' => false, "unsigned" => true, 'comment' =>'The Points System Zone Episode'));
+            $oTable->addColumn('event_type_ep','integer',array('notnull' => false, "unsigned" => true, 'comment' =>'The Event Type Episode'));
             $oTable->addColumn('score_id'         ,'guid' ,array('notnull' => true,  'comment' =>'The Score Entity'));
             $oTable->addColumn('score_group_id'   ,'guid' ,array('notnull' => false, 'comment' =>'The Score Group Entity'));
             $oTable->addColumn('system_id'        ,'guid' ,array('notnull' => true, 'comment' =>'The Points System Entity'));
