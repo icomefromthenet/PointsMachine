@@ -76,10 +76,25 @@ class PointsMachine
         $oDatabase         = $oContainer->getDatabaseAdaper();
         $oTmpScoreGateway  = $oContainer->getGatewayCollection()->getGateway('pt_result_score');
         $oTmpRuleGateway   = $oContainer->getGatewayCollection()->getGateway('pt_result_rule');
+        $oTmpCommonGateway = $oContainer->getGatewayCollection()->getGateway('pt_result_common');
         
         # Create the tmp tables
         $oTmpScoreGateway->getTableMaker()->createTable();
         $oTmpRuleGateway->getTableMaker()->createTable();
+        $oTmpCommonGateway->getTableMaker()->createTable();
+        
+        # Add settings to the common table
+        
+        $oTmpCommonGateway->insertQuery() 
+        ->start()
+            ->addColumn('system_id',$this->sPointSystemId)
+            ->addColumn('system_zone_id',$this->sPointSystemZoneId)
+            ->addColumn('event_type_id',$this->sEventTypeId)
+            ->addColumn('event_id',$this->iEventInstanceId)
+            ->addColumn('processing_date',$this->oProcessingDate)
+        ->end()
+        ->insert(); 
+        
         
         # insert score seeds
         foreach($this->aScores as $sScore) {
@@ -87,11 +102,6 @@ class PointsMachine
             $bSuccess = $oTmpScoreGateway->insertQuery()
              ->start()
                 ->addColumn('score_id',$sScore)
-                ->addColumn('system_id',$this->sPointSystemId)
-                ->addColumn('system_zone_id',$this->sPointSystemZoneId)
-                ->addColumn('event_type_id',$this->sEventTypeId)
-                ->addColumn('event_id',$this->iEventInstanceId)
-                ->addColumn('processing_date',$this->oProcessingDate)
              ->end()
             ->insert(); 
     

@@ -56,5 +56,19 @@ abstract class AbstractPass
         return $this->oGatewayCollecetion;
     }
     
+    /**
+     * Return the common table name
+     * 
+     * @return string the name of the common tmp table
+     */ 
+    public function getCommonTmpTableName()
+    {
+         return $this->getGatewayCollection()
+                            ->getGateway('pt_result_common')
+                            ->getMetaData()
+                            ->getName();
+        
+    }
+    
 }
 /* End of Pass */

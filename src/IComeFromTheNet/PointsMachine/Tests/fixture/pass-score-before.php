@@ -1,20 +1,7 @@
 <?php
 return [
-        'pt_system' => 
+        'pt_score' => 
         [
-            [
-                'episode_id' => 2
-                ,'system_id'  => 'D9025C02-5084-B3DD-3329-F54F857260FA'
-                ,'system_name' => 'Expired System A'
-                ,'system_name_slug' => 'expired_system_a'
-                ,'enabled_from' => (new DateTime('now - 5 days'))->format('Y-m-d')
-                ,'enabled_to'   => (new DateTime('now'))->format('Y-m-d')
-            ]
-        ]
-        
-        ,'pt_score' => 
-        [
-            
             /* Expired Scores */
             [
                 'episode_id'   => 20
@@ -40,19 +27,31 @@ return [
             
         ]
         
-        ,'pt_event_type' => 
+    /* Common Tmp Table Usually have 1 record only for a run*/
+    
+    ,'pt_result_common' => 
+    [
+        /* Valid Record */
         [
-            /* Expired Event Type */
-            [
-                'episode_id' => 3
-                ,'event_type_id' => '3DF73708-CE68-C20E-F831-A8C0013F0241'
-                ,'event_name' => 'Expired Event Type A'
-                ,'event_name_slug' => 'expired_event_type_a'
-                ,'enabled_from' => (new DateTime('now - 7 day'))->format('Y-m-d')
-                ,'enabled_to'  =>  (new DateTime('now'))->format('Y-m-d')
-            ]
-          
+             'slot_id' => 1
+            ,'system_ep'  => 1
+            ,'system_id' => '9B753E70-881B-F53E-2D46-8151BED1BBAF'
+    
+            ,'system_zone_ep' => 1
+            ,'system_zone_id' => '03D119A2-1B66-423C-401F-7CE384450CE5'
+            
+            ,'event_type_ep' => 1
+            ,'event_type_id' =>  'AE825846-3F9B-5FF7-D414-F46890E5C733' // Donation Event Type
+        
+            ,'event_id' => 1
+            ,'processing_date' => (new DateTime('now'))->format('Y-m-d')
+            
+            ,'rule_chain_ep' => 2
+            ,'rule_chain_id' => '78841FAC-F8F2-F7F9-ECF3-6A749BEFD0F5' //Withdrawal Chain
+        
         ]
+        
+    ]
     
     /* Score values in tmp table */    
     
@@ -64,16 +63,8 @@ return [
              'slot_id' => 1
             ,'score_ep' => null
             ,'score_group_ep' => null
-            ,'system_ep'  => null
-            ,'system_zone_ep' => null
-            ,'event_type_ep' => null
             ,'score_id'  => '755D1FFF-A190-9F70-21A1-3BCFAB7A60AA'
             ,'score_group_id' => null
-            ,'system_id' => '9B753E70-881B-F53E-2D46-8151BED1BBAF'
-            ,'system_zone_id' => '03D119A2-1B66-423C-401F-7CE384450CE5'
-            ,'event_type_id' =>  'AE825846-3F9B-5FF7-D414-F46890E5C733' // Donation Event Type
-            ,'event_id' => 1
-            ,'processing_date' => (new DateTime('now'))->format('Y-m-d')
             ,'score_base' =>  null
         ]
         
@@ -82,35 +73,8 @@ return [
              'slot_id' => 2
             ,'score_ep' => null
             ,'score_group_ep' => null
-            ,'system_ep'  => null
-            ,'system_zone_ep' => null
-            ,'event_type_ep' =>  null
             ,'score_id'  => 'EAF0B47C-B1AA-5867-DDF0-6B09AB03FDA0' // Healing Pot in Alchmey Group
             ,'score_group_id' => null
-            ,'system_id' => '9B753E70-881B-F53E-2D46-8151BED1BBAF' 
-            ,'system_zone_id' => '' // no zone given
-            ,'event_type_id' =>  '93B19460-04F4-85CD-6553-00D7125CFDAE' //Withdrawal Event Type
-            ,'event_id' => 1
-            ,'processing_date' => (new DateTime('now'))->format('Y-m-d')
-            ,'score_base' =>  null
-        ]
-        
-        
-        /* This record points to expired system */
-        ,[
-             'slot_id' => 3
-            ,'score_ep' => null
-            ,'score_group_ep' => null
-            ,'system_ep'  => null
-            ,'system_zone_ep' => null
-            ,'event_type_ep' =>  null
-            ,'score_id'  => '755D1FFF-A190-9F70-21A1-3BCFAB7A60AA'
-            ,'score_group_id' => null
-            ,'system_id' => 'D9025C02-5084-B3DD-3329-F54F857260FA'
-            ,'system_zone_id' => '03D119A2-1B66-423C-401F-7CE384450CE5'
-            ,'event_type_id' =>  'AE825846-3F9B-5FF7-D414-F46890E5C733' 
-            ,'event_id' => 1
-            ,'processing_date' => (new DateTime('now'))->format('Y-m-d')
             ,'score_base' =>  null
         ]
         
@@ -118,40 +82,15 @@ return [
         
         /* This record points to expired score */
         ,[
-             'slot_id' => 4
+             'slot_id' => 3
             ,'score_ep' => null
             ,'score_group_ep' => null
-            ,'system_ep'  => null
-            ,'system_zone_ep' => null
-            ,'event_type_ep' => null
             ,'score_id'  => '1CCAAACA-4E67-9D18-8738-8E84A954B4A6' // Expired Score A
             ,'score_group_id' => 'B1FEA3E0-1568-6C33-2519-14FBCC13BCED'
-            ,'system_id' => '9B753E70-881B-F53E-2D46-8151BED1BBAF'
-            ,'system_zone_id' => '03D119A2-1B66-423C-401F-7CE384450CE5'
-            ,'event_type_id' =>  'AE825846-3F9B-5FF7-D414-F46890E5C733' // Donation Event Type
-            ,'event_id' => 1
-            ,'processing_date' => (new DateTime('now'))->format('Y-m-d')
             ,'score_base' =>  null
         ]
         
-         /* Expired Event Type */
-        ,[
-             'slot_id' => 5
-            ,'score_ep' => null
-            ,'score_group_ep' => null
-            ,'system_ep'  => null
-            ,'system_zone_ep' => null
-            ,'event_type_ep' => null
-            ,'score_id'  => '755D1FFF-A190-9F70-21A1-3BCFAB7A60AA'
-            ,'score_group_id' => null
-            ,'system_id' => '9B753E70-881B-F53E-2D46-8151BED1BBAF'
-            ,'system_zone_id' => '03D119A2-1B66-423C-401F-7CE384450CE5'
-            ,'event_type_id' =>  '3DF73708-CE68-C20E-F831-A8C0013F0241' // Expired Event Type
-            ,'event_id' => 1
-            ,'processing_date' => (new DateTime('now'))->format('Y-m-d')
-            ,'score_base' =>  null
-        ]
-        
+       
         
     ]
 ];

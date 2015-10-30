@@ -10,10 +10,10 @@ use IComeFromTheNet\PointsMachine\Compiler\Pass\ScoreFilterPass;
 use IComeFromTheNet\PointsMachine\Compiler\CompileResult;
 
 
-class ScoreFilterPassTest extends CompilerTest
+class AdjRuleFilterPassTest extends CompilerTest
 {
    
-    protected $aFixtures = ['example-system.php','pass-score-before.php'];
+    protected $aFixtures = ['example-system.php','pass-adjrule-before.php'];
      
      
      

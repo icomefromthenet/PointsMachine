@@ -541,6 +541,19 @@ return [
                 ,'enabled_to'   =>  (new DateTime('3000-01-01'))->format('Y-m-d') 
             ]
             
+             /* Donation Event Chain */
+            ,[
+                'episode_id' => 2
+                ,'rule_chain_id'  =>'78841FAC-F8F2-F7F9-ECF3-6A749BEFD0F5'
+                ,'event_type_id'  =>'AE825846-3F9B-5FF7-D414-F46890E5C733'
+                ,'system_id'  =>'9B753E70-881B-F53E-2D46-8151BED1BBAF'
+                ,'chain_name'  =>'Donation Chain'
+                ,'chain_name_slug'  =>'donations_chain'
+                ,'rounding_option' => null
+                ,'cap_value'    => null
+                ,'enabled_from' => (new DateTime())->format('Y-m-d')
+                ,'enabled_to'   =>  (new DateTime('3000-01-01'))->format('Y-m-d') 
+            ]
             
             
         ]

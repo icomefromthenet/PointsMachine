@@ -67,6 +67,10 @@ class ContainerTest extends TestWithContainer
         $oGateway = $oContainer->getGatewayCollection()->getGateway('pt_result_result');
         $this->assertInstanceOf('IComeFromTheNet\PointsMachine\Compiler\Gateway\TmpResultsGateway',$oGateway);
         $this->assertInstanceOf('IComeFromTheNet\PointsMachine\Compiler\Driver\DriverInterface',$oGateway->getTableMaker());
+       
+        $oGateway = $oContainer->getGatewayCollection()->getGateway('pt_result_common');
+        $this->assertInstanceOf('IComeFromTheNet\PointsMachine\Compiler\Gateway\TmpCommonGateway',$oGateway);
+        $this->assertInstanceOf('IComeFromTheNet\PointsMachine\Compiler\Driver\DriverInterface',$oGateway->getTableMaker());
         
     }
     
