@@ -690,17 +690,13 @@ class PointsMachineContainer extends Pimple
             $oTable->addColumn('rule_group_ep','integer'   ,array('notnull' => false, "unsigned" => true, 'comment' =>'The Adj Rule Group Episode'));
             $oTable->addColumn('rule_group_id'    ,'guid' ,array('notnull' => false, 'comment' =>'The Adj Group Entity'));
 
-
             $oTable->addColumn('chain_member_ep','integer' ,array('notnull' => false, "unsigned" => true, 'comment' =>'The Rule Chain Member Episode'));
             $oTable->addColumn('chain_member_id'  ,'guid' ,array('notnull' => false, 'comment' =>'The Rule Chain Entity'));
 
-            $oTable->addColumn('rule_order_seq'   ,'integer'  ,array('notnull' => false, 'comment' => 'Adj Rule order inside a group'  ));
-            $oTable->addColumn('group_order_seq'  ,'integer'  ,array('notnull' => false, 'comment' => 'Adj Group order in a chain' ));
-            $oTable->addColumn('score_modifier'   ,'float',array('notnull' => false, "unsigned" => false,'comment' => 'Modifier Value' ));
-            $oTable->addColumn('score_multiplier' ,'float',array('notnull' => false, "unsigned" => false,'comment' => 'Multiplier Value'));
-            $oTable->addColumn('cap_remaining'    ,'float',array('notnull' => false, "unsigned" => true, 'comment' => 'Remaining Cap'));
-        
-        
+             $oTable->addColumn('apply_all_score','integer' ,array('notnull' => false, "unsigned" => true, 'default' => 1));
+             $oTable->addColumn('apply_all_sys','integer' ,array('notnull' => false, "unsigned" => true, 'default' => 1));
+             $oTable->addColumn('apply_all_zone','integer' ,array('notnull' => false, "unsigned" => true, 'default' => 1));
+            
             
             $oTable->setPrimaryKey(array('slot_id'));
             

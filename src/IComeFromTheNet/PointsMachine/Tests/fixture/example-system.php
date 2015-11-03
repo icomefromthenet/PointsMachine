@@ -436,7 +436,7 @@ return [
             ,[
                 'episode_id' => 2
                 ,'rule_id' => 'D39CDDFB-09DF-00F1-ED5B-ECE0C04782CD'
-                ,'rule_group_id' =>'5515F1B4-A824-30BD-0971-049495BCDB22'
+                ,'rule_group_id' =>'586DB7DF-57C3-F7D5-639D-0A9779AF79BD' 
                 ,'rule_name' => 'Big Discount'
                 ,'rule_name_slug' => 'big_discount'
                 ,'multiplier' => 0.8
@@ -449,7 +449,7 @@ return [
             ,[
                 'episode_id' => 3
                 ,'rule_id' => '3235B350-593C-7F7C-22BD-6089A36C155B'
-                ,'rule_group_id' =>'5515F1B4-A824-30BD-0971-049495BCDB22'
+                ,'rule_group_id' =>'586DB7DF-57C3-F7D5-639D-0A9779AF79BD'
                 ,'rule_name' => 'Medium Discount'
                 ,'rule_name_slug' => 'medium_discount'
                 ,'multiplier' => 0.4
@@ -462,7 +462,7 @@ return [
             ,[
                 'episode_id' => 4
                 ,'rule_id' => '61C6CA0C-2896-D97E-0A39-673121D4AF52'
-                ,'rule_group_id' =>'5515F1B4-A824-30BD-0971-049495BCDB22'
+                ,'rule_group_id' =>'586DB7DF-57C3-F7D5-639D-0A9779AF79BD'
                 ,'rule_name' => 'Small Discount'
                 ,'rule_name_slug' => 'small_discount'
                 ,'multiplier' => 0.2
@@ -475,7 +475,7 @@ return [
             ,[
                  'episode_id' => 5
                 ,'rule_id' => 'EAF03EED-16AC-557E-6267-7F54ADD83197'
-                ,'rule_group_id' =>'5515F1B4-A824-30BD-0971-049495BCDB22'
+                ,'rule_group_id' =>'586DB7DF-57C3-F7D5-639D-0A9779AF79BD'
                 ,'rule_name' => 'Healer Discount'
                 ,'rule_name_slug' => 'healer_discount'
                 ,'multiplier' => 0.5
@@ -489,7 +489,7 @@ return [
              ,[
                  'episode_id' => 6
                 ,'rule_id' => '7D4D8D11-7582-72BC-F9CB-7FD0CC8354A9'
-                ,'rule_group_id' =>'5515F1B4-A824-30BD-0971-049495BCDB22'
+                ,'rule_group_id' =>'586DB7DF-57C3-F7D5-639D-0A9779AF79BD'
                 ,'rule_name' => 'Tank Discount'
                 ,'rule_name_slug' => 'tank_discount'
                 ,'multiplier' => 0.5
