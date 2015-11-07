@@ -64,12 +64,24 @@ class ContainerTest extends TestWithContainer
         $this->assertInstanceOf('IComeFromTheNet\PointsMachine\Compiler\Gateway\TmpAdjRuleGateway',$oGateway);
         $this->assertInstanceOf('IComeFromTheNet\PointsMachine\Compiler\Driver\DriverInterface',$oGateway->getTableMaker());
         
-        $oGateway = $oContainer->getGatewayCollection()->getGateway('pt_result_result');
-        $this->assertInstanceOf('IComeFromTheNet\PointsMachine\Compiler\Gateway\TmpResultsGateway',$oGateway);
+        $oGateway = $oContainer->getGatewayCollection()->getGateway('pt_result_cjoin');
+        $this->assertInstanceOf('IComeFromTheNet\PointsMachine\Compiler\Gateway\TmpCrossJoinGateway',$oGateway);
         $this->assertInstanceOf('IComeFromTheNet\PointsMachine\Compiler\Driver\DriverInterface',$oGateway->getTableMaker());
        
         $oGateway = $oContainer->getGatewayCollection()->getGateway('pt_result_common');
         $this->assertInstanceOf('IComeFromTheNet\PointsMachine\Compiler\Gateway\TmpCommonGateway',$oGateway);
+        $this->assertInstanceOf('IComeFromTheNet\PointsMachine\Compiler\Driver\DriverInterface',$oGateway->getTableMaker());
+        
+        $oGateway = $oContainer->getGatewayCollection()->getGateway('pt_result_header');
+        $this->assertInstanceOf('IComeFromTheNet\PointsMachine\Compiler\Gateway\TmpResultHeaderGateway',$oGateway);
+        $this->assertInstanceOf('IComeFromTheNet\PointsMachine\Compiler\Driver\DriverInterface',$oGateway->getTableMaker());
+        
+        $oGateway = $oContainer->getGatewayCollection()->getGateway('pt_result_detail');
+        $this->assertInstanceOf('IComeFromTheNet\PointsMachine\Compiler\Gateway\TmpResultDetailGateway',$oGateway);
+        $this->assertInstanceOf('IComeFromTheNet\PointsMachine\Compiler\Driver\DriverInterface',$oGateway->getTableMaker());
+        
+        $oGateway = $oContainer->getGatewayCollection()->getGateway('pt_result_rank');
+        $this->assertInstanceOf('IComeFromTheNet\PointsMachine\Compiler\Gateway\TmpRankGateway',$oGateway);
         $this->assertInstanceOf('IComeFromTheNet\PointsMachine\Compiler\Driver\DriverInterface',$oGateway->getTableMaker());
         
     }

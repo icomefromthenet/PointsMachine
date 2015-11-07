@@ -2,12 +2,12 @@
 namespace IComeFromTheNet\PointsMachine\Compiler\Gateway;
 
 /**
- * This is a Gateway for the Results Tmp Table
+ * This is a Gateway for the Rank Tmp Table
  * 
  * @author Lewis Dyer <getintouch@icomefromthenet.com>
  * @since 1.0
  */ 
-class TmpResultsGateway extends AbstractTmpGateway
+class TmpRankGateway extends AbstractTmpGateway
 {
     /**
     * Create a new instance of the querybuilder

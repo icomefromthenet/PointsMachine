@@ -182,7 +182,7 @@ class AdjRuleFilterPass extends AbstractPass
         # Remove any rules without rule group episodes
         $sSql  = 'DELETE k FROM '.$sRuleTmpTable .' k ';   
         $sSql .= 'WHERE k.rule_group_ep IS NULL';
-       
+        
         
         $oDatabase->executeUpdate($sSql);
 

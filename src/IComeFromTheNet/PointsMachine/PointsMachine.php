@@ -77,11 +77,13 @@ class PointsMachine
         $oTmpScoreGateway  = $oContainer->getGatewayCollection()->getGateway('pt_result_score');
         $oTmpRuleGateway   = $oContainer->getGatewayCollection()->getGateway('pt_result_rule');
         $oTmpCommonGateway = $oContainer->getGatewayCollection()->getGateway('pt_result_common');
+        $oTmpCJoinGateway  = $oContainer->getGatewayCollection()->getGateway('pt_result_cjoin');
         
         # Create the tmp tables
         $oTmpScoreGateway->getTableMaker()->createTable();
         $oTmpRuleGateway->getTableMaker()->createTable();
         $oTmpCommonGateway->getTableMaker()->createTable();
+        $oTmpCJoinGateway->getTableMaker()->createTable();
         
         # Add settings to the common table
         

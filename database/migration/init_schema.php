@@ -142,7 +142,7 @@ class init_schema implements EntityInterface
        $table->addForeignKeyConstraint('pt_system',array('system_id'),array('system_id'),array(),'pt_rule_gp_limit_fk3');
        
        
-       # Rule Tables
+       # Rule bTables
        $table = $sc->createTable("pt_rule");
        $table->addColumn('episode_id','integer',array("unsigned" => true,'autoincrement' => true));
        $table->addColumn('rule_id','guid',array());
@@ -151,8 +151,8 @@ class init_schema implements EntityInterface
        $table->addColumn('rule_name_slug','string',array("length" => 100));
        $table->addColumn('enabled_from','date',array());
        $table->addColumn('enabled_to','date',array());
-       $table->addColumn('multiplier'  ,'float',array("unsigned" => true, 'comment' => 'Value to multiply the base value by','notnull' => false));
-       $table->addColumn('modifier'    ,'integer',array("unsigned" => true, 'comment' => 'value to add to the base','notnull' => false));
+       $table->addColumn('multiplier'  ,'float',array("unsigned" => false, 'comment' => 'Value to multiply the base value by','notnull' => false));
+       $table->addColumn('modifier'    ,'float',array("unsigned" => false, 'comment' => 'value to add to the base','notnull' => false));
        $table->addColumn('invert_flag' ,'smallint',array("unsigned" => true, 'comment' => 'Operation is inverted ie multiplier becomes a divisor','notnull' => false));
        
        

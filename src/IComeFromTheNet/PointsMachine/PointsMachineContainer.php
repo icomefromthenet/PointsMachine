@@ -53,9 +53,13 @@ use IComeFromTheNet\PointsMachine\Compiler\Driver\MYSQLDriver;
 use IComeFromTheNet\PointsMachine\Compiler\Driver\DriverFactory;
 
 use IComeFromTheNet\PointsMachine\Compiler\Gateway\TmpAdjRuleGateway;
-use IComeFromTheNet\PointsMachine\Compiler\Gateway\TmpResultsGateway;
+use IComeFromTheNet\PointsMachine\Compiler\Gateway\TmpCrossJoinGateway;
 use IComeFromTheNet\PointsMachine\Compiler\Gateway\TmpScoresGateway;
 use IComeFromTheNet\PointsMachine\Compiler\Gateway\TmpCommonGateway;
+use IComeFromTheNet\PointsMachine\Compiler\Gateway\TmpResultHeaderGateway;
+use IComeFromTheNet\PointsMachine\Compiler\Gateway\TmpResultDetailGateway;
+use IComeFromTheNet\PointsMachine\Compiler\Gateway\TmpRankGateway;
+
 
 class PointsMachineContainer extends Pimple
 {
@@ -175,9 +179,11 @@ class PointsMachineContainer extends Pimple
               // tmp result tables
               ,'pt_result_score'        => 'pt_result_score'
               ,'pt_result_rule'         => 'pt_result_rule'
-              ,'pt_result_result'       => 'pt_result_result'
+              ,'pt_result_cjoin'        => 'pt_result_cjoin'
               ,'pt_result_common'       => 'pt_result_common'
-              
+              ,'pt_result_header'       => 'pt_result_header'
+              ,'pt_result_detail'       => 'pt_result_detail'
+              ,'pt_result_rank'         => 'pt_result_rank'
             );
         }
         $this['table_map']       = $aTableMap;
@@ -467,7 +473,7 @@ class PointsMachineContainer extends Pimple
             $table->addColumn('enabled_from','date',array());
             $table->addColumn('enabled_to','date',array());
             $table->addColumn('multiplier'  ,'float',array("unsigned" => true, 'comment' => 'Value to multiply the base value by'));
-            $table->addColumn('modifier'    ,'integer',array("unsigned" => true, 'comment' => 'value to add to the base'));
+            $table->addColumn('modifier'    ,'float',array("unsigned" => true, 'comment' => 'value to add to the base'));
             $table->addColumn('invert_flag' ,'smallint',array("unsigned" => true, 'comment' => 'Operation is inverted ie multiplier becomes a divisor'));
                
             $table->setPrimaryKey(array('episode_id'));
@@ -693,9 +699,13 @@ class PointsMachineContainer extends Pimple
             $oTable->addColumn('chain_member_ep','integer' ,array('notnull' => false, "unsigned" => true, 'comment' =>'The Rule Chain Member Episode'));
             $oTable->addColumn('chain_member_id'  ,'guid' ,array('notnull' => false, 'comment' =>'The Rule Chain Entity'));
 
-             $oTable->addColumn('apply_all_score','integer' ,array('notnull' => false, "unsigned" => true, 'default' => 1));
-             $oTable->addColumn('apply_all_sys','integer' ,array('notnull' => false, "unsigned" => true, 'default' => 1));
-             $oTable->addColumn('apply_all_zone','integer' ,array('notnull' => false, "unsigned" => true, 'default' => 1));
+            $oTable->addColumn('apply_all_score','integer' ,array('notnull' => false, "unsigned" => true, 'default' => 1));
+            $oTable->addColumn('apply_all_sys','integer' ,array('notnull' => false, "unsigned" => true, 'default' => 1));
+            $oTable->addColumn('apply_all_zone','integer' ,array('notnull' => false, "unsigned" => true, 'default' => 1));
+    
+            $oTable->addColumn('override_modifier','float' ,array('notnull' => false, "unsigned" => false, 'comment' => 'Allows this modifier to be changed by external process'));
+            $oTable->addColumn('override_multiplier','float' ,array('notnull' => false, "unsigned" => false, 'comment' => 'Allows this rules multiplier to be changed be external process'));
+            $oTable->addColumn('max_value','float' ,array('notnull' => false, "unsigned" => false, 'comment' => 'combined value of this rule mod * mult'));
             
             
             $oTable->setPrimaryKey(array('slot_id'));
@@ -711,8 +721,9 @@ class PointsMachineContainer extends Pimple
             return $oGateway;
             
         });
-        $oGatewayCol->addGateway('pt_result_result',function() use($c, $oSchema, $aTableMap) {
-            $sActualTableName = $aTableMap['pt_result_result'];
+        
+        $oGatewayCol->addGateway('pt_result_cjoin',function() use($c, $oSchema, $aTableMap) {
+            $sActualTableName = $aTableMap['pt_result_cjoin'];
             $oEvent           = $c->getEventDispatcher();
             $oLogger          = $c->getAppLogger();
             $oDatabase        = $c->getDatabaseAdaper();
@@ -725,48 +736,16 @@ class PointsMachineContainer extends Pimple
             
             
             # pk of table
-            $oTable->addColumn('slot_id','integer',array("unsigned" => true, 'autoincrement' => true, 'comment' => 'Calculation Slot surrogate key'));
+            $oTable->addColumn('score_slot_id','integer',array("unsigned" => true,  'comment' => ''));
+            $oTable->addColumn('rule_slot_id','integer',array("unsigned" => true,  'comment' => ''));
            
+        
             
-            # Episode References
-            $oTable->addColumn('score_ep','integer',array('notnull' => true,"unsigned" => true, 'comment' => 'Calculation Slot surrogate key'));
-            $oTable->addColumn('score_group_ep','integer',array('notnull' => false, "unsigned" => true,'comment' =>'The Score Episode'));
-            $oTable->addColumn('system_ep','integer', array('notnull' => true, "unsigned" => true, 'comment' =>'The Points System Episode'));
-            $oTable->addColumn('system_zone_ep','integer',array('notnull' => false, "unsigned" => true, 'comment' =>'The Points System Zone Episode'));
-            $oTable->addColumn('rule_ep','integer',array('notnull' => false, "unsigned" => true, 'comment' =>'The Adj Rule Episode'));
-            
-            $oTable->addColumn('rule_group_ep','integer'   ,array('notnull' => false, "unsigned" => true, 'comment' =>'The Adj Rule Group Episode'));
-            $oTable->addColumn('rule_chain_ep','integer'   ,array('notnull' => false, "unsigned" => true, 'comment' =>'The Rule Chain Episode'));
-            $oTable->addColumn('chain_member_ep','integer' ,array('notnull' => false, "unsigned" => true, 'comment' =>'The Rule Chain Member Episode'));
-            
-            # Entity References
-            $oTable->addColumn('score_id'         ,'guid' ,array('notnull' => true,  'comment' =>'The Score Entity'));
-            $oTable->addColumn('score_group_id'   ,'guid' ,array('notnull' => false, 'comment' =>'The Score Group Entity'));
-            $oTable->addColumn('system_id'        ,'guid' ,array('notnull' => true, 'comment' =>'The Points System Entity'));
-            $oTable->addColumn('system_zone_id'   ,'guid' ,array('notnull' => false, 'comment' =>'The Points System Zone Entity'));
-            $oTable->addColumn('event_type_id'    ,'guid' ,array('notnull' => true, 'comment' =>'The Event Type Entity'));
-            $oTable->addColumn('rule_id'          ,'guid' ,array('notnull' => false, 'comment' =>'The Adj Rule Entity'));
-            $oTable->addColumn('rule_group_id'    ,'guid' ,array('notnull' => false, 'comment' =>'The Adj Group Entity'));
-            $oTable->addColumn('rule_chain_id'    ,'guid' ,array('notnull' => false,  'comment' =>'The Rule Chain Entity'));
-            $oTable->addColumn('chain_member_id'  ,'guid' ,array('notnull' => false, 'comment' =>'The Rule Chain Entity'));
-            
-            # Normal Fields
-            $oTable->addColumn('event_id'         ,'integer'  ,array('notnull' => true, "unsigned" => true,  'comment' => 'The Event Instance Entity'));
-            $oTable->addColumn('processing_date'  ,'date'     ,array('notnull' => true,  'comment' => 'What NOW() should be' ));
-            $oTable->addColumn('rule_order_seq'   ,'integer'  ,array('notnull' => false, 'comment' => 'Adj Rule order inside a group'  ));
-            $oTable->addColumn('group_order_seq'  ,'integer'  ,array('notnull' => false, 'comment' => 'Adj Group order in a chain' ));
-            
-            $oTable->addColumn('score_base'       ,'float',array('notnull' => false, "unsigned" => false,'comment' =>'Base Score Value' ));
-            $oTable->addColumn('score_modifier'   ,'float',array('notnull' => false, "unsigned" => false,'comment' => 'Modifier Value' ));
-            $oTable->addColumn('score_multiplier' ,'float',array('notnull' => false, "unsigned" => false,'comment' => 'Multiplier Value'));
-            $oTable->addColumn('cap_remaining'    ,'float',array('notnull' => false, "unsigned" => true, 'comment' => 'Remaining Cap'));
-
-            
-            $oTable->setPrimaryKey(array('slot_id'));
+            $oTable->setPrimaryKey(array('score_slot_id','rule_slot_id'));
             
             $oDriver          = $c->getTableDriver($oTable);
             
-            $oGateway         = new TmpResultsGateway($sActualTableName, $oDatabase, $oEvent, $oTable , null, null);
+            $oGateway         = new TmpCrossJoinGateway($sActualTableName, $oDatabase, $oEvent, $oTable , null, null);
     
             $oGateway->setTableQueryAlias('tmpr');
             $oGateway->setGatewayCollection($c->getGatewayCollection());
@@ -776,9 +755,118 @@ class PointsMachineContainer extends Pimple
             
         });
         
+        $oGatewayCol->addGateway('pt_result_rank',function() use($c, $oSchema, $aTableMap) {
+            $sActualTableName = $aTableMap['pt_result_rank'];
+            $oEvent           = $c->getEventDispatcher();
+            $oLogger          = $c->getAppLogger();
+            $oDatabase        = $c->getDatabaseAdaper();
+            $oGatewayCol      = $c->getGatewayCollection();
+           
+       
+            $oTable = $oSchema->createTable($sActualTableName);
+            $oTable->addOption('temporary',true); 
+            $oTable->addOption('engine','Memory');
+            
+            
+            # pk of table
+            $oTable->addColumn('score_slot_id','integer',array("unsigned" => true,  'comment' => ''));
+            $oTable->addColumn('rule_slot_id','integer',array("unsigned" => true,  'comment' => ''));
+            $oTable->addColumn('rank_high','integer',array("unsigned" => true,  'comment' => 'Sort the scores in group'));
+            $oTable->addColumn('rank_low','integer',array("unsigned" => true,  'comment' => 'Sort the score in group'));
+            $oTable->addColumn('rule_group_seq','integer',array("unsigned" => true,  'comment' => 'Rule Groups order in the current chain'));
+           
+            $oTable->setPrimaryKey(array('score_slot_id','rule_slot_id'));
+            
+            $oDriver          = $c->getTableDriver($oTable);
+            
+            $oGateway         = new TmpRankGateway($sActualTableName, $oDatabase, $oEvent, $oTable , null, null);
+    
+            $oGateway->setTableQueryAlias('tmprnk');
+            $oGateway->setGatewayCollection($c->getGatewayCollection());
+            $oGateway->setTableMaker($oDriver);
+            
+            return $oGateway;
+            
+        });
         
-         $oGatewayCol->addGateway('pt_result_common',function() use($c, $oSchema, $aTableMap) {
+        
+        $oGatewayCol->addGateway('pt_result_common',function() use($c, $oSchema, $aTableMap) {
             $sActualTableName = $aTableMap['pt_result_common'];
+            $oEvent           = $c->getEventDispatcher();
+            $oLogger          = $c->getAppLogger();
+            $oDatabase        = $c->getDatabaseAdaper();
+            $oGatewayCol      = $c->getGatewayCollection();
+           
+       
+            $oTable = $oSchema->createTable($sActualTableName);
+            $oTable->addOption('temporary',true); 
+            $oTable->addOption('engine','Memory');
+            $oTable->addColumn('slot_id','integer',array("unsigned" => true, 'autoincrement' => true, 'comment' => 'Calculation Slot surrogate key'));
+        
+            $oTable->addColumn('system_ep','integer', array('notnull' => false, "unsigned" => true, 'comment' =>'The Points System Episode'));
+            $oTable->addColumn('system_id','guid' ,array('notnull' => true, 'comment' =>'The Points System Entity'));
+        
+            $oTable->addColumn('system_zone_ep','integer',array('notnull' => false, "unsigned" => true, 'comment' =>'The Points System Zone Episode'));
+            $oTable->addColumn('system_zone_id'   ,'guid' ,array('notnull' => false, 'comment' =>'The Points System Zone Entity'));
+        
+            $oTable->addColumn('event_type_ep','integer',array('notnull' => false, "unsigned" => true, 'comment' =>'The Event Type Episode'));
+            $oTable->addColumn('event_type_id'    ,'guid' ,array('notnull' => true, 'comment' =>'The Event Type Entity'));
+        
+        
+            $oTable->addColumn('event_id'         ,'integer'  ,array('notnull' => true, "unsigned" => true,  'comment' => 'The Event Instance Entity'));
+            $oTable->addColumn('processing_date'  ,'date'     ,array('notnull' => true,  'comment' => 'What NOW() should be' ));
+         
+            $oTable->addColumn('rule_chain_ep','integer'   ,array('notnull' => false, "unsigned" => true, 'comment' =>'The Rule Chain Episode'));
+            $oTable->addColumn('rule_chain_id'    ,'guid' ,array('notnull' => false,  'comment' =>'The Rule Chain Entity'));
+
+            
+            $oTable->setPrimaryKey(array('slot_id'));
+            
+                
+            $oDriver          = $c->getTableDriver($oTable);
+            
+            $oGateway         = new TmpCommonGateway($sActualTableName, $oDatabase, $oEvent, $oTable , null, null);
+    
+            $oGateway->setTableQueryAlias('tmpc');
+            $oGateway->setGatewayCollection($c->getGatewayCollection());
+            $oGateway->setTableMaker($oDriver);
+            
+            return $oGateway;
+            
+        });
+        
+        $oGatewayCol->addGateway('pt_result_header',function() use($c, $oSchema, $aTableMap) {
+            $sActualTableName = $aTableMap['pt_result_header'];
+            $oEvent           = $c->getEventDispatcher();
+            $oLogger          = $c->getAppLogger();
+            $oDatabase        = $c->getDatabaseAdaper();
+            $oGatewayCol      = $c->getGatewayCollection();
+           
+       
+            $oTable = $oSchema->createTable($sActualTableName);
+            $oTable->addOption('temporary',true); 
+            $oTable->addOption('engine','Memory');
+            
+            $oTable->addColumn('score_ep','integer', array('notnull' => false, "unsigned" => true, 'comment' =>'The Points System Episode'));
+            $oTable->addColumn('score_group_ep','integer', array('notnull' => false, "unsigned" => true, 'comment' =>'The Points System Episode'));
+        
+            
+            $oTable->setPrimaryKey(array('score_ep','score_group_ep'));
+            
+            $oDriver          = $c->getTableDriver($oTable);
+            
+            $oGateway         = new TmpResultHeaderGateway($sActualTableName, $oDatabase, $oEvent, $oTable , null, null);
+    
+            $oGateway->setTableQueryAlias('tmprh');
+            $oGateway->setGatewayCollection($c->getGatewayCollection());
+            $oGateway->setTableMaker($oDriver);
+            
+            return $oGateway;
+            
+        });
+      
+        $oGatewayCol->addGateway('pt_result_detail',function() use($c, $oSchema, $aTableMap) {
+            $sActualTableName = $aTableMap['pt_result_detail'];
             $oEvent           = $c->getEventDispatcher();
             $oLogger          = $c->getAppLogger();
             $oDatabase        = $c->getDatabaseAdaper();
@@ -811,9 +899,9 @@ class PointsMachineContainer extends Pimple
             
             $oDriver          = $c->getTableDriver($oTable);
             
-            $oGateway         = new TmpCommonGateway($sActualTableName, $oDatabase, $oEvent, $oTable , null, null);
+            $oGateway         = new TmpResultDetailGateway($sActualTableName, $oDatabase, $oEvent, $oTable , null, null);
     
-            $oGateway->setTableQueryAlias('tmpc');
+            $oGateway->setTableQueryAlias('tmprd');
             $oGateway->setGatewayCollection($c->getGatewayCollection());
             $oGateway->setTableMaker($oDriver);
             
@@ -823,10 +911,10 @@ class PointsMachineContainer extends Pimple
         
         
       
-       $this['table_factory'] = $this->share(function($c){
-          return new DriverFactory();
-       });
-      
+        $this['table_factory'] = $this->share(function($c){
+            return new DriverFactory();
+        });
+
        
         
     }

@@ -22,11 +22,18 @@ class CompilerTest extends TestWithContainer
         $oTmpScoreGateway  = $oContainer->getGatewayCollection()->getGateway('pt_result_score');
         $oTmpRuleGateway   = $oContainer->getGatewayCollection()->getGateway('pt_result_rule');
         $oTmpCommonGateway = $oContainer->getGatewayCollection()->getGateway('pt_result_common');
+        $oTmpCJoinGateway  = $oContainer->getGatewayCollection()->getGateway('pt_result_cjoin');
+        $oTmpResHeaderGateway = $oContainer->getGatewayCollection()->getGateway('pt_result_header');
+        $oTmpResDetailGateway  = $oContainer->getGatewayCollection()->getGateway('pt_result_detail');
+    
         
         # Create the tmp tables
         $oTmpScoreGateway->getTableMaker()->createTable();
         $oTmpRuleGateway->getTableMaker()->createTable();
         $oTmpCommonGateway->getTableMaker()->createTable();
+        $oTmpCJoinGateway->getTableMaker()->createTable();
+        $oTmpResHeaderGateway->getTableMaker()->createTable();
+        $oTmpResDetailGateway->getTableMaker()->createTable();
         
         parent::setUp();
     }
@@ -37,11 +44,19 @@ class CompilerTest extends TestWithContainer
         $oTmpScoreGateway  = $oContainer->getGatewayCollection()->getGateway('pt_result_score');
         $oTmpRuleGateway   = $oContainer->getGatewayCollection()->getGateway('pt_result_rule');
         $oTmpCommonGateway = $oContainer->getGatewayCollection()->getGateway('pt_result_common');
+        $oTmpCJoinGateway  = $oContainer->getGatewayCollection()->getGateway('pt_result_cjoin');
+        $oTmpResHeaderGateway = $oContainer->getGatewayCollection()->getGateway('pt_result_header');
+        $oTmpResDetailGateway  = $oContainer->getGatewayCollection()->getGateway('pt_result_detail');
+    
         
         # Create the tmp tables
         $oTmpScoreGateway->getTableMaker()->removeTable();
         $oTmpRuleGateway->getTableMaker()->removeTable();
         $oTmpCommonGateway->getTableMaker()->removeTable();
+        $oTmpCJoinGateway->getTableMaker()->removeTable(); 
+        $oTmpResHeaderGateway->getTableMaker()->removeTable();
+        $oTmpResDetailGateway->getTableMaker()->removeTable();
+    
          
         parent::tearDown();
     }

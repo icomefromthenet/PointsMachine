@@ -70,5 +70,79 @@ abstract class AbstractPass
         
     }
     
+    /**
+     * Fetch the table name for this rules tmp table
+     *  
+     * @return string the tmp table name
+     * @access protected
+     */ 
+    protected function getRuleTmpTableName()
+    {
+        return $this->getGatewayCollection()
+                            ->getGateway('pt_result_rule')
+                            ->getMetaData()
+                            ->getName();
+        
+    }
+    
+    /**
+     * Fetch the table name for the Score tmp table
+     *  
+     * @return string the tmp table name
+     * @access protected
+     */
+    protected function getScoreTmpTableName()
+    {
+        return $this->getGatewayCollection()
+                            ->getGateway('pt_result_score')
+                            ->getMetaData()
+                            ->getName();
+        
+    }
+    
+    /**
+     * Fetch the table name for this CJoin tmp table
+     *  
+     * @return string the tmp table name
+     * @access protected
+     */
+    protected function getCJoinTmpTableName()
+    {
+        return $this->getGatewayCollection()
+                            ->getGateway('pt_result_cjoin')
+                            ->getMetaData()
+                            ->getName();
+        
+    }
+    
+    /**
+     * Fetch the table name for this rank tmp table
+     *  
+     * @return string the tmp table name
+     * @access protected
+     */
+    protected function getRankTmpTableName()
+    {
+        return $this->getGatewayCollection()
+                            ->getGateway('pt_result_rank')
+                            ->getMetaData()
+                            ->getName();
+        
+    }
+    
+    /**
+     * Fetch the table name for the rule table
+     *  
+     * @return string the table name
+     * @access protected
+     */
+    protected function getRuleTableName()
+    {
+        return $this->getGatewayCollection()
+                            ->getGateway('pt_rule')
+                            ->getMetaData()
+                            ->getName();
+        
+    }
 }
 /* End of Pass */

@@ -24,20 +24,7 @@ use IComeFromTheNet\PointsMachine\PointsMachineException;
 class ScoreFilterPass extends AbstractPass 
 {
     
-    /**
-     * Fetch the table name for this scores tmp table
-     *  
-     * @return string the tmp table name
-     * @access protected
-     */ 
-    protected function getScoreTmpTableName()
-    {
-        return $this->getGatewayCollection()
-                            ->getGateway('pt_result_score')
-                            ->getMetaData()
-                            ->getName();
-        
-    }
+    
     
     
     

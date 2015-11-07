@@ -121,13 +121,13 @@ return [
             ,'system_zone_id' => '03D119A2-1B66-423C-401F-7CE384450CE5'
             
             ,'event_type_ep' => 1
-            ,'event_type_id' =>  'AE825846-3F9B-5FF7-D414-F46890E5C733' // Donation Event Type
+            ,'event_type_id' =>  'AE825846-3F9B-5FF7-D414-F46890E5C733' //Donation Event Type
         
             ,'event_id' => 1
             ,'processing_date' => (new DateTime('now'))->format('Y-m-d')
             
             ,'rule_chain_ep' => 2
-            ,'rule_chain_id' => '78841FAC-F8F2-F7F9-ECF3-6A749BEFD0F5' //Withdrawal Chain
+            ,'rule_chain_id' => '78841FAC-F8F2-F7F9-ECF3-6A749BEFD0F5' //Donation Chain
         
         ]
         
@@ -144,6 +144,9 @@ return [
             ,'rule_group_id' => null
             ,'chain_member_ep' => null
             ,'chain_member_id' => null
+            ,'override_modifier'   => null
+            ,'override_multiplier' => null
+        
             
         ]
         
@@ -156,6 +159,9 @@ return [
             ,'rule_group_id' => null
             ,'chain_member_ep' => null
             ,'chain_member_id' => null
+            ,'override_modifier'   => null
+            ,'override_multiplier' => null
+        
             
         ]
         
@@ -168,6 +174,9 @@ return [
             ,'rule_group_id' => null
             ,'chain_member_ep' => null
             ,'chain_member_id' => null
+            ,'override_modifier'   => null
+            ,'override_multiplier' => null
+        
             
         ]
         
@@ -180,6 +189,9 @@ return [
             ,'rule_group_id' => null
             ,'chain_member_ep' => null
             ,'chain_member_id' => null
+            ,'override_modifier'   => null
+            ,'override_multiplier' => null
+        
             
         ]
         
@@ -192,6 +204,9 @@ return [
             ,'rule_group_id' => null
             ,'chain_member_ep' => null
             ,'chain_member_id' => null
+            ,'override_modifier'   => null
+            ,'override_multiplier' => null
+        
             
         ]
     ]
