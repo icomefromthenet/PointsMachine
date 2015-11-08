@@ -287,7 +287,7 @@ return [
                 ,'max_modifier' => null
                 ,'min_modifier' => null
                 ,'max_count' => 1
-                ,'order_method' => null
+                ,'order_method' => 1
                 ,'is_mandatory' => 1
                 ,'enabled_from' => (new DateTime())->format('Y-m-d')
                 ,'enabled_to'  =>  (new DateTime('3000-01-01'))->format('Y-m-d')

@@ -101,6 +101,21 @@ abstract class AbstractPass
     }
     
     /**
+     * Return the Compiler Tmp table Driver
+     * 
+     * @param string    $sTable The tmp table name
+     * @return  IComeFromTheNet\PointsMachine\Compiler\Driver\DriverInterface
+     * 
+     */ 
+    public function getTableMaker($sTable)
+    {
+        return $this->getGatewayCollection()
+                            ->getGateway($sTable)
+                            ->getTableMaker();
+        
+    }
+    
+    /**
      * Fetch the table name for this CJoin tmp table
      *  
      * @return string the tmp table name
@@ -140,6 +155,21 @@ abstract class AbstractPass
     {
         return $this->getGatewayCollection()
                             ->getGateway('pt_rule')
+                            ->getMetaData()
+                            ->getName();
+        
+    }
+    
+    /**
+     * Fetch the table name for the rule table
+     *  
+     * @return string the table name
+     * @access protected
+     */
+    protected function getRuleGroupTableName()
+    {
+        return $this->getGatewayCollection()
+                            ->getGateway('pt_rule_group')
                             ->getMetaData()
                             ->getName();
         
