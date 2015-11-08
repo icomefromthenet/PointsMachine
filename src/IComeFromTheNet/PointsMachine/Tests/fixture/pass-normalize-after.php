@@ -42,7 +42,7 @@ return [
        /* Rule with invert flag */
         ,[
             'slot_id' => 3   
-            ,'rule_ep' => 2
+            ,'rule_ep' => 7
             ,'rule_id' =>  'D2BD6919-9442-CC2D-ABCE-A7D3A2162258' 
             ,'rule_group_ep' => 2
             ,'rule_group_id' => '586DB7DF-57C3-F7D5-639D-0A9779AF79BD'

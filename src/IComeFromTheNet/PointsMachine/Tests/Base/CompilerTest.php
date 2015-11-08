@@ -25,7 +25,7 @@ class CompilerTest extends TestWithContainer
         $oTmpCJoinGateway  = $oContainer->getGatewayCollection()->getGateway('pt_result_cjoin');
         $oTmpResHeaderGateway = $oContainer->getGatewayCollection()->getGateway('pt_result_header');
         $oTmpResDetailGateway  = $oContainer->getGatewayCollection()->getGateway('pt_result_detail');
-    
+        $oTmpRankGateway    = $oContainer->getGatewayCollection()->getGateway('pt_result_rank');
         
         # Create the tmp tables
         $oTmpScoreGateway->getTableMaker()->createTable();
@@ -34,6 +34,7 @@ class CompilerTest extends TestWithContainer
         $oTmpCJoinGateway->getTableMaker()->createTable();
         $oTmpResHeaderGateway->getTableMaker()->createTable();
         $oTmpResDetailGateway->getTableMaker()->createTable();
+        $oTmpRankGateway->getTableMaker()->createTable();
         
         parent::setUp();
     }
@@ -47,7 +48,8 @@ class CompilerTest extends TestWithContainer
         $oTmpCJoinGateway  = $oContainer->getGatewayCollection()->getGateway('pt_result_cjoin');
         $oTmpResHeaderGateway = $oContainer->getGatewayCollection()->getGateway('pt_result_header');
         $oTmpResDetailGateway  = $oContainer->getGatewayCollection()->getGateway('pt_result_detail');
-    
+        $oTmpRankGateway    = $oContainer->getGatewayCollection()->getGateway('pt_result_rank');
+        
         
         # Create the tmp tables
         $oTmpScoreGateway->getTableMaker()->removeTable();
@@ -56,7 +58,7 @@ class CompilerTest extends TestWithContainer
         $oTmpCJoinGateway->getTableMaker()->removeTable(); 
         $oTmpResHeaderGateway->getTableMaker()->removeTable();
         $oTmpResDetailGateway->getTableMaker()->removeTable();
-    
+        $oTmpRankGateway->getTableMaker()->removeTable();
          
         parent::tearDown();
     }

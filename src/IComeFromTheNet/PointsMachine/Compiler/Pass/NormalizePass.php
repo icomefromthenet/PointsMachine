@@ -48,7 +48,8 @@ class NormalizePass extends AbstractPass
             $sSql .= " SET override_modifier = IFNULL(override_modifier, ("; 
                         $sSql .= " SELECT r.modifier ";
                         $sSql .= " FROM  $sRuleTableName r ";
-                        $sSql .= " WHERE  k.rule_id = r.rule_id ";
+                        $sSql .= " WHERE  k.rule_ep = r.episode_id ";
+                        $sSql .= " AND  k.rule_id = r.rule_id ";
             $sSql .= ")) ";
             $sSql .= " ,override_multiplier = IFNULL(override_multiplier, ("; 
                             $sSql .= " SELECT (CASE WHEN (r.invert_flag = 1) ";
@@ -56,7 +57,8 @@ class NormalizePass extends AbstractPass
                                     $sSql .= " ELSE r.multiplier ";
                                 $sSql .= " END) ";
                         $sSql .= " FROM  $sRuleTableName r ";
-                        $sSql .= " WHERE  k.rule_id = r.rule_id ";
+                        $sSql .= " WHERE  k.rule_ep = r.episode_id ";
+                        $sSql .= " AND  k.rule_id = r.rule_id ";
             $sSql .= ")) ";
             
             

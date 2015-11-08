@@ -768,9 +768,15 @@ class PointsMachineContainer extends Pimple
             $oTable->addOption('engine','Memory');
             
             
-            # pk of table
             $oTable->addColumn('score_slot_id','integer',array("unsigned" => true,  'comment' => ''));
             $oTable->addColumn('rule_slot_id','integer',array("unsigned" => true,  'comment' => ''));
+
+            $oTable->addColumn('rule_ep','integer',array('notnull' => false, "unsigned" => true, 'comment' =>'The Adj Rule Episode'));
+            $oTable->addColumn('rule_id'          ,'guid' ,array('notnull' => false, 'comment' =>'The Adj Rule Entity'));
+    
+            $oTable->addColumn('rule_group_ep','integer'   ,array('notnull' => false, "unsigned" => true, 'comment' =>'The Adj Rule Group Episode'));
+            $oTable->addColumn('rule_group_id'    ,'guid' ,array('notnull' => false, 'comment' =>'The Adj Group Entity'));
+
             $oTable->addColumn('rank_high','integer',array("unsigned" => true,  'comment' => 'Sort the scores in group'));
             $oTable->addColumn('rank_low','integer',array("unsigned" => true,  'comment' => 'Sort the score in group'));
             $oTable->addColumn('rule_group_seq','integer',array("unsigned" => true,  'comment' => 'Rule Groups order in the current chain'));
