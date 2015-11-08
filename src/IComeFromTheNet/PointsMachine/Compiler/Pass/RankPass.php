@@ -43,33 +43,59 @@ class RankPass extends AbstractPass
            $sJoinTmpTableName   = $this->getCJoinTmpTableName();
            $sCommonTmpTableName = $this->getCommonTmpTableName();
            $sRankTableName      = $this->getRankTmpTableName();
+           $sChainMemberTable   = $this->getChainMemberTableName();
            
             # clone the corss join table into rank table
            
             $sSql  = " INSERT INTO $sRankTableName ";
-            $sSql .= ' (score_slot_id, rule_slot_id, rule_ep, rule_id, rule_group_ep, rule_group_id) ';
-            $sSql .= ' SELECT j.score_slot_id, j.rule_slot_id, rt.rule_ep, rt.rule_id, rt.rule_group_ep, rt.rule_group_id ';
+            $sSql .= ' (score_slot_id, rule_slot_id, rule_ep, rule_id, rule_group_ep, rule_group_id, max_value) ';
+            $sSql .= ' SELECT j.score_slot_id, j.rule_slot_id, rt.rule_ep, rt.rule_id, rt.rule_group_ep, rt.rule_group_id, rt.max_value ';
             $sSql .="  FROM $sJoinTmpTableName j ";
             $sSql .="  JOIN $sRuleTmpTableName rt ON j.rule_slot_id = rt.slot_id  ";
         
             $this->getDatabaseAdaper()->executeUpdate($sSql);
             
             
-            # Rank the scores by Low to High
+            # Rank the scores by High to LOW
             
             $sSql = "UPDATE $sRankTableName x ";
             $sSql .= " SET rank_high = ( ";
-                $sSql .= " SELECT count(rule_id) ";
+                $sSql .= " SELECT count(r.slot_id) ";
                 $sSql .=" FROM $sJoinTmpTableName j "; 
-                $sSql .=" JOIN $sRuleTmpTableName r ON j.rule_slot_id = r.slot_id ";
-                $sSql .=" WHERE j.rule_slot_id = x.rule_group_id ";
-                $sSql .=" GROUP BY r.rule_group_id ";
+                $sSql .=" JOIN $sRuleTmpTableName r ON j.rule_slot_id = r.slot_id";
+                $sSql .=" WHERE x.rule_group_id = r.rule_group_id AND x.score_slot_id  = j.score_slot_id ";
+                $sSql .=" AND (r.max_value > x.max_value ";
+                    $sSql .=" OR (r.max_value = x.max_value AND r.slot_id = x.rule_slot_id)) ";
+                $sSql .=" ORDER BY r.max_value DESC, r.slot_id DESC ";
             $sSql .= " ) ";
             
-            # Rank the scores High to Low
+            $this->getDatabaseAdaper()->executeUpdate($sSql);
             
             
+            # Rank the scores Low To High
             
+            $sSql = "UPDATE $sRankTableName x ";
+            $sSql .= " SET rank_low = ( ";
+                       $sSql .= " SELECT count(r.slot_id) ";
+                $sSql .=" FROM $sJoinTmpTableName j "; 
+                $sSql .=" JOIN $sRuleTmpTableName r ON j.rule_slot_id = r.slot_id";
+                $sSql .=" WHERE x.rule_group_id = r.rule_group_id AND x.score_slot_id  = j.score_slot_id ";
+                $sSql .=" AND (r.max_value < x.max_value ";
+                    $sSql .=" OR (r.max_value = x.max_value AND r.slot_id = x.rule_slot_id)) ";
+                $sSql .=" ORDER BY r.max_value ASC, r.slot_id ASC ";
+            $sSql .= " ) ";
+            
+            $this->getDatabaseAdaper()->executeUpdate($sSql);
+            
+            # fetch ranks for the rule groups.
+            $sSql = "UPDATE $sRankTableName x ";
+            $sSql .= " SET rule_group_seq = ( ";
+                       $sSql .= " SELECT c.order_seq ";
+                $sSql .=" FROM $sJoinTmpTableName j "; 
+                $sSql .=" JOIN $sRuleTmpTableName r ON j.rule_slot_id = r.slot_id";
+                $sSql .=" JOIN $sChainMemberTable c ON c.episode_id = r.chain_member_ep";
+                $sSql .=" WHERE x.rule_slot_id = j.rule_slot_id  AND x.score_slot_id  = j.score_slot_id ";
+            $sSql .= " ) ";
             
             
             $this->getDatabaseAdaper()->executeUpdate($sSql);

@@ -144,5 +144,20 @@ abstract class AbstractPass
                             ->getName();
         
     }
+    
+    /**
+     * Fetch the table chain member table
+     *  
+     * @return string the table name
+     * @access protected
+     */
+    protected function getChainMemberTableName()
+    {
+        return $this->getGatewayCollection()
+                            ->getGateway('pt_chain_member')
+                            ->getMetaData()
+                            ->getName();
+        
+    }
 }
 /* End of Pass */

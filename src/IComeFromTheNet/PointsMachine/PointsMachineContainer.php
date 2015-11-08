@@ -777,9 +777,12 @@ class PointsMachineContainer extends Pimple
             $oTable->addColumn('rule_group_ep','integer'   ,array('notnull' => false, "unsigned" => true, 'comment' =>'The Adj Rule Group Episode'));
             $oTable->addColumn('rule_group_id'    ,'guid' ,array('notnull' => false, 'comment' =>'The Adj Group Entity'));
 
-            $oTable->addColumn('rank_high','integer',array("unsigned" => true,  'comment' => 'Sort the scores in group'));
-            $oTable->addColumn('rank_low','integer',array("unsigned" => true,  'comment' => 'Sort the score in group'));
-            $oTable->addColumn('rule_group_seq','integer',array("unsigned" => true,  'comment' => 'Rule Groups order in the current chain'));
+            $oTable->addColumn('rank_high','integer',array("default"=>1 ,"unsigned" => true,  'comment' => 'Sort the scores in group'));
+            $oTable->addColumn('rank_low','integer',array("default"=>1 ,"unsigned" => true,  'comment' => 'Sort the score in group'));
+            $oTable->addColumn('rule_group_seq','integer',array("default"=>1 ,"unsigned" => true,  'comment' => 'Rule Groups order in the current chain'));
+           
+            $oTable->addColumn('max_value','float' ,array('notnull' => false, "unsigned" => false, 'comment' => 'combined value of this rule mod * mult'));
+        
            
             $oTable->setPrimaryKey(array('score_slot_id','rule_slot_id'));
             
