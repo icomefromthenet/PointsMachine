@@ -44,6 +44,15 @@ abstract class AbstractPass
         return $this->oDatabase;
     }
    
+    /**
+     * Return the database adapter
+     *  
+     * @return Doctrine\DBAL\Connection
+     */ 
+    public function getDatabaseAdapter()
+    {
+        return $this->oDatabase;
+    }
     
     
     /**
@@ -142,6 +151,37 @@ abstract class AbstractPass
                             ->getGateway('pt_result_rank')
                             ->getMetaData()
                             ->getName();
+        
+    }
+    
+    /**
+     * Fetch the table name for the transaction log table
+     *  
+     * @return string the table name
+     * @access protected
+     */
+    protected function getTransactionLogTableNam()
+    {
+        return $this->getGatewayCollection()
+                            ->getGateway('')
+                            ->getMetaData()
+                            ->getName();
+
+    }
+    
+    /**
+     * Fetch the table name for this aggrate result table
+     *  
+     * @return string the tmp table name
+     * @access protected
+     */
+    protected function getAggValueTableName()
+    {
+        return $this->getGatewayCollection()
+                            ->getGateway('pt_result_agg')
+                            ->getMetaData()
+                            ->getName();
+        
         
     }
     

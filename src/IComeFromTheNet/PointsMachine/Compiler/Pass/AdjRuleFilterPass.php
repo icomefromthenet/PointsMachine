@@ -44,8 +44,7 @@ class AdjRuleFilterPass extends AbstractPass
     
     protected function matchRule(DateTime $oProcessingDate)
     {
-        
-        $oDatabase = $this->getDatabaseAdaper();
+        $sSql  = '';
         $sRuleTmpTable = $this->getRuleTmpTableName();
         $sCommonTmpTable = $this->getCommonTmpTableName();
         
@@ -60,26 +59,23 @@ class AdjRuleFilterPass extends AbstractPass
                                 ->getName();    
                             
         
-        $sSql =  'UPDATE '.$sRuleTmpTable .' k ';
+        $sSql .=  'UPDATE '.$sRuleTmpTable .' k ';
         $sSql .= 'SET  k.rule_ep = (';
             $sSql .= 'SELECT j.episode_id ';
             $sSql .= 'FROM  '.$sRuleTable.' j, '.$sCommonTmpTable  .' l ';
             $sSql .= 'WHERE  j.enabled_from <= l.processing_date AND j.enabled_to > l.processing_date ';
             $sSql .= 'AND j.rule_id = k.rule_id ';
-        $sSql .= ')';
+        $sSql .= ');'.PHP_EOL;;
+       
         
-        $oDatabase->executeUpdate($sSql);
-        
-        $sSql =  'UPDATE '.$sRuleTmpTable .' k ';
+        $sSql .=  'UPDATE '.$sRuleTmpTable .' k ';
         $sSql .= ' SET k.rule_group_id = (';
             $sSql .= 'SELECT j.rule_group_id ';
             $sSql .= 'FROM  '.$sRuleTable.' j, '.$sCommonTmpTable  .' l ';
             $sSql .= 'WHERE  j.enabled_from <= l.processing_date AND j.enabled_to > l.processing_date ';
             $sSql .= 'AND j.rule_id = k.rule_id ';
-        $sSql .= ')';
+        $sSql .= ');'.PHP_EOL;;
         
-        
-        $oDatabase->executeUpdate($sSql);
         
         
         # Remove rules that have a zone link that not match the assigned zone
@@ -88,32 +84,31 @@ class AdjRuleFilterPass extends AbstractPass
     
         # Remove any rules without an episode
         
-        $sSql =  'UPDATE '.$sRuleTmpTable .' k ';
+        $sSql .=  'UPDATE '.$sRuleTmpTable .' k ';
         $sSql .= 'SET k.apply_all_zone = IF(( ';
                             $sSql .= 'SELECT count(*) FROM '.$sRuleZoneTable.' j ,'.$sCommonTmpTable.' l ';
                             $sSql .= 'WHERE  j.enabled_from <= l.processing_date ';
                             $sSql .= 'AND j.enabled_to > l.processing_date ';
                             $sSql .= 'AND k.rule_id = j.rule_id ';
-                            $sSql .=')> 0,0,1)';
+                            $sSql .=')> 0,0,1);'.PHP_EOL;;
    
-        $oDatabase->executeUpdate($sSql);
          
-        $sSql  = 'DELETE k FROM '.$sRuleTmpTable .' k ';    
+        $sSql  .= 'DELETE k FROM '.$sRuleTmpTable .' k ';    
         $sSql .= 'WHERE NOT EXISTS (SELECT 1 FROM '.$sRuleZoneTable.' j ,'.$sCommonTmpTable.' l ';
                             $sSql .= 'WHERE  j.enabled_from <= l.processing_date ';
                             $sSql .= 'AND j.enabled_to > l.processing_date ';
                             $sSql .= 'AND k.rule_id = j.rule_id ';
                             $sSql .= 'AND l.system_zone_id = j.zone_id) ';
         $sSql .= 'AND k.apply_all_zone = 0 ';        
-        $sSql .= 'OR k.rule_ep IS NULL ';
+        $sSql .= 'OR k.rule_ep IS NULL; '.PHP_EOL;;
        
         
-        $oDatabase->executeUpdate($sSql);
+        return $sSql;
     }
     
     protected function matchRuleGroup(DateTime $oProcessingDate)
     {
-        $oDatabase = $this->getDatabaseAdaper();
+        $sSql  = '';
         $sRuleTmpTable = $this->getRuleTmpTableName();
         $sCommonTmpTable = $this->getCommonTmpTableName();
         
@@ -128,32 +123,29 @@ class AdjRuleFilterPass extends AbstractPass
                             ->getName();                    
                 
         
-        $sSql =  'UPDATE '.$sRuleTmpTable .' k ';
+        $sSql .=  'UPDATE '.$sRuleTmpTable .' k ';
         $sSql .= 'SET  k.rule_group_ep = (';
             $sSql .= 'SELECT j.episode_id ';
             $sSql .= 'FROM  '.$sRuleGroupTable.' j, '.$sCommonTmpTable  .' l ';
             $sSql .= 'WHERE  j.enabled_from <= l.processing_date AND j.enabled_to > l.processing_date ';
             $sSql .= 'AND j.rule_group_id = k.rule_group_id ';
-        $sSql .= ')';
+        $sSql .= ');'.PHP_EOL;;
         
         
-        $oDatabase->executeUpdate($sSql);
-        
-        
+
         # filter out rule groups that are not linked to the current system
 
-        $sSql =  'UPDATE '.$sRuleTmpTable .' k ';
+        $sSql .=  'UPDATE '.$sRuleTmpTable .' k ';
         $sSql .= 'SET  k.apply_all_sys = IF((';
                     $sSql .= 'SELECT count(*) FROM '.$sRuleLimitTable.' j ,'.$sCommonTmpTable.' l ';
                     $sSql .= 'WHERE  j.enabled_from <= l.processing_date  ';
                     $sSql .= 'AND j.enabled_to > l.processing_date ';
                     $sSql .= 'AND k.rule_group_id = j.rule_group_id ';
                     $sSql .= 'AND j.system_id IS NOT NULL ';  
-        $sSql .= ') > 0,0,1)';
+        $sSql .= ') > 0,0,1);'.PHP_EOL;;
         
-        $oDatabase->executeUpdate($sSql);
-
-        $sSql  = 'DELETE k FROM '.$sRuleTmpTable .' k ';    
+    
+        $sSql .= 'DELETE k FROM '.$sRuleTmpTable .' k ';    
         $sSql .= 'WHERE NOT EXISTS ( ';
                             $sSql .= 'SELECT 1 FROM '.$sRuleLimitTable.' j ,'.$sCommonTmpTable.' l ';
                             $sSql .= 'WHERE  j.enabled_from <= l.processing_date  ';
@@ -161,36 +153,35 @@ class AdjRuleFilterPass extends AbstractPass
                             $sSql .= 'AND k.rule_group_id = j.rule_group_id ';
                             $sSql .= 'AND l.system_id = j.system_id ';
                             $sSql .= ')';
-        $sSql .= 'AND k.apply_all_sys = 0';
+        $sSql .= 'AND k.apply_all_sys = 0;'.PHP_EOL;;
         
-        $oDatabase->executeUpdate($sSql);
         
         # filter out rule groups not linked to the score group
         # we won't know until we do the join on score and rules which record to filter
         # but want to know if this rule group has strict requirements
-        $sSql =  'UPDATE '.$sRuleTmpTable .' k ';
+        $sSql .=  'UPDATE '.$sRuleTmpTable .' k ';
         $sSql .= 'SET  k.apply_all_score = IF((';
                     $sSql .= 'SELECT count(*) FROM '.$sRuleLimitTable.' j ,'.$sCommonTmpTable.' l ' ;
                     $sSql .= 'WHERE  j.enabled_from <= l.processing_date  ';
                     $sSql .= 'AND j.enabled_to > l.processing_date ';
                     $sSql .= 'AND k.rule_group_id = j.rule_group_id ';
                     $sSql .= 'AND j.score_group_id is not null  ';  
-        $sSql .= ') > 0,0,1)';
+        $sSql .= ') > 0,0,1);'.PHP_EOL;;
          
-        $oDatabase->executeUpdate($sSql);
+       
  
         # Remove any rules without rule group episodes
-        $sSql  = 'DELETE k FROM '.$sRuleTmpTable .' k ';   
-        $sSql .= 'WHERE k.rule_group_ep IS NULL';
+        $sSql  .= 'DELETE k FROM '.$sRuleTmpTable .' k ';   
+        $sSql .= 'WHERE k.rule_group_ep IS NULL;'.PHP_EOL;;
         
         
-        $oDatabase->executeUpdate($sSql);
+        return $sSql;
 
     }
     
     protected function matchRuleChainMember(DateTime $oProcessingDate)
     {
-        $oDatabase = $this->getDatabaseAdaper();
+        $sSql  = '';
         $sRuleTmpTable = $this->getRuleTmpTableName();
         $sCommonTmpTable = $this->getCommonTmpTableName();
         
@@ -204,36 +195,32 @@ class AdjRuleFilterPass extends AbstractPass
         # find the chain member entity id, this may be null if the rule group not
         # part of the chain
         
-        $sSql =  'UPDATE '.$sRuleTmpTable .' k ';
+        $sSql .=  'UPDATE '.$sRuleTmpTable .' k ';
         $sSql .= 'SET  k.chain_member_id = (';
             $sSql .= 'SELECT j.chain_member_id ';
             $sSql .= 'FROM  '.$sRuleCMemberTable.' j, '.$sCommonTmpTable  .' l ';
             $sSql .= 'WHERE  j.rule_chain_id = l.rule_chain_id ';
             $sSql .= 'AND j.rule_group_id = k.rule_group_id ';
-        $sSql .= ') ';
+        $sSql .= '); '.PHP_EOL;;
         
-        $oDatabase->executeUpdate($sSql);
         
         # find the episode of this entity 
-        $sSql =  'UPDATE '.$sRuleTmpTable .' k ';
+        $sSql .=  'UPDATE '.$sRuleTmpTable .' k ';
         $sSql .= 'SET k.chain_member_ep = (';
             $sSql .= 'SELECT j.episode_id ';
             $sSql .= 'FROM  '.$sRuleCMemberTable.' j, '.$sCommonTmpTable  .' l ';
             $sSql .= 'WHERE  j.enabled_from <= l.processing_date AND j.enabled_to > l.processing_date ';
             $sSql .= 'AND j.rule_chain_id = l.rule_chain_id ';
             $sSql .= 'AND j.rule_group_id = k.rule_group_id ';
-        $sSql .= ')';
-        
-        
-        $oDatabase->executeUpdate($sSql);
+        $sSql .= '); '.PHP_EOL;;
         
         
         # remove adjustment groups not part of the assigned chain.
         
-        $sSql  = 'DELETE k FROM '.$sRuleTmpTable .' k ';    
-        $sSql .= 'WHERE k.chain_member_ep IS NULL';
+        $sSql .= 'DELETE k FROM '.$sRuleTmpTable .' k ';    
+        $sSql .= 'WHERE k.chain_member_ep IS NULL; '.PHP_EOL;;
         
-        $oDatabase->executeUpdate($sSql);
+        return $sSql;
     }
     
     
@@ -246,10 +233,16 @@ class AdjRuleFilterPass extends AbstractPass
     {
         
         try {
-            $this->matchRule($oProcessingDate);
-            $this->matchRuleGroup($oProcessingDate);
-            $this->matchRuleChainMember($oProcessingDate);
-          
+            
+            $oDatabase = $this->getDatabaseAdapter();
+            
+            $sSql  = '';
+            $sSql .= $this->matchRule($oProcessingDate);
+            $sSql .= $this->matchRuleGroup($oProcessingDate);
+            $sSql .= $this->matchRuleChainMember($oProcessingDate);
+           
+            
+            $oDatabase->executeUpdate($sSql);
             
         }
         catch(DBALException $e) {

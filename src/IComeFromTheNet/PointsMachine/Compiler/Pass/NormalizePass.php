@@ -59,15 +59,14 @@ class NormalizePass extends AbstractPass
                         $sSql .= " FROM  $sRuleTableName r ";
                         $sSql .= " WHERE  k.rule_ep = r.episode_id ";
                         $sSql .= " AND  k.rule_id = r.rule_id ";
-            $sSql .= ")) ";
+            $sSql .= ")); ".PHP_EOL;
             
-            
-            $this->getDatabaseAdaper()->executeUpdate($sSql);
+           
     
             # Max values to be used in ordering the rules within a group
             
-            $sSql  = " UPDATE $sRuleTmpTableName ";
-            $sSql .= " SET max_value = (ifnull(override_modifier,1) * ifnull(override_multiplier,1)) ";        
+            $sSql  .= " UPDATE $sRuleTmpTableName ";
+            $sSql .= " SET max_value = (ifnull(override_modifier,1) * ifnull(override_multiplier,1)); ".PHP_EOL;        
             
             $this->getDatabaseAdaper()->executeUpdate($sSql);
         

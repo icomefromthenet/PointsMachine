@@ -2,14 +2,14 @@
 namespace IComeFromTheNet\PointsMachine\Compiler\Gateway;
 
 /**
- * This is a Gateway for the result detail Tmp Table.
+ * This is a Gateway for the agg value Tmp Table.
  * 
  * This table only have 1 row.
  * 
  * @author Lewis Dyer <getintouch@icomefromthenet.com>
  * @since 1.0
  */ 
-class TmpResultDetailGateway extends AbstractTmpGateway
+class TmpAggValueGateway extends AbstractTmpGateway
 {
     /**
     * Create a new instance of the querybuilder

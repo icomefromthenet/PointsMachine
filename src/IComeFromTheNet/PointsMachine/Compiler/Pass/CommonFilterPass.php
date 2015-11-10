@@ -27,29 +27,15 @@ use IComeFromTheNet\PointsMachine\PointsMachineException;
 class CommonFilterPass extends AbstractPass 
 {
     
-    /**
-     * Fetch the table name for this scores tmp table
-     *  
-     * @return string the tmp table name
-     * @access protected
-     */ 
-    protected function getScoreTmpTableName()
-    {
-        return $this->getGatewayCollection()
-                            ->getGateway('pt_result_common')
-                            ->getMetaData()
-                            ->getName();
-        
-    }
+    
     
     
     protected function matchSystemsEpisodes(DateTime $oProcessingDate)
     {
         
-        $oDatabase = $this->getDatabaseAdaper();
-        $sCommonTmpTable = $this->getScoreTmpTableName();
-        
-        $sSystemTable  = $this->getGatewayCollection()
+        $sCommonTmpTable = $this->getCommonTmpTableName();
+         $sSql           = '';  
+        $sSystemTable    = $this->getGatewayCollection()
                             ->getGateway('pt_system')
                             ->getMetaData()
                             ->getName();                    
@@ -57,28 +43,24 @@ class CommonFilterPass extends AbstractPass
                             
         # find system entities episodes
         # where using closed-open date pairs
-        $sSql =  'UPDATE '.$sCommonTmpTable.' k ';
+        $sSql .=  'UPDATE '.$sCommonTmpTable.' k ';
         $sSql .= 'SET  k.system_ep = (';
             $sSql .= 'SELECT j.episode_id ';
             $sSql .= 'FROM  '.$sSystemTable.' j ';
             $sSql .= 'WHERE  j.enabled_from <= k.processing_date AND j.enabled_to > k.processing_date ';
             $sSql .= 'AND j.system_id = k.system_id ';
-        $sSql .= ')';
+        $sSql .= '); '.PHP_EOL;
         
+       return $sSql;                         
         
-        $oDatabase->executeUpdate($sSql);
-                                
-        
-       
     }
     
    
     
     protected function matchSystemZonesEpisodes(DateTime $oProcessingDate)
     {
-        $oDatabase = $this->getDatabaseAdaper();
-        $sCommonTmpTable = $this->getScoreTmpTableName();
-        
+        $sCommonTmpTable = $this->getCommonTmpTableName();
+        $sSql      = '';  
         $sZoneTable  = $this->getGatewayCollection()
                             ->getGateway('pt_system_zone')
                             ->getMetaData()
@@ -86,21 +68,21 @@ class CommonFilterPass extends AbstractPass
         
         # find score group episode
         # where using closed-open date pairs
-        $sSql =  'UPDATE '.$sCommonTmpTable.' ';
+        $sSql .=  'UPDATE '.$sCommonTmpTable.' ';
         $sSql .= 'SET  system_zone_ep = (';
             $sSql .= 'SELECT j.episode_id ';
             $sSql .= 'FROM  '.$sZoneTable.' j ';
             $sSql .= 'WHERE  j.enabled_from <= processing_date AND j.enabled_to > processing_date ';
             $sSql .= 'AND j.zone_id = system_zone_id ';
-        $sSql .= ')';
+        $sSql .= '); '.PHP_EOL;
     
-        $oDatabase->executeUpdate($sSql);
+        return $sSql;
     }
     
-     protected function matchEventTypesEpisodes(DateTime $oProcessingDate)
+    protected function matchEventTypesEpisodes(DateTime $oProcessingDate)
     {
-        $oDatabase = $this->getDatabaseAdaper();
-        $sCommonTmpTable = $this->getScoreTmpTableName();
+        $sSql      = '';  
+        $sCommonTmpTable = $this->getCommonTmpTableName();
         
         $sEtypeTable  = $this->getGatewayCollection()
                             ->getGateway('pt_event_type')
@@ -109,22 +91,21 @@ class CommonFilterPass extends AbstractPass
         
         # find score group episode
         # where using closed-open date pairs
-        $sSql =  'UPDATE '.$sCommonTmpTable.' k ';
+        $sSql .=  'UPDATE '.$sCommonTmpTable.' k ';
         $sSql .= 'SET  k.event_type_ep = (';
             $sSql .= 'SELECT j.episode_id ';
             $sSql .= 'FROM  '.$sEtypeTable.' j ';
             $sSql .= 'WHERE  j.enabled_from <= k.processing_date AND j.enabled_to > k.processing_date ';
             $sSql .= 'AND j.event_type_id = k.event_type_id ';
-        $sSql .= ')';
+        $sSql .= '); '.PHP_EOL;
     
-        $oDatabase->executeUpdate($sSql);
+        return $sSql;
     }
     
     protected function matchRuleChainEpisodes(DateTime $oProcessingDate)
     {
-        $oDatabase = $this->getDatabaseAdaper();
-        $sCommonTmpTable = $this->getScoreTmpTableName();
-        
+        $sCommonTmpTable = $this->getCommonTmpTableName();
+        $sSql      = '';  
         $sChainTable  = $this->getGatewayCollection()
                             ->getGateway('pt_rule_chain')
                             ->getMetaData()
@@ -133,48 +114,42 @@ class CommonFilterPass extends AbstractPass
         
         # find the chain that applies to this combination
         
-        $sSql =  'UPDATE '.$sCommonTmpTable.' k ';
+        $sSql .=  'UPDATE '.$sCommonTmpTable.' k ';
         $sSql .= 'SET  k.rule_chain_id = (';
             $sSql .= 'SELECT distinct j.rule_chain_id ';
             $sSql .= 'FROM  '.$sChainTable.' j ';
             $sSql .= 'WHERE j.system_id = k.system_id ';
             $sSql .= 'AND j.event_type_id = k.event_type_id ';
             
-        $sSql .= ')';
-        
-        $oDatabase->executeUpdate($sSql);
+        $sSql .= '); '.PHP_EOL;
         
         # find the chain episode
         
-        $sSql =  'UPDATE '.$sCommonTmpTable.' k ';
+        $sSql .=  'UPDATE '.$sCommonTmpTable.' k ';
         $sSql .= 'SET  k.rule_chain_ep = (';
             $sSql .= 'SELECT j.episode_id ';
             $sSql .= 'FROM  '.$sChainTable.' j ';
             $sSql .= 'WHERE  j.enabled_from <= k.processing_date AND j.enabled_to > k.processing_date ';
             $sSql .= 'AND j.rule_chain_id = k.rule_chain_id ';
-        $sSql .= ')';
+        $sSql .= '); '.PHP_EOL;
      
-    
-        $oDatabase->executeUpdate($sSql);
+        return $sSql;
     }
     
     
     protected function removeExpiredEntities(DateTime $oProcessingDate)
     {
-        $oDatabase = $this->getDatabaseAdaper();
-        $sCommonTmpTable = $this->getScoreTmpTableName();
+        $sSql      = '';  
+        $sCommonTmpTable = $this->getCommonTmpTableName();
     
-        
         # remove systems that did not exist
         
-        $sSql  = 'DELETE FROM '.$sCommonTmpTable. ' ';
+        $sSql  .= 'DELETE FROM '.$sCommonTmpTable. ' ';
         $sSql  .='WHERE system_ep IS NULL ';
         $sSql  .='OR event_type_ep IS NULL ';
-        $sSql  .='OR rule_chain_ep IS NULL ';
-      
-        
-        $oDatabase->executeUpdate($sSql);
-        
+        $sSql  .='OR rule_chain_ep IS NULL; ';
+       
+        return $sSql;
     }
     
     
@@ -188,15 +163,22 @@ class CommonFilterPass extends AbstractPass
         
         try {
         
-            $this->matchSystemsEpisodes($oProcessingDate);
+            $oDatabase = $this->getDatabaseAdaper();
+            $sSql      = '';    
+        
+            $sSql .= $this->matchSystemsEpisodes($oProcessingDate);
             
-            $this->matchSystemZonesEpisodes($oProcessingDate);
+            $sSql .= $this->matchSystemZonesEpisodes($oProcessingDate);
             
-            $this->matchEventTypesEpisodes($oProcessingDate);
+            $sSql .= $this->matchEventTypesEpisodes($oProcessingDate);
             
-            $this->matchRuleChainEpisodes($oProcessingDate);
+            $sSql .= $this->matchRuleChainEpisodes($oProcessingDate);
             
-            $this->removeExpiredEntities($oProcessingDate);
+            $sSql .= $this->removeExpiredEntities($oProcessingDate);
+            
+            
+            
+            $oDatabase->executeUpdate($sSql);
             
         }
         catch(DBALException $e) {

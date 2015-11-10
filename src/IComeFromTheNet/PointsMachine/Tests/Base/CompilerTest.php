@@ -23,8 +23,8 @@ class CompilerTest extends TestWithContainer
         $oTmpRuleGateway   = $oContainer->getGatewayCollection()->getGateway('pt_result_rule');
         $oTmpCommonGateway = $oContainer->getGatewayCollection()->getGateway('pt_result_common');
         $oTmpCJoinGateway  = $oContainer->getGatewayCollection()->getGateway('pt_result_cjoin');
-        $oTmpResHeaderGateway = $oContainer->getGatewayCollection()->getGateway('pt_result_header');
-        $oTmpResDetailGateway  = $oContainer->getGatewayCollection()->getGateway('pt_result_detail');
+        $oTmpResHeaderGateway = $oContainer->getGatewayCollection()->getGateway('pt_result_agg');
+        
         $oTmpRankGateway    = $oContainer->getGatewayCollection()->getGateway('pt_result_rank');
         
         # Create the tmp tables
@@ -33,7 +33,7 @@ class CompilerTest extends TestWithContainer
         $oTmpCommonGateway->getTableMaker()->createTable();
         $oTmpCJoinGateway->getTableMaker()->createTable();
         $oTmpResHeaderGateway->getTableMaker()->createTable();
-        $oTmpResDetailGateway->getTableMaker()->createTable();
+        
         $oTmpRankGateway->getTableMaker()->createTable();
         
         parent::setUp();
@@ -46,8 +46,8 @@ class CompilerTest extends TestWithContainer
         $oTmpRuleGateway   = $oContainer->getGatewayCollection()->getGateway('pt_result_rule');
         $oTmpCommonGateway = $oContainer->getGatewayCollection()->getGateway('pt_result_common');
         $oTmpCJoinGateway  = $oContainer->getGatewayCollection()->getGateway('pt_result_cjoin');
-        $oTmpResHeaderGateway = $oContainer->getGatewayCollection()->getGateway('pt_result_header');
-        $oTmpResDetailGateway  = $oContainer->getGatewayCollection()->getGateway('pt_result_detail');
+        $oTmpResHeaderGateway = $oContainer->getGatewayCollection()->getGateway('pt_result_agg');
+        
         $oTmpRankGateway    = $oContainer->getGatewayCollection()->getGateway('pt_result_rank');
         
         
@@ -57,7 +57,7 @@ class CompilerTest extends TestWithContainer
         $oTmpCommonGateway->getTableMaker()->removeTable();
         $oTmpCJoinGateway->getTableMaker()->removeTable(); 
         $oTmpResHeaderGateway->getTableMaker()->removeTable();
-        $oTmpResDetailGateway->getTableMaker()->removeTable();
+        
         $oTmpRankGateway->getTableMaker()->removeTable();
          
         parent::tearDown();

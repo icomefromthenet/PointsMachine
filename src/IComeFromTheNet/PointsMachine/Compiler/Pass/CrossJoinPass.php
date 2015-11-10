@@ -79,15 +79,15 @@ class CrossJoinPass extends AbstractPass
             $sSql  = 'INSERT INTO ' . $sJoinTmpTableName .' ';
             $sSql .= ' (score_slot_id,rule_slot_id) ';
             $sSql .= ' SELECT a.slot_id, b.slot_id';
-            $sSql .="  FROM $sScoreTmpTableName a , $sRuleTmpTableName b, $sCommonTmpTableName k";
+            $sSql .="  FROM $sScoreTmpTableName a , $sRuleTmpTableName b, $sCommonTmpTableName k; ".PHP_EOL;
         
-            $this->getDatabaseAdaper()->executeUpdate($sSql);
+            
             
             # remove rule groups that dont apply current score group
             # check if rule group has a requirement of the current score group 
             # or voids the none means all and requirement.
         
-            $sSql  = " DELETE a FROM $sJoinTmpTableName a ";
+            $sSql .= " DELETE a FROM $sJoinTmpTableName a ";
             $sSql .= " JOIN $sRuleTmpTableName r ON r.slot_id = a.rule_slot_id ";
             $sSql .= " JOIN $sScoreTmpTableName s ON s.slot_id = a.score_slot_id ";
             $sSql .= " WHERE NOT EXISTS (SELECT 1 FROM $sRuleLimitsTableName  j , $sCommonTmpTableName l ";
@@ -95,7 +95,7 @@ class CrossJoinPass extends AbstractPass
                             $sSql .= " AND j.enabled_to > l.processing_date ";
                             $sSql .= " AND r.rule_group_id = j.rule_group_id ";
                             $sSql .= " AND s.score_group_id = j.score_group_id) ";
-            $sSql .= ' AND r.apply_all_score = 0 ';        
+            $sSql .= ' AND r.apply_all_score = 0; '.PHP_EOL;        
     
     
             $this->getDatabaseAdaper()->executeUpdate($sSql);

@@ -50,18 +50,15 @@ class LimitPass extends AbstractPass
             $sSql .= " JOIN $sRuleTmpTableName   rt ON rt.slot_id   = rnk.rule_slot_id ";        
             $sSql .= " JOIN $sRuleGroupTableName r  ON r.episode_id = rt.rule_group_ep ";        
             $sSql .= " WHERE (r.max_count IS NOT NULL AND r.order_method = 0 AND rnk.rank_low  > r.max_count ) ";
-            $sSql .= " OR    (r.max_count IS NOT NULL AND r.order_method = 1 AND rnk.rank_high > r.max_count ) ";
+            $sSql .= " OR    (r.max_count IS NOT NULL AND r.order_method = 1 AND rnk.rank_high > r.max_count ); ".PHP_EOL;
     
-            $this->getDatabaseAdaper()->executeUpdate($sSql);
-        
-        
+
             # update the join table with new row set
             $oCJoinTableMaker->truncateTable();
             
-            $sSql  = " INSERT $sCJoinTmpTableName (score_slot_id, rule_slot_id) ";
-            $sSql .= " SELECT score_slot_id, rule_slot_id FROM $sRankTmpTableName ";        
+            $sSql .= " INSERT $sCJoinTmpTableName (score_slot_id, rule_slot_id) ";
+            $sSql .= " SELECT score_slot_id, rule_slot_id FROM $sRankTmpTableName ;".PHP_EOL;        
         
-            
             $this->getDatabaseAdaper()->executeUpdate($sSql);
         
         }

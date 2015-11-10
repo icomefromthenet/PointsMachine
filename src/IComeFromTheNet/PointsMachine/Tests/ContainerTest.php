@@ -72,17 +72,16 @@ class ContainerTest extends TestWithContainer
         $this->assertInstanceOf('IComeFromTheNet\PointsMachine\Compiler\Gateway\TmpCommonGateway',$oGateway);
         $this->assertInstanceOf('IComeFromTheNet\PointsMachine\Compiler\Driver\DriverInterface',$oGateway->getTableMaker());
         
-        $oGateway = $oContainer->getGatewayCollection()->getGateway('pt_result_header');
-        $this->assertInstanceOf('IComeFromTheNet\PointsMachine\Compiler\Gateway\TmpResultHeaderGateway',$oGateway);
+        $oGateway = $oContainer->getGatewayCollection()->getGateway('pt_result_agg');
+        $this->assertInstanceOf('IComeFromTheNet\PointsMachine\Compiler\Gateway\TmpAggValueGateway',$oGateway);
         $this->assertInstanceOf('IComeFromTheNet\PointsMachine\Compiler\Driver\DriverInterface',$oGateway->getTableMaker());
         
-        $oGateway = $oContainer->getGatewayCollection()->getGateway('pt_result_detail');
-        $this->assertInstanceOf('IComeFromTheNet\PointsMachine\Compiler\Gateway\TmpResultDetailGateway',$oGateway);
-        $this->assertInstanceOf('IComeFromTheNet\PointsMachine\Compiler\Driver\DriverInterface',$oGateway->getTableMaker());
-        
+
         $oGateway = $oContainer->getGatewayCollection()->getGateway('pt_result_rank');
         $this->assertInstanceOf('IComeFromTheNet\PointsMachine\Compiler\Gateway\TmpRankGateway',$oGateway);
         $this->assertInstanceOf('IComeFromTheNet\PointsMachine\Compiler\Driver\DriverInterface',$oGateway->getTableMaker());
+        
+        
         
     }
     

@@ -51,14 +51,12 @@ class RankPass extends AbstractPass
             $sSql .= ' (score_slot_id, rule_slot_id, rule_ep, rule_id, rule_group_ep, rule_group_id, max_value) ';
             $sSql .= ' SELECT j.score_slot_id, j.rule_slot_id, rt.rule_ep, rt.rule_id, rt.rule_group_ep, rt.rule_group_id, rt.max_value ';
             $sSql .="  FROM $sJoinTmpTableName j ";
-            $sSql .="  JOIN $sRuleTmpTableName rt ON j.rule_slot_id = rt.slot_id  ";
+            $sSql .="  JOIN $sRuleTmpTableName rt ON j.rule_slot_id = rt.slot_id;  ".PHP_EOL;
         
-            $this->getDatabaseAdaper()->executeUpdate($sSql);
-            
             
             # Rank the scores by High to LOW
             
-            $sSql = "UPDATE $sRankTableName x ";
+            $sSql .= "UPDATE $sRankTableName x ";
             $sSql .= " SET rank_high = ( ";
                 $sSql .= " SELECT count(r.slot_id) ";
                 $sSql .=" FROM $sJoinTmpTableName j "; 
@@ -67,14 +65,12 @@ class RankPass extends AbstractPass
                 $sSql .=" AND (r.max_value > x.max_value ";
                     $sSql .=" OR (r.max_value = x.max_value AND r.slot_id = x.rule_slot_id)) ";
                 $sSql .=" ORDER BY r.max_value DESC, r.slot_id DESC ";
-            $sSql .= " ) ";
-            
-            $this->getDatabaseAdaper()->executeUpdate($sSql);
+            $sSql .= " ); ".PHP_EOL;
             
             
             # Rank the scores Low To High
             
-            $sSql = "UPDATE $sRankTableName x ";
+            $sSql .= "UPDATE $sRankTableName x ";
             $sSql .= " SET rank_low = ( ";
                        $sSql .= " SELECT count(r.slot_id) ";
                 $sSql .=" FROM $sJoinTmpTableName j "; 
@@ -83,19 +79,19 @@ class RankPass extends AbstractPass
                 $sSql .=" AND (r.max_value < x.max_value ";
                     $sSql .=" OR (r.max_value = x.max_value AND r.slot_id = x.rule_slot_id)) ";
                 $sSql .=" ORDER BY r.max_value ASC, r.slot_id ASC ";
-            $sSql .= " ) ";
+            $sSql .= " ); ".PHP_EOL;
             
-            $this->getDatabaseAdaper()->executeUpdate($sSql);
+            
             
             # fetch ranks for the rule groups.
-            $sSql = "UPDATE $sRankTableName x ";
+            $sSql .= "UPDATE $sRankTableName x ";
             $sSql .= " SET rule_group_seq = ( ";
                        $sSql .= " SELECT c.order_seq ";
                 $sSql .=" FROM $sJoinTmpTableName j "; 
                 $sSql .=" JOIN $sRuleTmpTableName r ON j.rule_slot_id = r.slot_id";
                 $sSql .=" JOIN $sChainMemberTable c ON c.episode_id = r.chain_member_ep";
                 $sSql .=" WHERE x.rule_slot_id = j.rule_slot_id  AND x.score_slot_id  = j.score_slot_id ";
-            $sSql .= " ) ";
+            $sSql .= " ); ".PHP_EOL;
             
             
             $this->getDatabaseAdaper()->executeUpdate($sSql);

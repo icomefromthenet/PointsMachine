@@ -31,7 +31,7 @@ class ScoreFilterPass extends AbstractPass
     
     protected function matchScoreEpisodes(DateTime $oProcessingDate)
     {
-        $oDatabase = $this->getDatabaseAdaper();
+        $sSql = '';
         $sScoreTmpTable = $this->getScoreTmpTableName();
         $sCommonTable = $this->getCommonTmpTableName();
         $sScoreTable  = $this->getGatewayCollection()
@@ -42,18 +42,18 @@ class ScoreFilterPass extends AbstractPass
         
         # find score episodes
         # where using closed-open date pairs
-        $sSql =  'UPDATE '.$sScoreTmpTable.' k ';
+        $sSql .=  'UPDATE '.$sScoreTmpTable.' k ';
         $sSql .= 'SET  k.score_ep = (';
             $sSql .= 'SELECT j.episode_id ';
             $sSql .= 'FROM  '.$sScoreTable.' j , '.$sCommonTable. ' l ';
             $sSql .= 'WHERE  j.enabled_from <= l.processing_date AND j.enabled_to > l.processing_date ';
             $sSql .= 'AND j.score_id = k.score_id ';
-        $sSql .= ')'; 
+        $sSql .= ');'.PHP_EOL; 
         
-        $oDatabase->executeUpdate($sSql);
+      
         
         # set the score base values
-        $sSql =  'UPDATE '.$sScoreTmpTable.' k ';
+        $sSql .=  'UPDATE '.$sScoreTmpTable.' k ';
          $sSql .= 'SET  k.score_base = (';
             $sSql .= 'SELECT j.score_value ';
             $sSql .= 'FROM  '.$sScoreTable.' j ';
@@ -63,16 +63,17 @@ class ScoreFilterPass extends AbstractPass
             $sSql .= 'SELECT j.score_group_id ';
             $sSql .= 'FROM  '.$sScoreTable.' j ';
             $sSql .= 'WHERE  j.episode_id = k.score_ep AND j.score_id = k.score_id ';
-        $sSql .= ')';  
+        $sSql .= ');'.PHP_EOL;  
        
-        $oDatabase->executeUpdate($sSql);
+        return $sSql;
     }
      
  
     
     protected function matchScoreGroupsEpisodes(DateTime $oProcessingDate)
     {
-        $oDatabase = $this->getDatabaseAdaper();
+        $sSql = '';
+        
         $sScoreTmpTable = $this->getScoreTmpTableName();
         $sCommonTable = $this->getCommonTmpTableName();
         $sGroupTable  = $this->getGatewayCollection()
@@ -82,31 +83,31 @@ class ScoreFilterPass extends AbstractPass
         
         # find score group episode
         # where using closed-open date pairs
-        $sSql =  'UPDATE '.$sScoreTmpTable.' k ';
+        $sSql .=  'UPDATE '.$sScoreTmpTable.' k ';
         $sSql .= 'SET  k.score_group_ep = (';
             $sSql .= 'SELECT j.episode_id ';
             $sSql .= 'FROM  '.$sGroupTable.' j  , '.$sCommonTable. ' l ';
             $sSql .= 'WHERE  j.enabled_from <= l.processing_date AND j.enabled_to > l.processing_date ';
             $sSql .= 'AND j.score_group_id = k.score_group_id ';
-        $sSql .= ')'; 
+        $sSql .= ');'.PHP_EOL; 
         
-        $oDatabase->executeUpdate($sSql);
+        return $sSql;
     }
     
     
     
     protected function removeExpiredEntities()
     {
-        $oDatabase = $this->getDatabaseAdaper();
+        $sSql = '';
         $sScoreTmpTable = $this->getScoreTmpTableName();
     
         
         # remove systems that did not exist
         
-        $sSql  = 'DELETE FROM '.$sScoreTmpTable. ' ';
-        $sSql  .='WHERE score_ep IS NULL ';
+        $sSql  .= 'DELETE FROM '.$sScoreTmpTable. ' ';
+        $sSql  .='WHERE score_ep IS NULL; '.PHP_EOL;
         
-        $oDatabase->executeUpdate($sSql);
+        return $sSql;
         
     }
     
@@ -121,13 +122,14 @@ class ScoreFilterPass extends AbstractPass
     {
         
         try {
-        
-            $this->matchScoreEpisodes($oProcessingDate);
+            $oDatabase = $this->getDatabaseAdapter();
             
-            $this->matchScoreGroupsEpisodes($oProcessingDate);
+            $sSql = $this->matchScoreEpisodes($oProcessingDate);
+            $sSql .= $this->matchScoreGroupsEpisodes($oProcessingDate);
+            $sSql .= $this->removeExpiredEntities($oProcessingDate);
             
-            $this->removeExpiredEntities($oProcessingDate);
             
+            $oDatabase->executeUpdate($sSql);
         }
         catch(DBALException $e) {
             throw new PointsMachineException($e->getMessage(),0,$e);
