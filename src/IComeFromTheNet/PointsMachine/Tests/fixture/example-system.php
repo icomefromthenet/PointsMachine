@@ -267,8 +267,8 @@ return [
                 ,'rule_group_name_slug'=> 'withdrawal_conversion'
                 ,'max_multiplier' => null
                 ,'min_multiplier' => null
-                ,'max_modifier' => null
-                ,'min_modifier' => null
+                ,'max_modifier' => 5
+                ,'min_modifier' => 0.1
                 ,'max_count' => 1
                 ,'order_method' => null
                 ,'is_mandatory' => 1
@@ -282,10 +282,10 @@ return [
                 ,'rule_group_id' => '586DB7DF-57C3-F7D5-639D-0A9779AF79BD'
                 ,'rule_group_name' => 'Discounts'
                 ,'rule_group_name_slug'=> 'discounts'
-                ,'max_multiplier' => null
-                ,'min_multiplier' => null
-                ,'max_modifier' => null
-                ,'min_modifier' => null
+                ,'max_multiplier' => 10
+                ,'min_multiplier' => 10
+                ,'max_modifier' => 100
+                ,'min_modifier' => 8
                 ,'max_count' => 1
                 ,'order_method' => 1
                 ,'is_mandatory' => 1
@@ -535,7 +535,7 @@ return [
                 ,'system_id'  =>'9B753E70-881B-F53E-2D46-8151BED1BBAF'
                 ,'chain_name'  =>'Withdrawal Chain'
                 ,'chain_name_slug'  =>'withdrawal_chain'
-                ,'rounding_option' => null
+                ,'rounding_option' => 2
                 ,'cap_value'    => null
                 ,'enabled_from' => (new DateTime())->format('Y-m-d')
                 ,'enabled_to'   =>  (new DateTime('3000-01-01'))->format('Y-m-d') 

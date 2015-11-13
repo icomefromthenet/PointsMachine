@@ -37,8 +37,9 @@ class AggValuePass extends AbstractPass
             $sRuleTableName     = $this->getRuleTableName();
             $sScoreTmpTableName = $this->getScoreTmpTableName();
             $sRuleTmpTableName  = $this->getRuleTmpTableName();
-            $sAggTmpTableName   = $this->getAggValueTableName();
+            $sAggTmpTableName   = $this->getAggValueTmpTableName();
             $sChainMemberTableName  = $this->getChainMemberTableName();
+            $sRuleGroupTableName  = $this->getRuleGroupTableName();
         
             # Insert basic data into the agg table
             $sSql = " INSERT INTO $sAggTmpTableName (score_slot_id, rule_group_ep, rule_group_id, rank, modifier, multiplier, cumval) ";
@@ -68,29 +69,52 @@ class AggValuePass extends AbstractPass
                     $sSql .= " JOIN  $sRuleTmpTableName r on rnk.rule_slot_id = r.slot_id ";
                     $sSql .= " WHERE a.rule_group_ep = rnk.rule_group_ep AND a.score_slot_id = rnk.score_slot_id ";
             $sSql .= ");". PHP_EOL;
+            
         
+            ## Need to process the Min and Max settings for each Adjustment Group
+        
+            $sSql .= " UPDATE $sAggTmpTableName  agg";
+            $sSql .= " JOIN $sRuleGroupTableName r  ON r.episode_id = agg.rule_group_ep ";
+            $sSql .= " SET agg.modifier = (CASE  ";
+                                    $sSql .= " WHEN (r.max_modifier IS NOT NULL) AND (agg.modifier > r.max_modifier) THEN r.max_modifier ";
+                                    $sSql .= " WHEN (r.min_modifier IS NOT NULL) AND (agg.modifier < r.min_modifier) THEN r.min_modifier ";
+                                    $sSql .= " ELSE agg.modifier ";
+                                $sSql .= " END) ";
+            $sSql .= ", agg.multiplier = (CASE  ";
+                                    $sSql .= " WHEN (r.max_multiplier IS NOT NULL) AND (agg.multiplier > r.max_multiplier) THEN r.max_multiplier ";
+                                    $sSql .= " WHEN (r.min_multiplier IS NOT NULL) AND (agg.multiplier < r.min_multiplier) THEN r.min_multiplier ";
+                                    $sSql .= " ELSE agg.multiplier ";
+                                $sSql .= " END);";
+        
+            
             $this->getDatabaseAdapter()->executeUpdate($sSql);
-        
+            
+            
+            
             # Calculate the Cumulative value with a variable for Cumulative Value
             # where doing slow update because we can't refer to same TMP table twice in a query
-            $sSql = " SELECT agg.score_slot_id, agg.rule_group_ep, agg.rule_group_id, @running_total := @running_total + (max(agg.modifier) * max(agg.multiplier)) AS cumulative_sum ";
+            $sSql  = " SELECT agg.score_slot_id, agg.rule_group_ep, agg.rule_group_id ,@running_total := @running_total + (r.score_base + max(agg.modifier)) * max(agg.multiplier) AS cumulative_sum ";
             $sSql .= " FROM  $sAggTmpTableName agg ";
             $sSql .= " JOIN  $sScoreTmpTableName r on agg.score_slot_id = r.slot_id ";
-            $sSql .= " JOIN (SELECT @running_total := 0) rt ";
+            $sSql .= " JOIN  (SELECT @running_total := 0) rt ";
             $sSql .= " GROUP BY agg.score_slot_id, agg.rule_group_ep, agg.rule_group_id ";
-            $sSql .= " ORDER BY agg.rank "; 
+            $sSql .= " ORDER BY agg.rank; "; 
 
-            $aAllData = $this->getDatabaseAdapter()->fetchAll($sSql);
+            $oStmt = $this->getDatabaseAdapter()->query($sSql);
             
-            foreach($aAllData as $aData) {
-                $this->getDatabaseAdapter()->executeUpdate("UPDATE $sAggTmpTableName set cumval = :fCumVal 
-                                                           WHERE score_slot_id = :iScoreSlotId
-                                                           AND rule_group_ep = :iRuleGroupEp
-                                                           and rule_group_id = :iRuleGroupId"
-                                                           ,array('iScoreSlotId' => $aData['score_slot_id']
-                                                                  'iRuleGroupEp' => $aData['rule_group_ep']
-                                                                  'iRuleGroupId' => $aData['rule_group_id']
-                                                                  'fCumVal'      => $aData['cumulative_sum']
+            while ($aData = $oStmt->fetch()) {
+
+          
+                $sSql  = " UPDATE $sAggTmpTableName ";
+                $sSql .= " SET cumval = :fCumVal ";
+                $sSql .= " WHERE score_slot_id = :iScoreSlotId ";
+                $sSql .= " AND   rule_group_ep = :iRuleGroupEp ";
+                $sSql .= " AND   rule_group_id = :iRuleGroupId ";
+                
+                $this->getDatabaseAdapter()->executeUpdate($sSql ,array( 'iScoreSlotId' => $aData['score_slot_id']
+                                                                  ,'iRuleGroupEp' => $aData['rule_group_ep']
+                                                                  ,'iRuleGroupId' => $aData['rule_group_id']
+                                                                  ,'fCumVal'      => $aData['cumulative_sum']
                                                            ));
                 
             }

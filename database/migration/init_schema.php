@@ -175,39 +175,70 @@ class init_schema implements EntityInterface
        $table->addForeignKeyConstraint('pt_system_zone',array('zone_id'),array('zone_id'),array(),'pt_rule_sys_zone_fk2');
        
        
-       # Rule transaction
-       $table = $sc->createTable("pt_scoring_transaction");
-       $table->addColumn('process_id','integer',array("unsigned" => true,'autoincrement' => true));
-       $table->addColumn('rule_id'       ,'integer',array("unsigned" => true));
-       $table->addColumn('rule_group_id' ,'integer',array("unsigned" => true,'default'=>null));
-       $table->addColumn('score_id'      ,'integer',array("unsigned" => true));
-       $table->addColumn('score_group_id','integer',array("unsigned" => true,'default'=>null));
-       $table->addColumn('system_id'     ,'integer',array("unsigned" => true));
-       $table->addColumn('zone_id'       ,'integer',array("unsigned" => true));
-       $table->addColumn('event_type_id' ,'integer',array("unsigned" => true));
-       $table->addColumn('event_id'      ,'integer',array("unsigned" => true));
-       
-       $table->addColumn('score_base'      ,'float',array());
-       $table->addColumn('score_balance'   ,'float',array());
-       $table->addColumn('score_modifier'  ,'float',array());
-       $table->addColumn('score_multiplier','float',array());
-       
-       $table->addColumn('created_date'    ,'date',array());
-       $table->addColumn('processing_date' ,'date',array());
-       $table->addColumn('occured_date'    ,'date' ,array());
-       
-       $table->setPrimaryKey(array('process_id'));
-       $table->addForeignKeyConstraint('pt_rule'       ,array('rule_id')       ,array('episode_id') ,array(), 'pt_tran_rule_fk1');
-       $table->addForeignKeyConstraint('pt_rule_group' ,array('rule_group_id') ,array('episode_id') ,array(), 'pt_tran_rule_gp_fk2');
-       $table->addForeignKeyConstraint('pt_system'     ,array('system_id')     ,array('episode_id') ,array(), 'pt_tran_sys_fk3');
-       $table->addForeignKeyConstraint('pt_system_zone',array('zone_id')       ,array('episode_id') ,array(), 'pt_tran_sys_zone_fk4');
-       $table->addForeignKeyConstraint('pt_score'      ,array('score_id')      ,array('episode_id') ,array(), 'pt_tran_score_fk5');
-       $table->addForeignKeyConstraint('pt_score_group',array('score_group_id'),array('episode_id') ,array(), 'pt_tran_score_gp_fk6');
-       $table->addForeignKeyConstraint('pt_event_type' ,array('event_type_id') ,array('episode_id') ,array(), 'pt_tran_event_type_fk7');
-       $table->addForeignKeyConstraint('pt_event'      ,array('event_id')      ,array('event_id')    ,array(), 'pt_tran_event_fk8');
-       
-       
-   }
+       # Score transaction
+        $table = $sc->createTable("pt_transaction_header");
+        $table->addColumn('event_id'      ,'integer',array("unsigned" => true));
+        $table->addColumn('system_ep'     ,'integer',array("unsigned" => true));
+        $table->addColumn('zone_ep'       ,'integer',array("unsigned" => true));
+        $table->addColumn('event_type_ep' ,'integer',array("unsigned" => true));
+        $table->addColumn('created_date'    ,'date',array());
+        $table->addColumn('processing_date' ,'date',array());
+        $table->addColumn('occured_date'    ,'date' ,array());
+        
+        $table->setPrimaryKey(array('event_id'));
+
+        $table->addForeignKeyConstraint('pt_system'     ,array('system_ep')     ,array('episode_id') ,array(), 'pt_tran_head_sys_fk1');
+        $table->addForeignKeyConstraint('pt_system_zone',array('zone_ep')       ,array('episode_id') ,array(), 'pt_tran_head_zone_fk2');        
+        $table->addForeignKeyConstraint('pt_event_type' ,array('event_type_ep') ,array('episode_id') ,array(), 'pt_tran_head_event_type_fk3');
+        $table->addForeignKeyConstraint('pt_event'      ,array('event_id')      ,array('event_id')    ,array(), 'pt_tran_head_event_fk4');
+
+        
+        # Score Totals  
+        $table = $sc->createTable("pt_transaction_score");
+        $table->addColumn('event_id'          ,'integer',array("unsigned" => true));
+        $table->addColumn('score_ep'          ,'integer',array("unsigned" => true));
+        $table->addColumn('score_group_ep'    ,'integer',array("unsigned" => true,'default'=>null));
+        $table->addColumn('score_base'        ,'float'  ,array("unsigned" => false,'default'=>0));
+        $table->addColumn('score_cal_raw'     ,'float'  ,array("unsigned" => false,'default'=>0));
+        $table->addColumn('score_cal_rounded' ,'float'  ,array("unsigned" => false,'default'=>0));
+        $table->addColumn('score_cal_capped'  ,'float'  ,array("unsigned" => false,'default'=>0));
+        
+        
+        $table->setPrimaryKey(array('event_id','score_ep'));
+        $table->addForeignKeyConstraint('pt_score'      ,array('score_ep')      ,array('episode_id') ,array(), 'pt_tran_sc_score_fk1');
+        $table->addForeignKeyConstraint('pt_score_group',array('score_group_ep'),array('episode_id') ,array(), 'pt_tran_sc_score_gp_fk2');
+        $table->addForeignKeyConstraint('pt_event'      ,array('event_id')      ,array('event_id')    ,array(), 'pt_tran_sc_event_fk3');
+        
+        # Adj Group Transaction
+        $table = $sc->createTable("pt_transaction_group");
+        $table->addColumn('event_id','integer',array("unsigned" => true));
+        $table->addColumn('score_ep'      ,'integer',array("unsigned" => true));
+        $table->addColumn('rule_group_ep' ,'integer',array("unsigned" => true,'default'=>null));
+        $table->addColumn('score_modifier'  ,'float',array());
+        $table->addColumn('score_multiplier','float',array());
+        $table->addColumn('order_seq','integer',array("unsigned" => true));
+        
+        $table->setPrimaryKey(array('event_id','score_ep','rule_group_ep'));
+        $table->addForeignKeyConstraint('pt_event'      ,array('event_id')      ,array('event_id')    ,array(), 'pt_tran_gp_event_fk1');
+        $table->addForeignKeyConstraint('pt_score'      ,array('score_ep')      ,array('episode_id') ,array(), 'pt_tran_gp_score_fk2');
+        $table->addForeignKeyConstraint('pt_rule_group' ,array('rule_group_ep') ,array('episode_id') ,array(), 'pt_tran_gp_rulgp_fk3');
+        
+        
+        # Adj Rule Transactions'
+        $table = $sc->createTable("pt_transaction_rule");
+        $table->addColumn('event_id','integer',array("unsigned" => true));
+        $table->addColumn('score_ep'      ,'integer',array("unsigned" => true));       
+        $table->addColumn('rule_ep'       ,'integer',array("unsigned" => true));
+        $table->addColumn('score_modifier'  ,'float',array());
+        $table->addColumn('score_multiplier','float',array());
+        $table->addColumn('order_seq','integer',array("unsigned" => true));
+        
+        $table->setPrimaryKey(array('event_id','score_ep','rule_ep'));
+        $table->addForeignKeyConstraint('pt_event'      ,array('event_id')      ,array('event_id')    ,array(), 'pt_tran_rule_event_fk1');
+        $table->addForeignKeyConstraint('pt_score'      ,array('score_ep')      ,array('episode_id') ,array(), 'pt_tran_rule_score_fk2');
+        $table->addForeignKeyConstraint('pt_rule'       ,array('rule_ep')       ,array('episode_id') ,array(), 'pt_tran_rule_rule_fk3');
+    }
+   
    
    public function getRuleChain(Connection $db, ASchema $sc)
    {
@@ -219,7 +250,7 @@ class init_schema implements EntityInterface
        $table->addColumn('system_id','guid',array()); 
        $table->addColumn('chain_name','string',array("length" => 100));
        $table->addColumn('chain_name_slug','string',array("length" => 100));
-       $table->addColumn('rounding_option','smallint',array('notnull' => false, 'default'=> 1,'comment' => 'Rounding method to apply floor|ceil|round'));
+       $table->addColumn('rounding_option','smallint',array('default'=> 0,'comment' => 'Rounding method to apply floor|ceil|round'));
        $table->addColumn('cap_value','float',array('notnull' => false,'signed' => true, 'comment' =>'Max value +- that this event type can generate after all calculations have been made'));
      
        $table->addColumn('enabled_from','date',array());

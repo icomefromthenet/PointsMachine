@@ -137,6 +137,7 @@ class CommonFilterPass extends AbstractPass
     }
     
     
+    
     protected function removeExpiredEntities(DateTime $oProcessingDate)
     {
         $sSql      = '';  

@@ -39,8 +39,19 @@ use IComeFromTheNet\PointsMachine\DB\Builder\AdjustmentRuleBuilder;
 use IComeFromTheNet\PointsMachine\DB\Gateway\AdjustmentZoneGateway;
 use IComeFromTheNet\PointsMachine\DB\Builder\AdjustmentZoneBuilder;
 
-use IComeFromTheNet\PointsMachine\DB\Gateway\CalculationGateway;
-use IComeFromTheNet\PointsMachine\DB\Builder\CalculationBuilder;
+use IComeFromTheNet\PointsMachine\DB\Gateway\CalculationScoreGateway;
+use IComeFromTheNet\PointsMachine\DB\Builder\CalculationScoreBuilder;
+
+use IComeFromTheNet\PointsMachine\DB\Gateway\CalculationEventGateway;
+use IComeFromTheNet\PointsMachine\DB\Builder\CalculationEventBuilder;
+
+use IComeFromTheNet\PointsMachine\DB\Gateway\CalculationAdjGroupGateway;
+use IComeFromTheNet\PointsMachine\DB\Builder\CalculationAdjGroupBuilder;
+
+use IComeFromTheNet\PointsMachine\DB\Gateway\CalculationAdjRuleGateway;
+use IComeFromTheNet\PointsMachine\DB\Builder\CalculationAdjRuleBuilder;
+
+
 
 use IComeFromTheNet\PointsMachine\DB\Gateway\RuleChainGateway;
 use IComeFromTheNet\PointsMachine\DB\Builder\RuleChainBuilder;
@@ -172,7 +183,13 @@ class PointsMachineContainer extends Pimple
               ,'pt_rule_group_limits'   => 'pt_rule_group_limits'
               ,'pt_rule'                => 'pt_rule'
               ,'pt_rule_sys_zone'       => 'pt_rule_sys_zone'
-              ,'pt_scoring_transaction' => 'pt_scoring_transaction'
+              
+              // Transaction Log
+              ,'pt_transaction_header'   => 'pt_transaction_header'
+              ,'pt_transaction_score'   => 'pt_transaction_score'
+              ,'pt_transaction_group'   => 'pt_transaction_group'
+              ,'pt_transaction_rule'    => 'pt_transaction_rule'
+              
               ,'pt_rule_chain'          => 'pt_rule_chain'
               ,'pt_chain_member'        => 'pt_chain_member'
               // tmp result tables
@@ -520,8 +537,8 @@ class PointsMachineContainer extends Pimple
             return $oGateway;
         });
         
-        $oGatewayCol->addGateway('pt_scoring_transaction',function() use ($c, $oSchema, $aTableMap) {
-            $sActualTableName = $aTableMap['pt_scoring_transaction'];
+        $oGatewayCol->addGateway('pt_transaction_header',function() use ($c, $oSchema, $aTableMap) {
+            $sActualTableName = $aTableMap['pt_transaction_header'];
             $oEvent           = $c->getEventDispatcher();
             $oLogger          = $c->getAppLogger();
             $oDatabase        = $c->getDatabaseAdaper();
@@ -529,42 +546,128 @@ class PointsMachineContainer extends Pimple
             
             # Transaction Header Table
             $table = $oSchema->createTable($sActualTableName);
-            $table->addColumn('process_id','integer',array("unsigned" => true,'autoincrement' => true));
-            $table->addColumn('rule_id'       ,'integer',array("unsigned" => true));
-            $table->addColumn('rule_group_id' ,'integer',array("unsigned" => true,'default'=>null));
-            $table->addColumn('score_id'      ,'integer',array("unsigned" => true));
-            $table->addColumn('score_group_id','integer',array("unsigned" => true,'default'=>null));
-            $table->addColumn('system_id'     ,'integer',array("unsigned" => true));
-            $table->addColumn('zone_id'       ,'integer',array("unsigned" => true));
-            $table->addColumn('event_type_id' ,'integer',array("unsigned" => true));
+          
             $table->addColumn('event_id'      ,'integer',array("unsigned" => true));
-            
-            $table->addColumn('score_base'      ,'float',array());
-            $table->addColumn('score_balance'   ,'float',array());
-            $table->addColumn('score_modifier'  ,'float',array());
-            $table->addColumn('score_multiplier','float',array());
-            
+            $table->addColumn('system_ep'     ,'integer',array("unsigned" => true));
+            $table->addColumn('zone_ep'       ,'integer',array("unsigned" => true));
+            $table->addColumn('event_type_ep' ,'integer',array("unsigned" => true));
             $table->addColumn('created_date'    ,'date',array());
             $table->addColumn('processing_date' ,'date',array());
             $table->addColumn('occured_date'    ,'date' ,array());
             
-            $table->setPrimaryKey(array('process_id'));
-            $table->addForeignKeyConstraint($aTableMap['pt_rule']       ,array('rule_id')       ,array('episode_id') ,array(), 'pt_tran_rule_fk1');
-            $table->addForeignKeyConstraint($aTableMap['pt_rule_group'] ,array('rule_group_id') ,array('episode_id') ,array(), 'pt_tran_rule_gp_fk2');
-            $table->addForeignKeyConstraint($aTableMap['pt_system']     ,array('system_id')     ,array('episode_id') ,array(), 'pt_tran_sys_fk3');
-            $table->addForeignKeyConstraint($aTableMap['pt_system_zone'],array('zone_id')       ,array('episode_id') ,array(), 'pt_tran_sys_zone_fk4');
-            $table->addForeignKeyConstraint($aTableMap['pt_score']      ,array('score_id')      ,array('episode_id') ,array(), 'pt_tran_score_fk5');
-            $table->addForeignKeyConstraint($aTableMap['pt_score_group'],array('score_group_id'),array('episode_id') ,array(), 'pt_tran_score_gp_fk6');
-            $table->addForeignKeyConstraint($aTableMap['pt_event_type'] ,array('event_type_id') ,array('episode_id') ,array(), 'pt_tran_event_type_fk7');
-            $table->addForeignKeyConstraint($aTableMap['pt_event']      ,array('event_id')      ,array('event_id')    ,array(), 'pt_tran_event_fk8');
-   
+            $table->setPrimaryKey(array('event_id'));
+            
+            $table->addForeignKeyConstraint($aTableMap['pt_system']     ,array('system_ep')     ,array('episode_id') ,array(), 'pt_tran_head_sys_fk1');
+            $table->addForeignKeyConstraint($aTableMap['pt_system_zone'],array('zone_ep')       ,array('episode_id') ,array(), 'pt_tran_head_zone_fk2');        
+            $table->addForeignKeyConstraint($aTableMap['pt_event_type'] ,array('event_type_ep') ,array('episode_id') ,array(), 'pt_tran_head_event_type_fk3');
+            $table->addForeignKeyConstraint($aTableMap['pt_event']      ,array('event_id')      ,array('event_id')    ,array(), 'pt_tran_head_event_fk4');
+
            
-            $oBuilder = new CalculationBuilder();
-            $oGateway = new CalculationGateway($sActualTableName, $oDatabase, $oEvent, $table , null, $oBuilder);
+            $oBuilder = new CalculationEventBuilder();
+            $oGateway = new CalculationEventGateway($sActualTableName, $oDatabase, $oEvent, $table , null, $oBuilder);
     
             $oBuilder->setGateway($oGateway);
             $oBuilder->setLogger($oLogger);
-            $oGateway->setTableQueryAlias('t');
+            $oGateway->setTableQueryAlias('te');
+            $oGateway->setGatewayCollection($c->getGatewayCollection());
+            
+            return $oGateway;
+        });
+        
+        $oGatewayCol->addGateway('pt_transaction_score',function() use ($c, $oSchema, $aTableMap) {
+            $sActualTableName = $aTableMap['pt_transaction_score'];
+            $oEvent           = $c->getEventDispatcher();
+            $oLogger          = $c->getAppLogger();
+            $oDatabase        = $c->getDatabaseAdaper();
+            $oGatewayCol      = $c->getGatewayCollection();
+            
+            # Transaction Header Table
+            $table = $oSchema->createTable($sActualTableName);
+            $table->addColumn('event_id'          ,'integer',array("unsigned" => true));
+            $table->addColumn('score_ep'          ,'integer',array("unsigned" => true));
+            $table->addColumn('score_group_ep'    ,'integer',array("unsigned" => true,'default'=>null));
+            $table->addColumn('score_base'        ,'float'  ,array("unsigned" => false,'default'=>0));
+            $table->addColumn('score_cal_raw'     ,'float'  ,array("unsigned" => false,'default'=>0));
+            $table->addColumn('score_cal_rounded' ,'float'  ,array("unsigned" => false,'default'=>0));
+            $table->addColumn('score_cal_capped'  ,'float'  ,array("unsigned" => false,'default'=>0));
+            
+            
+            $table->setPrimaryKey(array('event_id','score_ep'));
+            $table->addForeignKeyConstraint($aTableMap['pt_score']      ,array('score_ep')      ,array('episode_id') ,array(), 'pt_tran_sc_score_fk1');
+            $table->addForeignKeyConstraint($aTableMap['pt_score_group'],array('score_group_ep'),array('episode_id') ,array(), 'pt_tran_sc_score_gp_fk2');
+            $table->addForeignKeyConstraint($aTableMap['pt_event']      ,array('event_id')      ,array('event_id')    ,array(), 'pt_tran_sc_event_fk3');
+
+           
+            $oBuilder = new CalculationScoreBuilder();
+            $oGateway = new CalculationScoreGateway($sActualTableName, $oDatabase, $oEvent, $table , null, $oBuilder);
+    
+            $oBuilder->setGateway($oGateway);
+            $oBuilder->setLogger($oLogger);
+            $oGateway->setTableQueryAlias('ts');
+            $oGateway->setGatewayCollection($c->getGatewayCollection());
+            
+            return $oGateway;
+        });
+        
+        $oGatewayCol->addGateway('pt_transaction_group',function() use ($c, $oSchema, $aTableMap) {
+            $sActualTableName = $aTableMap['pt_transaction_group'];
+            $oEvent           = $c->getEventDispatcher();
+            $oLogger          = $c->getAppLogger();
+            $oDatabase        = $c->getDatabaseAdaper();
+            $oGatewayCol      = $c->getGatewayCollection();
+            
+            # Transaction Header Table
+            $table = $oSchema->createTable($sActualTableName);
+            $table->addColumn('event_id','integer',array("unsigned" => true));
+            $table->addColumn('score_ep'      ,'integer',array("unsigned" => true));
+            $table->addColumn('rule_group_ep' ,'integer',array("unsigned" => true,'default'=>null));
+            $table->addColumn('score_modifier'  ,'float',array());
+            $table->addColumn('score_multiplier','float',array());
+            $table->addColumn('order_seq','integer',array("unsigned" => true));
+            
+            $table->setPrimaryKey(array('event_id','score_ep','rule_group_ep'));
+            $table->addForeignKeyConstraint($aTableMap['pt_event']   ,array('event_id')      ,array('event_id')    ,array(), 'pt_tran_gp_event_fk1');
+            $table->addForeignKeyConstraint($aTableMap['pt_score']   ,array('score_ep')      ,array('episode_id') ,array(), 'pt_tran_gp_score_fk2');
+            $table->addForeignKeyConstraint($aTableMap['pt_rule_group'] ,array('rule_group_ep') ,array('episode_id') ,array(), 'pt_tran_gp_rulgp_fk3');
+
+            $oBuilder = new CalculationAdjGroupBuilder();
+            $oGateway = new CalculationAdjGroupGateway($sActualTableName, $oDatabase, $oEvent, $table , null, $oBuilder);
+    
+            $oBuilder->setGateway($oGateway);
+            $oBuilder->setLogger($oLogger);
+            $oGateway->setTableQueryAlias('tg');
+            $oGateway->setGatewayCollection($c->getGatewayCollection());
+            
+            return $oGateway;
+        });
+        
+        $oGatewayCol->addGateway('pt_transaction_rule',function() use ($c, $oSchema, $aTableMap) {
+            $sActualTableName = $aTableMap['pt_transaction_rule'];
+            $oEvent           = $c->getEventDispatcher();
+            $oLogger          = $c->getAppLogger();
+            $oDatabase        = $c->getDatabaseAdaper();
+            $oGatewayCol      = $c->getGatewayCollection();
+            
+            # Transaction Header Table
+            $table = $oSchema->createTable($sActualTableName);
+            $table->addColumn('event_id','integer',array("unsigned" => true));
+            $table->addColumn('score_ep'      ,'integer',array("unsigned" => true));       
+            $table->addColumn('rule_ep'       ,'integer',array("unsigned" => true));
+            $table->addColumn('score_modifier'  ,'float',array());
+            $table->addColumn('score_multiplier','float',array());
+            $table->addColumn('order_seq','integer',array("unsigned" => true));
+            
+            $table->setPrimaryKey(array('event_id','score_ep','rule_ep'));
+            $table->addForeignKeyConstraint($aTableMap['pt_event']  ,array('event_id')      ,array('event_id')    ,array(), 'pt_tran_rule_event_fk1');
+            $table->addForeignKeyConstraint($aTableMap['pt_score']  ,array('score_ep')      ,array('episode_id') ,array(), 'pt_tran_rule_score_fk2');
+            $table->addForeignKeyConstraint($aTableMap['pt_rule']   ,array('rule_ep')       ,array('episode_id') ,array(), 'pt_tran_rule_rule_fk3');
+            
+            $oBuilder = new CalculationAdjRuleBuilder();
+            $oGateway = new CalculationAdjRuleGateway($sActualTableName, $oDatabase, $oEvent, $table , null, $oBuilder);
+    
+            $oBuilder->setGateway($oGateway);
+            $oBuilder->setLogger($oLogger);
+            $oGateway->setTableQueryAlias('tr');
             $oGateway->setGatewayCollection($c->getGatewayCollection());
             
             return $oGateway;
@@ -585,7 +688,7 @@ class PointsMachineContainer extends Pimple
             $table->addColumn('system_id','guid',array()); 
             $table->addColumn('chain_name','string',array("length" => 100));
             $table->addColumn('chain_name_slug','string',array("length" => 100));
-            $table->addColumn('rounding_option','smallint',array('default'=> 1,'comment' => 'Rounding method to apply floor|ceil|round'));
+            $table->addColumn('rounding_option','smallint',array('default'=> 0,'comment' => 'Rounding method to apply floor|ceil|round'));
             $table->addColumn('cap_value','float',array('signed' => true, 'comment' =>'Max value +- that this event type can generate after all calculations have been made'));
             
             $table->addColumn('enabled_from','date',array());
@@ -659,6 +762,9 @@ class PointsMachineContainer extends Pimple
             $oTable->addColumn('score_id'         ,'guid' ,array('notnull' => true,  'comment' =>'The Score Entity'));
             $oTable->addColumn('score_group_id'   ,'guid' ,array('notnull' => false, 'comment' =>'The Score Group Entity'));
             $oTable->addColumn('score_base'       ,'float',array('notnull' => false, "unsigned" => false,'comment' =>'Base Score Value' ));
+            $oTable->addColumn('score_cal_raw'    ,'float',array('notnull' => false, "unsigned" => false,'comment' =>'Raw subtotal for this score' ));
+            $oTable->addColumn('score_cal_rounded','float',array('notnull' => false, "unsigned" => false,'comment' =>'rounded value of this score' ));
+            $oTable->addColumn('score_cal_capped' ,'float',array('notnull' => false, "unsigned" => false,'comment' =>'Capped value of this score' ));
             
             $oTable->setPrimaryKey(array('slot_id'));
             
@@ -879,6 +985,7 @@ class PointsMachineContainer extends Pimple
             
         });
       
+       
         
         
       

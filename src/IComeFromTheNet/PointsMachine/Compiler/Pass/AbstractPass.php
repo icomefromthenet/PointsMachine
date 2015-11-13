@@ -17,6 +17,15 @@ abstract class AbstractPass
    
     protected $oDatabase;
     protected $oGatewayCollecetion;
+    
+    
+    const ROUND_OFF    = 0;
+
+    const ROUND_NORMAL = 1;
+    
+    const ROUND_CEIL  = 2;
+    
+    const ROUND_FLOOR = 3;
    
    
    public function __construct(Connection $oDatabase, GatewayProxyCollection $oCollection)
@@ -160,7 +169,7 @@ abstract class AbstractPass
      * @return string the table name
      * @access protected
      */
-    protected function getTransactionLogTableNam()
+    protected function getTransactionLogTableName()
     {
         return $this->getGatewayCollection()
                             ->getGateway('')
@@ -175,7 +184,7 @@ abstract class AbstractPass
      * @return string the tmp table name
      * @access protected
      */
-    protected function getAggValueTableName()
+    protected function getAggValueTmpTableName()
     {
         return $this->getGatewayCollection()
                             ->getGateway('pt_result_agg')
@@ -225,6 +234,21 @@ abstract class AbstractPass
     {
         return $this->getGatewayCollection()
                             ->getGateway('pt_chain_member')
+                            ->getMetaData()
+                            ->getName();
+        
+    }
+    
+    /**
+     * Fetch the table chain table
+     *  
+     * @return string the table name
+     * @access protected
+     */
+    protected function getChainTableName()
+    {
+        return $this->getGatewayCollection()
+                            ->getGateway('pt_rule_chain')
                             ->getMetaData()
                             ->getName();
         

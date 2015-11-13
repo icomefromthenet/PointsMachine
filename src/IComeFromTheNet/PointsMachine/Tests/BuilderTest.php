@@ -470,80 +470,174 @@ class BuilderTest extends TestWithContainer
         
     }
     
-    public function testCalculationBuilder()
+    public function testCalculationEventBuilder()
     {
-         $oBuilder = $this->getContainer()
+          $oBuilder = $this->getContainer()
                          ->getGatewayCollection()
-                         ->getGateway('pt_scoring_transaction')
+                         ->getGateway('pt_transaction_header')
                          ->getEntityBuilder();
       
         $sAlais   = $oBuilder->getTableQueryAlias().'_';
         
-        # test build
-        
-        $aRawEntity = array(
-            $sAlais.'process_id'        => 1,
-            $sAlais.'rule_id'           => 2,
-            $sAlais.'rule_group_id'     => 3,
-            $sAlais.'score_id'          => 4,
-            $sAlais.'score_group_id'    => 5,
-            $sAlais.'system_id'         => 6,
-            $sAlais.'zone_id'           => 7,
-            $sAlais.'event_type_id'     => 8,
+          $aRawEntity = array(
             $sAlais.'event_id'          => 9,
-            $sAlais.'score_base'        => 10,
-            $sAlais.'score_balance'     => 20,
-            $sAlais.'score_modifier'    => 8,
-            $sAlais.'score_multiplier'  => 1.5,
+            $sAlais.'system_ep'         => 6,
+            $sAlais.'zone_ep'           => 7,
+            $sAlais.'event_type_ep'     => 8,
             $sAlais.'created_date'      => new DateTime(),
             $sAlais.'processing_date'   => new DateTime('now + 1 day'),
             $sAlais.'occured_date'      => new DateTime('now - 5 day'),
+           
+        );
+        
+        $oEntity = $oBuilder->build($aRawEntity);
+         
+        $this->assertEquals($aRawEntity[$sAlais.'event_id'],$oEntity->iScoringEventID);       
+        $this->assertEquals($aRawEntity[$sAlais.'system_ep'],$oEntity->iSystemEP);
+        $this->assertEquals($aRawEntity[$sAlais.'zone_ep'],$oEntity->iSystemZoneEP);
+        $this->assertEquals($aRawEntity[$sAlais.'event_type_ep'],$oEntity->iEventTypeEP);
+        $this->assertEquals($aRawEntity[$sAlais.'created_date'],$oEntity->oCreatedDate);
+        $this->assertEquals($aRawEntity[$sAlais.'processing_date'],$oEntity->oProcessingDate);
+        $this->assertEquals($aRawEntity[$sAlais.'occured_date'],$oEntity->oOccuredDate);
+         
+        $aRawEntity = $oBuilder->demolish($oEntity);
+        
+        $this->assertEquals($oEntity->iScoringEventID,$aRawEntity['event_id']);
+        $this->assertEquals($oEntity->iSystemEP,$aRawEntity['system_ep']);
+        $this->assertEquals($oEntity->iSystemZoneEP,$aRawEntity['zone_ep']);
+        $this->assertEquals($oEntity->iEventTypeEP,$aRawEntity['event_type_ep']);
+        $this->assertEquals($oEntity->oCreatedDate,$aRawEntity['created_date']);
+        $this->assertEquals($oEntity->oProcessingDate,$aRawEntity['processing_date']);
+        $this->assertEquals($oEntity->oOccuredDate,$aRawEntity['occured_date']);
+         
+    }
+    
+    public function testCalculationScoreBuilder()
+    {
+          $oBuilder = $this->getContainer()
+                         ->getGatewayCollection()
+                         ->getGateway('pt_transaction_score')
+                         ->getEntityBuilder();
+      
+        $sAlais   = $oBuilder->getTableQueryAlias().'_';
+        
+          $aRawEntity = array(
+            $sAlais.'event_id'          => 9,
+            $sAlais.'score_ep'          => 4,
+            $sAlais.'score_group_ep'    => 5,
+            $sAlais.'score_base'        => 10,
+            $sAlais.'score_raw'         => 11,
+            $sAlais.'score_rounded'     => 12,
+            $sAlais.'score_capped'      => 13,
+            
+        );
+        
+        $oEntity = $oBuilder->build($aRawEntity);
+         
+        $this->assertEquals($aRawEntity[$sAlais.'event_id'],$oEntity->iScoringEventID);   
+        $this->assertEquals($aRawEntity[$sAlais.'score_ep'],$oEntity->iScoreEP);
+        $this->assertEquals($aRawEntity[$sAlais.'score_group_ep'],$oEntity->iScoreGroupEP);
+        
+        $this->assertEquals($aRawEntity[$sAlais.'score_base'],$oEntity->fScoreBase);
+        $this->assertEquals($aRawEntity[$sAlais.'score_raw'],$oEntity->fScoreRaw);
+        $this->assertEquals($aRawEntity[$sAlais.'score_rounded'],$oEntity->fScoreRounded);
+        $this->assertEquals($aRawEntity[$sAlais.'score_capped'],$oEntity->fScoreCapped);
+        
+        $aRawEntity = $oBuilder->demolish($oEntity);
+        
+        $this->assertEquals($oEntity->iScoringEventID,$aRawEntity['event_id']);
+        $this->assertEquals($oEntity->iScoreEP,$aRawEntity['score_ep']);
+        $this->assertEquals($oEntity->iScoreGroupEP,$aRawEntity['score_group_ep']);
+        $this->assertEquals($oEntity->fScoreBase,$aRawEntity['score_base']);
+        $this->assertEquals($oEntity->fScoreRaw,$aRawEntity['score_raw']);
+        $this->assertEquals($oEntity->fScoreRounded,$aRawEntity['score_rounded']);
+        $this->assertEquals($oEntity->fScoreCapped,$aRawEntity['score_capped']);
+         
+         
+    }
+    
+    public function testCalculationAdjRuleBuilder()
+    {
+       $oBuilder = $this->getContainer()
+                         ->getGatewayCollection()
+                         ->getGateway('pt_transaction_rule')
+                         ->getEntityBuilder();
+      
+        $sAlais   = $oBuilder->getTableQueryAlias().'_';
+        
+         $aRawEntity = array(
+            $sAlais.'event_id'          => 9,
+            $sAlais.'score_ep'          => 4,
+            $sAlais.'rule_ep'           => 2,
+            $sAlais.'score_modifier'    => 8,
+            $sAlais.'score_multiplier'  => 1.5,
+            $sAlais.'order_seq'         => 1,
+           
+        );
+        
+         $oEntity = $oBuilder->build($aRawEntity);
+         
+           
+        $this->assertEquals($aRawEntity[$sAlais.'event_id'],$oEntity->iScoringEventID);
+        $this->assertEquals($aRawEntity[$sAlais.'score_ep'],$oEntity->iScoreEP);
+        $this->assertEquals($aRawEntity[$sAlais.'rule_ep'],$oEntity->iAdjustmentRuleEP);
+        $this->assertEquals($aRawEntity[$sAlais.'score_modifier'],$oEntity->fScoreModifier);
+        $this->assertEquals($aRawEntity[$sAlais.'score_multiplier'],$oEntity->fScoreMultiplier);
+        $this->assertEquals($aRawEntity[$sAlais.'order_seq'],$oEntity->iOrderSeq);
+        
+         $aRawEntity = $oBuilder->demolish($oEntity);
+        
+        $this->assertEquals($oEntity->iScoringEventID,$aRawEntity['event_id']);
+        $this->assertEquals($oEntity->iAdjustmentRuleID,$aRawEntity['rule_ep']);
+        $this->assertEquals($oEntity->iScoreID,$aRawEntity['score_ep']);
+        $this->assertEquals($oEntity->fScoreModifier,$aRawEntity['score_modifier']);
+        $this->assertEquals($oEntity->fScoreMultiplier,$aRawEntity['score_multiplier']);
+        $this->assertEquals($oEntity->iOrderSeq,$aRawEntity['order_seq']);
+        
+    }
+    
+    public function testCalculationAdjGroupBuilder()
+    {
+        $oBuilder = $this->getContainer()
+                         ->getGatewayCollection()
+                         ->getGateway('pt_transaction_group')
+                         ->getEntityBuilder();
+      
+        $sAlais   = $oBuilder->getTableQueryAlias().'_';
+        
+          $aRawEntity = array(
+            $sAlais.'event_id'          => 9,
+            $sAlais.'score_ep'          => 4,
+            $sAlais.'rule_group_ep'     => 3,
+            $sAlais.'score_modifier'    => 8,
+            $sAlais.'score_multiplier'  => 1.5,
+            $sAlais.'order_seq'         => 1
             
            
         );
         
         $oEntity = $oBuilder->build($aRawEntity);
-        
-        $this->assertEquals($aRawEntity[$sAlais.'process_id'],$oEntity->iProcessID);
-        $this->assertEquals($aRawEntity[$sAlais.'rule_id'],$oEntity->iAdjustmentRuleID);
-        $this->assertEquals($aRawEntity[$sAlais.'rule_group_id'],$oEntity->iAdjustmentGroupID);
-        $this->assertEquals($aRawEntity[$sAlais.'score_id'],$oEntity->iScoreID);
-        $this->assertEquals($aRawEntity[$sAlais.'score_group_id'],$oEntity->iScoreGroupID);
-        $this->assertEquals($aRawEntity[$sAlais.'system_id'],$oEntity->iSystemID);
-        $this->assertEquals($aRawEntity[$sAlais.'zone_id'],$oEntity->iSystemZoneID);
-        $this->assertEquals($aRawEntity[$sAlais.'event_type_id'],$oEntity->iEventTypeID);
+         
+           
         $this->assertEquals($aRawEntity[$sAlais.'event_id'],$oEntity->iScoringEventID);
-        $this->assertEquals($aRawEntity[$sAlais.'score_base'],$oEntity->fScoreBase);
-        $this->assertEquals($aRawEntity[$sAlais.'score_balance'],$oEntity->fScoreBalance);
+        $this->assertEquals($aRawEntity[$sAlais.'score_ep'],$oEntity->iScoreEP);
+        $this->assertEquals($aRawEntity[$sAlais.'rule_group_ep'],$oEntity->iAdjustmentGroupEP);
         $this->assertEquals($aRawEntity[$sAlais.'score_modifier'],$oEntity->fScoreModifier);
         $this->assertEquals($aRawEntity[$sAlais.'score_multiplier'],$oEntity->fScoreMultiplier);
-        $this->assertEquals($aRawEntity[$sAlais.'created_date'],$oEntity->oCreatedDate);
-        $this->assertEquals($aRawEntity[$sAlais.'processing_date'],$oEntity->oProcessingDate);
-        $this->assertEquals($aRawEntity[$sAlais.'occured_date'],$oEntity->oOccuredDate);
+        $this->assertEquals($oEntity->iOrderSeq,$aRawEntity['order_seq']);
         
-      
+         $aRawEntity = $oBuilder->demolish($oEntity);
         
-        $aRawEntity = $oBuilder->demolish($oEntity);
-        
-        $this->assertEquals($oEntity->iProcessID,$aRawEntity['process_id']);
-        $this->assertEquals($oEntity->iAdjustmentRuleID,$aRawEntity['rule_id']);
-        $this->assertEquals($oEntity->iAdjustmentGroupID,$aRawEntity['rule_group_id']);
-        $this->assertEquals($oEntity->iScoreID,$aRawEntity['score_id']);
-        $this->assertEquals($oEntity->iScoreGroupID,$aRawEntity['score_group_id']);
-        $this->assertEquals($oEntity->iSystemID,$aRawEntity['system_id']);
-        $this->assertEquals($oEntity->iSystemZoneID,$aRawEntity['zone_id']);
-        $this->assertEquals($oEntity->iEventTypeID,$aRawEntity['event_type_id']);
         $this->assertEquals($oEntity->iScoringEventID,$aRawEntity['event_id']);
-        $this->assertEquals($oEntity->fScoreBase,$aRawEntity['score_base']);
-        $this->assertEquals($oEntity->fScoreBalance,$aRawEntity['score_balance']);
+        $this->assertEquals($oEntity->iScoreEP,$aRawEntity['score_ep']);
+        $this->assertEquals($oEntity->iAdjustmentGroupEP,$aRawEntity['rule_group_ep']);
         $this->assertEquals($oEntity->fScoreModifier,$aRawEntity['score_modifier']);
         $this->assertEquals($oEntity->fScoreMultiplier,$aRawEntity['score_multiplier']);
-        $this->assertEquals($oEntity->oCreatedDate,$aRawEntity['created_date']);
-        $this->assertEquals($oEntity->oProcessingDate,$aRawEntity['processing_date']);
-        $this->assertEquals($oEntity->oOccuredDate,$aRawEntity['occured_date']);
-       
-        
+        $this->assertEquals($oEntity->iOrderSeq,$aRawEntity['order_seq']);
+         
     }
+    
+  
     
     public function testRuleChainBuilder()
     {

@@ -4,13 +4,14 @@ namespace IComeFromTheNet\PointsMachine\DB\Gateway;
 use IComeFromTheNet\PointsMachine\DB\CommonTable;
 use IComeFromTheNet\PointsMachine\DB\Query\CalculationQuery;
 
+
 /**
- * Table gateway pt_scoring_transaction
+ * Table gateway pt_transaction_score
  * 
  * @author Lewis Dyer <getintouch@icomefromthenet.com>
  * @since 1.0
  */
-class CalculationGateway extends CommonTable
+class CalculationScoreGateway extends CommonTable
 {
     /**
     * Create a new instance of the querybuilder
