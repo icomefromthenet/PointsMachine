@@ -536,7 +536,7 @@ return [
                 ,'chain_name'  =>'Withdrawal Chain'
                 ,'chain_name_slug'  =>'withdrawal_chain'
                 ,'rounding_option' => 2
-                ,'cap_value'    => null
+                ,'cap_value'    => -120
                 ,'enabled_from' => (new DateTime())->format('Y-m-d')
                 ,'enabled_to'   =>  (new DateTime('3000-01-01'))->format('Y-m-d') 
             ]
