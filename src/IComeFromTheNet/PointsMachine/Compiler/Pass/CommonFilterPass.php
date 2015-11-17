@@ -29,16 +29,15 @@ class CommonFilterPass extends AbstractPass
     
     
     
+    const PASS_PRIORITY = 10;
+    
     
     protected function matchSystemsEpisodes(DateTime $oProcessingDate)
     {
         
         $sCommonTmpTable = $this->getCommonTmpTableName();
-         $sSql           = '';  
-        $sSystemTable    = $this->getGatewayCollection()
-                            ->getGateway('pt_system')
-                            ->getMetaData()
-                            ->getName();                    
+        $sSql            = '';  
+        $sSystemTable    = $this->getSystemTableName();
         
                             
         # find system entities episodes
@@ -60,11 +59,8 @@ class CommonFilterPass extends AbstractPass
     protected function matchSystemZonesEpisodes(DateTime $oProcessingDate)
     {
         $sCommonTmpTable = $this->getCommonTmpTableName();
-        $sSql      = '';  
-        $sZoneTable  = $this->getGatewayCollection()
-                            ->getGateway('pt_system_zone')
-                            ->getMetaData()
-                            ->getName();  
+        $sSql            = '';  
+        $sZoneTable      = $this->getSystemZoneTableName();
         
         # find score group episode
         # where using closed-open date pairs
@@ -81,13 +77,9 @@ class CommonFilterPass extends AbstractPass
     
     protected function matchEventTypesEpisodes(DateTime $oProcessingDate)
     {
-        $sSql      = '';  
+        $sSql            = '';  
         $sCommonTmpTable = $this->getCommonTmpTableName();
-        
-        $sEtypeTable  = $this->getGatewayCollection()
-                            ->getGateway('pt_event_type')
-                            ->getMetaData()
-                            ->getName();  
+        $sEtypeTable     = $this->getEventTypeTableName();
         
         # find score group episode
         # where using closed-open date pairs
@@ -105,11 +97,8 @@ class CommonFilterPass extends AbstractPass
     protected function matchRuleChainEpisodes(DateTime $oProcessingDate)
     {
         $sCommonTmpTable = $this->getCommonTmpTableName();
-        $sSql      = '';  
-        $sChainTable  = $this->getGatewayCollection()
-                            ->getGateway('pt_rule_chain')
-                            ->getMetaData()
-                            ->getName();  
+        $sSql            = '';  
+        $sChainTable     = $this->getChainTableName();
         
         
         # find the chain that applies to this combination
@@ -181,8 +170,13 @@ class CommonFilterPass extends AbstractPass
             
             $oDatabase->executeUpdate($sSql);
             
+            
+            $oResult->addResult(__CLASS__,'Executed Successfully');
+            
         }
         catch(DBALException $e) {
+            $oResult->addError(__CLASS__,$e->getMessage());
+          
             throw new PointsMachineException($e->getMessage(),0,$e);
             
         }

@@ -20,7 +20,7 @@ interface CompilerInterface
      * @param ComplileResult    $oResult
      * @param DateTime          $oProcessingDate
      */ 
-    public function execute(ComplileResult $oResult, DateTime $oProcessingDate);
+    public function execute(DateTime $oProcessingDate, ComplileResult $oResult);
     
     
     /**
@@ -42,22 +42,20 @@ interface CompilerInterface
     public function addPass(CompilerPassInterface $oPass);
     
     /**
-     * Return the complied result as collection.
+     * Return the results saved in the transaction tables
      * 
      * @access public
-     * @return Doctrine\Common\Collection
+     * @return array
      */ 
     public function getResult();
     
-    /**
-     * Temp table that will hold the results at the start and the finish
-     * though each pass may use their own temp tables
-     * 
-     * @access public
-     * @return string the table name 
-     */ 
-    public function getResultTableName();
     
+    /**
+     * Fetch the assigned logger
+     * 
+     * @return LoggerInterface
+     */ 
+    public function getLogger();
     
 }
 /* End of class */

@@ -127,19 +127,15 @@ abstract class CommonEntity implements ActiveRecordInterface
     
     abstract public function remove(DateTime $oProcessDte);
     
-    abstract public function updateAll(DateTime $oProcessDte);
     
     
     //-----------------------------------------------------------------
     # Extra Validator Helpers
     
-    abstract public function validate(DateTime $oProcessDte, $sOpt);
-    
-    abstract protected function validateNewEpisode(DateTime $oProcessDte);
-    
-    abstract protected function validateNewEntity(DateTime $oProcessDte);
+    abstract protected function validateNew(DateTime $oProcessDte);
     
     abstract protected function validateUpdate(DateTime $oProcessDte);
-    
+          
+    abstract protected function validateRemove(DateTime $oProcessDte);
 }
 /* End of File */

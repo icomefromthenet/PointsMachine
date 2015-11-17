@@ -28,6 +28,8 @@ use IComeFromTheNet\PointsMachine\PointsMachineException;
 class RoundPass extends AbstractPass 
 {
   
+    const PASS_PRIORITY = 90;
+
 
     /**
      * Executes this pass.
@@ -83,9 +85,14 @@ class RoundPass extends AbstractPass
             $sSql .=" ); ";
             
             $this->getDatabaseAdapter()->executeUpdate($sSql);
+            
+            
+            $oResult->addResult(__CLASS__,'Executed Sucessfuly');
         
         }
         catch(DBALException $e) {
+            $oResult->addError(__CLASS__,$e->getMessage());
+          
             throw new PointsMachineException($e->getMessage(),0,$e);
             
         }

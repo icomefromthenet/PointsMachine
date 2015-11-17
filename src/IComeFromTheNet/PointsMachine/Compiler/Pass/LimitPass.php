@@ -60,9 +60,14 @@ class LimitPass extends AbstractPass
             $sSql .= " SELECT score_slot_id, rule_slot_id FROM $sRankTmpTableName ;".PHP_EOL;        
         
             $this->getDatabaseAdaper()->executeUpdate($sSql);
+            
+            
+            $oResult->addResult(__CLASS__,'Executed Sucessfuly');
         
         }
         catch(DBALException $e) {
+            $oResult->addError(__CLASS__,$e->getMessage());
+          
             throw new PointsMachineException($e->getMessage(),0,$e);
             
         }

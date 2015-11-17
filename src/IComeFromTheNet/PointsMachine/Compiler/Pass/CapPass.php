@@ -20,6 +20,7 @@ use IComeFromTheNet\PointsMachine\PointsMachineException;
 class CapPass extends AbstractPass 
 {
   
+    const PASS_PRIORITY = 100;
 
     /**
      * Executes this pass.
@@ -28,7 +29,8 @@ class CapPass extends AbstractPass
      */ 
     public function execute(DateTime $oProcessingDate, CompileResult $oResult)
     {
-        
+      
+       
         try {
             
             $sScoreTmpTableName = $this->getScoreTmpTableName();
@@ -69,8 +71,13 @@ class CapPass extends AbstractPass
             
             $this->getDatabaseAdapter()->executeUpdate($sSql);
      
+            
+            $oResult->addResult(__CLASS__,'Executed Sucessfuly');
+     
         }
         catch(DBALException $e) {
+            $oResult->addError(__CLASS__,$e->getMessage());
+          
             throw new PointsMachineException($e->getMessage(),0,$e);
             
         }

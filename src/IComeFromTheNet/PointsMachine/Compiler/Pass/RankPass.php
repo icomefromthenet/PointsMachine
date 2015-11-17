@@ -27,6 +27,8 @@ use IComeFromTheNet\PointsMachine\PointsMachineException;
 class RankPass extends AbstractPass 
 {
     
+    const PASS_PRIORITY = 60;
+    
     
     /**
      * Executes this pass.
@@ -96,10 +98,15 @@ class RankPass extends AbstractPass
             
             $this->getDatabaseAdaper()->executeUpdate($sSql);
             
+            
+            $oResult->addResult(__CLASS__,'Executed Sucessfuly');
+            
         }
         
         
         catch(DBALException $e) {
+            $oResult->addError(__CLASS__,$e->getMessage());
+          
             throw new PointsMachineException($e->getMessage(),0,$e);
             
         }

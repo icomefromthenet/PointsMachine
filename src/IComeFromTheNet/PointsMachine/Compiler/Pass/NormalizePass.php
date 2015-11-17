@@ -27,6 +27,7 @@ use IComeFromTheNet\PointsMachine\PointsMachineException;
 class NormalizePass extends AbstractPass 
 {
     
+    const PASS_PRIORITY = 50;
 
     /**
      * Executes this pass.
@@ -40,7 +41,7 @@ class NormalizePass extends AbstractPass
             $sRankTmpTableName  = $this->getRankTmpTableName();
             $sCJoinTmpTableName = $this->getCJoinTmpTableName();
             $sRuleTmpTableName  = $this->getRuleTmpTableName();
-            $sRuleTableName  = $this->getRuleTableName();
+            $sRuleTableName     = $this->getRuleTableName();
             
             # normalize each value but respect the overrides.
         
@@ -69,9 +70,13 @@ class NormalizePass extends AbstractPass
             $sSql .= " SET max_value = (ifnull(override_modifier,1) * ifnull(override_multiplier,1)); ".PHP_EOL;        
             
             $this->getDatabaseAdaper()->executeUpdate($sSql);
+            
+            
+            $oResult->addResult(__CLASS__,'Executed Sucessfuly');
         
         }
         catch(DBALException $e) {
+            $oResult->addError(__CLASS__,$e->getMessage());
             throw new PointsMachineException($e->getMessage(),0,$e);
             
         }

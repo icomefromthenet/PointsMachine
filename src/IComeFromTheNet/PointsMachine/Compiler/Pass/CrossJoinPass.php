@@ -22,39 +22,9 @@ use IComeFromTheNet\PointsMachine\PointsMachineException;
 class CrossJoinPass extends AbstractPass 
 {
     
-    /**
-     * Fetch the table name for this rules tmp table
-     *  
-     * @return string the tmp table name
-     * @access protected
-     */ 
-    protected function getRuleTmpTableName()
-    {
-        return $this->getGatewayCollection()
-                            ->getGateway('pt_result_rule')
-                            ->getMetaData()
-                            ->getName();
-        
-    }
-    
-    protected function getScoreTmpTableName()
-    {
-        return $this->getGatewayCollection()
-                            ->getGateway('pt_result_score')
-                            ->getMetaData()
-                            ->getName();
-        
-    }
-    
-    protected function getCJoinTmpTableName()
-    {
-        return $this->getGatewayCollection()
-                            ->getGateway('pt_result_cjoin')
-                            ->getMetaData()
-                            ->getName();
-        
-    }
-    
+    const PASS_PRIORITY = 40;
+   
+   
    
     /**
      * Executes this pass.
@@ -71,9 +41,9 @@ class CrossJoinPass extends AbstractPass
                             ->getMetaData()
                             ->getName();
            
-           $sScoreTmpTableName = $this->getScoreTmpTableName();
+           $sScoreTmpTableName  = $this->getScoreTmpTableName();
            $sRuleTmpTableName   = $this->getRuleTmpTableName();
-           $sJoinTmpTableName  = $this->getCJoinTmpTableName();
+           $sJoinTmpTableName   = $this->getCJoinTmpTableName();
            $sCommonTmpTableName = $this->getCommonTmpTableName();
            
             $sSql  = 'INSERT INTO ' . $sJoinTmpTableName .' ';
@@ -99,11 +69,16 @@ class CrossJoinPass extends AbstractPass
     
     
             $this->getDatabaseAdaper()->executeUpdate($sSql);
+         
+            
+            $oResult->addResult(__CLASS__,'Executed Successfully');
             
         }
         
         
         catch(DBALException $e) {
+             $oResult->addError(__CLASS__,$e->getMessage());
+          
             throw new PointsMachineException($e->getMessage(),0,$e);
             
         }

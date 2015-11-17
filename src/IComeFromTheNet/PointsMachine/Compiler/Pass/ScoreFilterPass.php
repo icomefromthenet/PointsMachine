@@ -25,7 +25,7 @@ class ScoreFilterPass extends AbstractPass
 {
     
     
-    
+    const PASS_PRIORITY = 20;
     
     
     
@@ -34,10 +34,7 @@ class ScoreFilterPass extends AbstractPass
         $sSql = '';
         $sScoreTmpTable = $this->getScoreTmpTableName();
         $sCommonTable = $this->getCommonTmpTableName();
-        $sScoreTable  = $this->getGatewayCollection()
-                            ->getGateway('pt_score')
-                            ->getMetaData()
-                            ->getName();     
+        $sScoreTable  = $this->getScoreTableName();
         
         
         # find score episodes
@@ -76,10 +73,7 @@ class ScoreFilterPass extends AbstractPass
         
         $sScoreTmpTable = $this->getScoreTmpTableName();
         $sCommonTable = $this->getCommonTmpTableName();
-        $sGroupTable  = $this->getGatewayCollection()
-                            ->getGateway('pt_score_group')
-                            ->getMetaData()
-                            ->getName();  
+        $sGroupTable  = $this->getScoreGroupTableName();
         
         # find score group episode
         # where using closed-open date pairs
@@ -130,8 +124,12 @@ class ScoreFilterPass extends AbstractPass
             
             
             $oDatabase->executeUpdate($sSql);
+            
+            
+            $oResult->addResult(__CLASS__,'Executed Successfully');
         }
         catch(DBALException $e) {
+            $oResult->addError(__CLASS__,$e->getMessage());
             throw new PointsMachineException($e->getMessage(),0,$e);
             
         }

@@ -23,6 +23,8 @@ use IComeFromTheNet\PointsMachine\PointsMachineException;
 class AggValuePass extends AbstractPass 
 {
     
+    const PASS_PRIORITY = 70;
+    
 
     /**
      * Executes this pass.
@@ -118,11 +120,14 @@ class AggValuePass extends AbstractPass
                                                            ));
                 
             }
+            
+            
+            $oResult->addResult(__CLASS__,'Executed Sucessfuly');
         
         }
         catch(DBALException $e) {
+            $oResult->addError(__CLASS__,$e->getMessage());
             throw new PointsMachineException($e->getMessage(),0,$e);
-            
         }
         
         

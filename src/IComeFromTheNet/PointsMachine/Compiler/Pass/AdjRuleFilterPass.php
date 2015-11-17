@@ -26,32 +26,17 @@ use IComeFromTheNet\PointsMachine\PointsMachineException;
 class AdjRuleFilterPass extends AbstractPass 
 {
     
-    /**
-     * Fetch the table name for this rules tmp table
-     *  
-     * @return string the tmp table name
-     * @access protected
-     */ 
-    protected function getRuleTmpTableName()
-    {
-        return $this->getGatewayCollection()
-                            ->getGateway('pt_result_rule')
-                            ->getMetaData()
-                            ->getName();
-        
-    }
+    
+    const PASS_PRIORITY = 30;
+    
     
     
     protected function matchRule(DateTime $oProcessingDate)
     {
-        $sSql  = '';
-        $sRuleTmpTable = $this->getRuleTmpTableName();
+        $sSql            = '';
+        $sRuleTmpTable   = $this->getRuleTmpTableName();
         $sCommonTmpTable = $this->getCommonTmpTableName();
-        
-        $sRuleTable  = $this->getGatewayCollection()
-                            ->getGateway('pt_rule')
-                            ->getMetaData()
-                            ->getName();                    
+        $sRuleTable      = $this->getRuleTableName();                  
         
         $sRuleZoneTable = $this->getGatewayCollection()
                                ->getGateway('pt_rule_sys_zone')
@@ -65,7 +50,7 @@ class AdjRuleFilterPass extends AbstractPass
             $sSql .= 'FROM  '.$sRuleTable.' j, '.$sCommonTmpTable  .' l ';
             $sSql .= 'WHERE  j.enabled_from <= l.processing_date AND j.enabled_to > l.processing_date ';
             $sSql .= 'AND j.rule_id = k.rule_id ';
-        $sSql .= ');'.PHP_EOL;;
+        $sSql .= ');'.PHP_EOL;
        
         
         $sSql .=  'UPDATE '.$sRuleTmpTable .' k ';
@@ -74,7 +59,7 @@ class AdjRuleFilterPass extends AbstractPass
             $sSql .= 'FROM  '.$sRuleTable.' j, '.$sCommonTmpTable  .' l ';
             $sSql .= 'WHERE  j.enabled_from <= l.processing_date AND j.enabled_to > l.processing_date ';
             $sSql .= 'AND j.rule_id = k.rule_id ';
-        $sSql .= ');'.PHP_EOL;;
+        $sSql .= ');'.PHP_EOL;
         
         
         
@@ -90,7 +75,7 @@ class AdjRuleFilterPass extends AbstractPass
                             $sSql .= 'WHERE  j.enabled_from <= l.processing_date ';
                             $sSql .= 'AND j.enabled_to > l.processing_date ';
                             $sSql .= 'AND k.rule_id = j.rule_id ';
-                            $sSql .=')> 0,0,1);'.PHP_EOL;;
+                            $sSql .=')> 0,0,1);'.PHP_EOL;
    
          
         $sSql  .= 'DELETE k FROM '.$sRuleTmpTable .' k ';    
@@ -100,7 +85,7 @@ class AdjRuleFilterPass extends AbstractPass
                             $sSql .= 'AND k.rule_id = j.rule_id ';
                             $sSql .= 'AND l.system_zone_id = j.zone_id) ';
         $sSql .= 'AND k.apply_all_zone = 0 ';        
-        $sSql .= 'OR k.rule_ep IS NULL; '.PHP_EOL;;
+        $sSql .= 'OR k.rule_ep IS NULL; '.PHP_EOL;
        
         
         return $sSql;
@@ -109,13 +94,9 @@ class AdjRuleFilterPass extends AbstractPass
     protected function matchRuleGroup(DateTime $oProcessingDate)
     {
         $sSql  = '';
-        $sRuleTmpTable = $this->getRuleTmpTableName();
-        $sCommonTmpTable = $this->getCommonTmpTableName();
-        
-        $sRuleGroupTable  = $this->getGatewayCollection()
-                            ->getGateway('pt_rule_group')
-                            ->getMetaData()
-                            ->getName();                    
+        $sRuleTmpTable    = $this->getRuleTmpTableName();
+        $sCommonTmpTable  = $this->getCommonTmpTableName();
+        $sRuleGroupTable  = $this->getRuleGroupTableName();                   
         
         $sRuleLimitTable =  $this->getGatewayCollection()
                             ->getGateway('pt_rule_group_limits')
@@ -129,7 +110,7 @@ class AdjRuleFilterPass extends AbstractPass
             $sSql .= 'FROM  '.$sRuleGroupTable.' j, '.$sCommonTmpTable  .' l ';
             $sSql .= 'WHERE  j.enabled_from <= l.processing_date AND j.enabled_to > l.processing_date ';
             $sSql .= 'AND j.rule_group_id = k.rule_group_id ';
-        $sSql .= ');'.PHP_EOL;;
+        $sSql .= ');'.PHP_EOL;
         
         
 
@@ -142,7 +123,7 @@ class AdjRuleFilterPass extends AbstractPass
                     $sSql .= 'AND j.enabled_to > l.processing_date ';
                     $sSql .= 'AND k.rule_group_id = j.rule_group_id ';
                     $sSql .= 'AND j.system_id IS NOT NULL ';  
-        $sSql .= ') > 0,0,1);'.PHP_EOL;;
+        $sSql .= ') > 0,0,1);'.PHP_EOL;
         
     
         $sSql .= 'DELETE k FROM '.$sRuleTmpTable .' k ';    
@@ -153,7 +134,7 @@ class AdjRuleFilterPass extends AbstractPass
                             $sSql .= 'AND k.rule_group_id = j.rule_group_id ';
                             $sSql .= 'AND l.system_id = j.system_id ';
                             $sSql .= ')';
-        $sSql .= 'AND k.apply_all_sys = 0;'.PHP_EOL;;
+        $sSql .= 'AND k.apply_all_sys = 0;'.PHP_EOL;
         
         
         # filter out rule groups not linked to the score group
@@ -166,13 +147,13 @@ class AdjRuleFilterPass extends AbstractPass
                     $sSql .= 'AND j.enabled_to > l.processing_date ';
                     $sSql .= 'AND k.rule_group_id = j.rule_group_id ';
                     $sSql .= 'AND j.score_group_id is not null  ';  
-        $sSql .= ') > 0,0,1);'.PHP_EOL;;
+        $sSql .= ') > 0,0,1);'.PHP_EOL;
          
        
  
         # Remove any rules without rule group episodes
         $sSql  .= 'DELETE k FROM '.$sRuleTmpTable .' k ';   
-        $sSql .= 'WHERE k.rule_group_ep IS NULL;'.PHP_EOL;;
+        $sSql .= 'WHERE k.rule_group_ep IS NULL;'.PHP_EOL;
         
         
         return $sSql;
@@ -181,16 +162,10 @@ class AdjRuleFilterPass extends AbstractPass
     
     protected function matchRuleChainMember(DateTime $oProcessingDate)
     {
-        $sSql  = '';
-        $sRuleTmpTable = $this->getRuleTmpTableName();
-        $sCommonTmpTable = $this->getCommonTmpTableName();
-        
-        
-         
-        $sRuleCMemberTable =  $this->getGatewayCollection()
-                            ->getGateway('pt_chain_member')
-                            ->getMetaData()
-                            ->getName();    
+        $sSql               = '';
+        $sRuleTmpTable      = $this->getRuleTmpTableName();
+        $sCommonTmpTable    = $this->getCommonTmpTableName();
+        $sRuleCMemberTable  = $this->getChainMemberTableName();
         
         # find the chain member entity id, this may be null if the rule group not
         # part of the chain
@@ -201,7 +176,7 @@ class AdjRuleFilterPass extends AbstractPass
             $sSql .= 'FROM  '.$sRuleCMemberTable.' j, '.$sCommonTmpTable  .' l ';
             $sSql .= 'WHERE  j.rule_chain_id = l.rule_chain_id ';
             $sSql .= 'AND j.rule_group_id = k.rule_group_id ';
-        $sSql .= '); '.PHP_EOL;;
+        $sSql .= '); '.PHP_EOL;
         
         
         # find the episode of this entity 
@@ -212,13 +187,13 @@ class AdjRuleFilterPass extends AbstractPass
             $sSql .= 'WHERE  j.enabled_from <= l.processing_date AND j.enabled_to > l.processing_date ';
             $sSql .= 'AND j.rule_chain_id = l.rule_chain_id ';
             $sSql .= 'AND j.rule_group_id = k.rule_group_id ';
-        $sSql .= '); '.PHP_EOL;;
+        $sSql .= '); '.PHP_EOL;
         
         
         # remove adjustment groups not part of the assigned chain.
         
         $sSql .= 'DELETE k FROM '.$sRuleTmpTable .' k ';    
-        $sSql .= 'WHERE k.chain_member_ep IS NULL; '.PHP_EOL;;
+        $sSql .= 'WHERE k.chain_member_ep IS NULL; '.PHP_EOL;
         
         return $sSql;
     }
@@ -244,12 +219,13 @@ class AdjRuleFilterPass extends AbstractPass
             
             $oDatabase->executeUpdate($sSql);
             
+            $oResult->addResult(__CLASS__,'Executed Successfully');
         }
         catch(DBALException $e) {
+            $oResult->addError(__CLASS__,$e->getMessage());
             throw new PointsMachineException($e->getMessage(),0,$e);
             
         }
-        
         
         
     }

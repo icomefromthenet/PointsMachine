@@ -3,10 +3,16 @@ namespace IComeFromTheNet\PointsMachine\Compiler;
 
 use \DateTime;
 use Doctrine\DBAL\Connection;
+use PSR\Log\LoggerInterface;
+use DBALGateway\Table\GatewayProxyCollection;
 use IComeFromTheNet\PointsMachine\PointsMachineException;
 
 /**
- * This complier used to combine a number of score rules.
+ * This class used to execute the scoring compiler passes
+ * and log each execution. 
+ * 
+ * After execution has finishes the result stored in Adjustment Scores
+ * transction table will be loaded. 
  * 
  * @author Lewis Dyer <getintouch@icomefromthenet.com>
  * @since 0.1
@@ -20,26 +26,27 @@ class ScoreProcessor implements CompilerInterface
     protected $oAdapter;
     
     /**
-     * @var string the result tmp table name
-     */ 
-    protected $sResultTableName;
-    
+     * @var DBALGateway\Table\GatewayProxyCollection
+     */  
+    protected $oGatewayCollection;
+
     /**
      * @var array [IComeFromTheNet\PointsMachine\Compiler\CompilerPassInterface]
      */ 
     protected $aPasses;
     
+
     /**
-     * @var CompileResult
+     * @var LoggerInterface
      */ 
-    protected $oLastResult;
+    protected $oLogger;
     
     
-    
-    public function __construct(Connection $oAdapter, $sResultTableName)
+    public function __construct(Connection $oAdapter, LoggerInterface $oLogger, GatewayProxyCollection $oGateways)
     {
-        $this->oAdapter = $oAdapter;
-        $this->sResultTableName = $sResultTableName;
+        $this->oAdapter             = $oAdapter;
+        $this->oLogger              = $oLogger; 
+        $this->oGatewayCollecetion  = $oGateways;
     }
     
     
@@ -51,26 +58,35 @@ class ScoreProcessor implements CompilerInterface
      * @param ComplileResult    $oResult
      * @param DateTime          $oProcessingDate
      */ 
-    public function execute(ComplileResult $oResult, DateTime $oProcessingDate)
+    public function execute(DateTime $oProcessingDate, ComplileResult $oResult)
     {
-        $this->oLastResult = $oResult;
-        
+
         try {
             
             // Execute Each Pass
+            $this->getLogger()->info('Starting Execute PointsMachine Score Compiler for Processing Date ::'.$oProcessingDate->format('d-m-Y'));
             
             foreach($this->aPasses as $oPass) {
-                $oPass->execute($sResultTableName,$oProcessingDate);
+                
+                $this->getLogger()->debug('Starting Pass ::'.get_class($oPass));
+                
+                $oPass->execute($oProcessingDate,$oResult);
+                
+                $this->getLogger()->debug('Finished Pass ::'.get_class($oPass));
+            
             }
             
-            // fetch the results
-            
-            
-            
+            $this->getLogger()->info('Finished Executing PointsMachine Score Compiler');
+
             
         } catch(PointsMachineException $e) {
-            
-            
+            if(get_class($oPass)) {
+                $this->getLogger()->error('Error Execute Pass '.get_class($oPass). '::'.$e->getMessage());    
+            }
+            else {
+                $this->getLogger()->error('Error Execute Unknown Pass ::'. $e->getMessage());
+            }
+                        
             throw $e;
         }
         
@@ -87,6 +103,15 @@ class ScoreProcessor implements CompilerInterface
         return $this->oAdapter;
     }
     
+    /**
+     * Fetch the assigned logger
+     * 
+     * @return LoggerInterface
+     */ 
+    public function getLogger()
+    {
+        return $this->oLogger;
+    }
 
     /**
      * Add a pass to this complier, passes will be executed in 
@@ -98,30 +123,34 @@ class ScoreProcessor implements CompilerInterface
      */ 
     public function addPass(CompilerPassInterface $oPass)
     {
-        $this->aPasses[] = $oPass;
+        if(true === isset($this->aPasses[$oPass::PASS_PRIORITY])) {
+            throw new PointsMachineException('Error compiler pass ::'.get_class($oPass).' using a priority that already been used');
+        }
+        
+        $this->aPasses[$oPass::PASS_PRIORITY] = $oPass;
     }
     
     /**
-     * Return the complied result as collection.
+     * Return the result stored in the transaction tables.
      * 
      * @access public
-     * @return Doctrine\Common\Collection
+     * @return array
+     * @param integer The Event Instance To find
      */ 
-    public function getResult()
+    public function getResult($iEventId)
     {
-        return $this->oLastResult;
+        $oScoreTransactionGateway = $this->oGatewayCollection->getGateway('pt_transaction_score');
+                        
+        
+        return $oScoreTransactionGateway
+            ->selectQuery()
+             ->start()
+                ->andWhere('event_id',$iEventId)
+             ->end()
+           ->find();
+        
+
     }
     
-    /**
-     * Temp table that will hold the results at the start and the finish
-     * though each pass may use their own temp tables
-     * 
-     * @access public
-     * @return string the table name 
-     */ 
-    public function getResultTableName()
-    {
-        return $this->sResultTableName;
-    }
     
 }

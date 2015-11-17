@@ -14,6 +14,8 @@ use \DateTime;
 interface CompilerPassInterface
 {
     
+    public PASS_PRIORITY = 100;
+    
     /**
      * Executes this pass.
      * 

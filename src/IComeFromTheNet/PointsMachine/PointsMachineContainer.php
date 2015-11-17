@@ -52,7 +52,6 @@ use IComeFromTheNet\PointsMachine\DB\Gateway\CalculationAdjRuleGateway;
 use IComeFromTheNet\PointsMachine\DB\Builder\CalculationAdjRuleBuilder;
 
 
-
 use IComeFromTheNet\PointsMachine\DB\Gateway\RuleChainGateway;
 use IComeFromTheNet\PointsMachine\DB\Builder\RuleChainBuilder;
 
@@ -69,6 +68,10 @@ use IComeFromTheNet\PointsMachine\Compiler\Gateway\TmpScoresGateway;
 use IComeFromTheNet\PointsMachine\Compiler\Gateway\TmpCommonGateway;
 use IComeFromTheNet\PointsMachine\Compiler\Gateway\TmpAggValueGateway;
 use IComeFromTheNet\PointsMachine\Compiler\Gateway\TmpRankGateway;
+
+use IComeFromTheNet\PointsMachine\Compiler\ScoreProcessor;
+
+use IComeFromTheNet\PointsMachine\Compiler\Pass;
 
 
 class PointsMachineContainer extends Pimple
@@ -166,6 +169,29 @@ class PointsMachineContainer extends Pimple
     {
         return $this['table_map'];
     }
+    
+    /**
+     * Return the compiler score processor
+     *  
+     * @return IComeFromTheNet\PointsMachine\Compiler\ScoreProcessor
+     */ 
+    public function getScoreProcessor()
+    {
+        return $this['score_processor'];
+    }
+    
+    /**
+     * Return an collection of complier passes
+     * each instanced, as each pass is stateless this can
+     * be reused.
+     * 
+     * @return array(CompilerPassInterface)
+     */ 
+    public function getCompilerPasses()
+    {
+        return $this['compiler_passes'];
+    }
+    
     
     public function boot(DateTime $oProcessingDate, $aTableMap = null)
     {
@@ -991,6 +1017,48 @@ class PointsMachineContainer extends Pimple
       
         $this['table_factory'] = $this->share(function($c){
             return new DriverFactory();
+        });
+        
+        
+        
+        $this['compiler_passes'] = $this->share(function($c){
+            $oDatabase          = $c->getDatabaseAdaper(); 
+            $oGatewayCollection = $c->getGatewayCollection();
+            
+            # each pass as a priority assigned that determine the order
+            # they are executed
+           return array(
+               new AdjRuleFilterPass($oDatabase,$oCollection) 
+              ,new AggValuePass($oDatabase,$oCollection) 
+              ,new CapPass($oDatabase,$oCollection) 
+              ,new CommonFilterPass($oDatabase,$oCollection) 
+              ,new CrossJoinPass($oDatabase,$oCollection)
+              ,new DetailSavePass($oDatabase,$oCollection)
+              ,new NormalizePass($oDatabase,$oCollection)
+              ,new LimitPass($oDatabase,$oCollection)
+              ,new RankPass($oDatabase,$oCollection)
+              ,new RoundPass($oDatabase,$oCollection)
+              ,new ScoreFilterPass($oDatabase,$oCollection)
+            ); 
+            
+        });
+
+        
+        $this['score_processor'] = $this->share(function($c){
+           $oGatewayCollection = $c->getGatewayCollection();
+           $oDatabase          = $c->getDatabaseAdaper();    
+           $oLogger            = $c->getLogger();
+           $aCompilerPass      = $c->getCompilerPasses();
+         
+            
+           $oProcessor = new ScoreProcessor($oDatabase,$oLogger,$oGatewayCollection); 
+           
+           foreach($aCompilerPass as $oPass) {
+               $oProcessor->addPass($oPass);
+           }
+           
+           
+           return $oProcessor;
         });
 
        

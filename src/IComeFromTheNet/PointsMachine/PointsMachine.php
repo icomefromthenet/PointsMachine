@@ -3,8 +3,9 @@ namespace IComeFromTheNet\PointsMachine;
 
 use Exception;
 use DateTime;
-use IComeFromTheNet\PointsMachine\PointsMachineContainer;
 use Valitron\Validator;
+use IComeFromTheNet\PointsMachine\PointsMachineContainer;
+use IComeFromTheNet\PointsMachine\Compiler\CompileResult;
 
 class PointsMachine
 {
@@ -27,6 +28,7 @@ class PointsMachine
      * @var DateTime
      */ 
     protected $oProcessingDate;
+    
     
     /**
      * @var array
@@ -72,18 +74,25 @@ class PointsMachine
     
     protected function seedTmpTables()
     {
-        $oContainer        = $this->getContainer();     
-        $oDatabase         = $oContainer->getDatabaseAdaper();
+        $oContainer        = $this->getContainer();
         $oTmpScoreGateway  = $oContainer->getGatewayCollection()->getGateway('pt_result_score');
         $oTmpRuleGateway   = $oContainer->getGatewayCollection()->getGateway('pt_result_rule');
         $oTmpCommonGateway = $oContainer->getGatewayCollection()->getGateway('pt_result_common');
         $oTmpCJoinGateway  = $oContainer->getGatewayCollection()->getGateway('pt_result_cjoin');
+        $oTmpResHeaderGateway = $oContainer->getGatewayCollection()->getGateway('pt_result_agg');
+        
+        $oTmpRankGateway    = $oContainer->getGatewayCollection()->getGateway('pt_result_rank');
         
         # Create the tmp tables
         $oTmpScoreGateway->getTableMaker()->createTable();
         $oTmpRuleGateway->getTableMaker()->createTable();
         $oTmpCommonGateway->getTableMaker()->createTable();
         $oTmpCJoinGateway->getTableMaker()->createTable();
+        $oTmpResHeaderGateway->getTableMaker()->createTable();
+        
+        $oTmpRankGateway->getTableMaker()->createTable();
+        
+        
         
         # Add settings to the common table
         
@@ -120,9 +129,7 @@ class PointsMachine
         
              $bSuccess = $oTmpRuleGateway->insertQuery()
              ->start()
-                ->addColumn('event_type_id',$this->sEventTypeId)
-                ->addColumn('')
-                
+                ->addColumn('rule_id',$sAdjustmentRuleId)
              ->end()
             ->insert(); 
     
@@ -131,7 +138,6 @@ class PointsMachine
             }
             
         }
-        
         
         
         
@@ -156,9 +162,7 @@ class PointsMachine
                             ->end()
                     ->insert();
         
-        if(true === $bSuccess) {
-                
-        } else {
+        if(false === $bSuccess) {
             throw new PointsMachineException('Unable to create an event instance');
         }
         
@@ -169,10 +173,20 @@ class PointsMachine
     
     protected function executeCompiler()
     {
+        $oScoreProcessor = $this->getContainer()->getScoreProcessor();
         
+        $oResult = new CompileResult();
         
+        $oScoreProcessor->execute($this->oProcessingDate, $oResult);
+        
+        return $oScoreProcessor->getResult($this->iEventInstanceId);  
     }
     
+    /**
+     * Validate if this machine is ready for a points run.
+     * 
+     * @return boolean true if valid
+     */ 
     protected function validate()
     {
         $oV = new Validator([
@@ -195,7 +209,11 @@ class PointsMachine
         return;
     }
     
-    
+    /**
+     * Class Constructor
+     * 
+     * @param PointsMachineContainer $oContainer    The Lib dependency container
+     */ 
     public function __construct(PointsMachineContainer $oContainer)
     {
         $this->oContainer   = $oContainer;
@@ -224,7 +242,16 @@ class PointsMachine
         $this->aLastValidationErrors = null;
         
     }
-
+    
+    /**
+     * Execute a calculation round.
+     * 
+     * You must set an event type, a system and optional system zone
+     * add at least 1 score and 1 adjustment rule before this method is called 
+     * and don't forget the processing date.
+     * 
+     * @return array the score results
+     */ 
     public function executeRound()
     {
         
@@ -247,7 +274,7 @@ class PointsMachine
         
         
         # execute the calculator complier
-        $this->executeCompiler();
+        return $this->executeCompiler();
         
     }
 
@@ -274,7 +301,7 @@ class PointsMachine
      * @param string    $sAdjustmentRuleId  The Database table id for the entity at table pt_rule
      * @return void
      */ 
-    public function addAdjustmentRules($sAdjustmentRuleId)
+    public function addAdjustmentRule($sAdjustmentRuleId)
     {
         
         if(true === empty($sAdjustmentRuleId)) {

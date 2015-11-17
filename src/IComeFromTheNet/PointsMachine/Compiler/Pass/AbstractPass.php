@@ -18,6 +18,10 @@ abstract class AbstractPass
     protected $oDatabase;
     protected $oGatewayCollecetion;
     
+    /**
+     * @var constanced used to order when the pass will execute.
+     */ 
+    const PASS_PRIORITY = 0;
     
     const ROUND_OFF    = 0;
 
@@ -74,6 +78,26 @@ abstract class AbstractPass
         return $this->oGatewayCollecetion;
     }
     
+
+    /**
+     * Return the Compiler Tmp table Driver
+     * 
+     * @param string    $sTable The tmp table name
+     * @return  IComeFromTheNet\PointsMachine\Compiler\Driver\DriverInterface
+     * 
+     */ 
+    public function getTableMaker($sTable)
+    {
+        return $this->getGatewayCollection()
+                            ->getGateway($sTable)
+                            ->getTableMaker();
+        
+    }
+
+    //--------------------------------------------------------
+    # Tmp Tables
+
+
     /**
      * Return the common table name
      * 
@@ -118,20 +142,6 @@ abstract class AbstractPass
         
     }
     
-    /**
-     * Return the Compiler Tmp table Driver
-     * 
-     * @param string    $sTable The tmp table name
-     * @return  IComeFromTheNet\PointsMachine\Compiler\Driver\DriverInterface
-     * 
-     */ 
-    public function getTableMaker($sTable)
-    {
-        return $this->getGatewayCollection()
-                            ->getGateway($sTable)
-                            ->getTableMaker();
-        
-    }
     
     /**
      * Fetch the table name for this CJoin tmp table
@@ -163,20 +173,8 @@ abstract class AbstractPass
         
     }
     
-    /**
-     * Fetch the table name for the transaction log table
-     *  
-     * @return string the table name
-     * @access protected
-     */
-    protected function getTransactionLogTableName()
-    {
-        return $this->getGatewayCollection()
-                            ->getGateway('')
-                            ->getMetaData()
-                            ->getName();
+     
 
-    }
     
     /**
      * Fetch the table name for this aggrate result table
@@ -193,6 +191,75 @@ abstract class AbstractPass
         
         
     }
+
+
+    // ----------------------------------------------------
+    # Transcation Tables
+    
+    
+    /**
+     * Fetch the table name for the transaction adj rules log table
+     *  
+     * @return string the table name
+     * @access protected
+     */
+    protected function getTransactionAdjRuleTableName()
+    {
+        return $this->getGatewayCollection()
+                            ->getGateway('pt_transaction_rule')
+                            ->getMetaData()
+                            ->getName();
+
+    }    
+    
+    /**
+     * Fetch the table name for the transaction adj group rules log table
+     *  
+     * @return string the table name
+     * @access protected
+     */
+    protected function getTransactionAdjGroupTableName()
+    {
+        return $this->getGatewayCollection()
+                            ->getGateway('pt_transaction_group')
+                            ->getMetaData()
+                            ->getName();
+
+    }    
+    
+    /**
+     * Fetch the table name for the transaction scores log table
+     *  
+     * @return string the table name
+     * @access protected
+     */
+    protected function getTransactionScoreTableName()
+    {
+        return $this->getGatewayCollection()
+                            ->getGateway('pt_transaction_score')
+                            ->getMetaData()
+                            ->getName();
+
+    }    
+    
+    /**
+     * Fetch the table name for the transaction event log table
+     *  
+     * @return string the table name
+     * @access protected
+     */
+    protected function getTransactionEventTableName()
+    {
+        return $this->getGatewayCollection()
+                            ->getGateway('pt_transaction_header')
+                            ->getMetaData()
+                            ->getName();
+
+    }    
+   
+    
+    //-----------------------------------------------
+    # Normal Tables
     
     /**
      * Fetch the table name for the rule table
@@ -240,7 +307,7 @@ abstract class AbstractPass
     }
     
     /**
-     * Fetch the table chain table
+     * Fetch the table chain name
      *  
      * @return string the table name
      * @access protected
@@ -253,5 +320,82 @@ abstract class AbstractPass
                             ->getName();
         
     }
+    
+    /**
+     * Fetch the system table name
+     *  
+     * @return string the table name
+     * @access protected
+     */
+    protected function getSystemTableName()
+    {
+        return $this->getGatewayCollection()
+                            ->getGateway('pt_system')
+                            ->getMetaData()
+                            ->getName();                    
+        
+    }
+    
+    
+    /**
+     * Fetch the system zone table name
+     *  
+     * @return string the table name
+     * @access protected
+     */
+    protected function getSystemZoneTableName()
+    {
+        return  $this->getGatewayCollection()
+                            ->getGateway('pt_system_zone')
+                            ->getMetaData()
+                            ->getName();  
+        
+    }
+    
+    /**
+     * Fetch the event type table name
+     *  
+     * @return string the table name
+     * @access protected
+     */
+    protected function getEventTypeTableName()
+    {
+        return  $this->getGatewayCollection()
+                            ->getGateway('pt_event_type')
+                            ->getMetaData()
+                            ->getName();  
+        
+    }
+    
+    /**
+     * Fetch the score table name
+     *  
+     * @return string the table name
+     * @access protected
+     */
+    protected function getScoreTableName()
+    {
+        return  $this->getGatewayCollection()
+                            ->getGateway('pt_score')
+                            ->getMetaData()
+                            ->getName();  
+        
+    }
+    
+    /**
+     * Fetch the score group table name
+     *  
+     * @return string the table name
+     * @access protected
+     */
+    protected function getScoreGroupTableName()
+    {
+        return  $this->getGatewayCollection()
+                            ->getGateway('pt_score_group')
+                            ->getMetaData()
+                            ->getName();  
+        
+    }
+    
 }
 /* End of Pass */
