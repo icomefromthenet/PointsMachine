@@ -4,6 +4,7 @@ namespace IComeFromTheNet\PointsMachine\DB;
 use DateTime;
 use DBALGateway\Table\AbstractTable;
 use Psr\Log\LoggerInterface;
+use Valitron\Validator;
 
 /**
  * Entity for the points system
@@ -123,19 +124,46 @@ abstract class CommonEntity implements ActiveRecordInterface
     #  ActiveRecordInterface
     
     
-    abstract public function save(DateTime $oProcessDte);
+    abstract public function save();
     
-    abstract public function remove(DateTime $oProcessDte);
+    abstract public function remove();
     
     
     
     //-----------------------------------------------------------------
     # Extra Validator Helpers
     
-    abstract protected function validateNew(DateTime $oProcessDte);
+    /**
+     * Validate an object using the data and rules passed in
+     * 
+     * Will update the last result with validation errors
+     * 
+     * @param array $aData   The data to validate 
+     * @param array $aRules  The results to apply
+     * 
+     * @return boolean true if valid false otherwise
+     */ 
+    protected function validate($aData,$aRules)
+    {
+        $oValidator = new Validator($aData);
+        
+        $oValidator->rules($aRules);
+        
+        $bValid = $oValidator->validate();
+        
+        if(false === $bValid) {
+            $this->aLastResult['result'] = false;
+            $this->aLastResult['msg'] = $oValidator->errors();
+        }
+        
+        return $bValid;
+        
+    }
     
-    abstract protected function validateUpdate(DateTime $oProcessDte);
+    abstract protected function validateNew($aDatabaseData);
+    
+    abstract protected function validateUpdate($aDatabaseData);
           
-    abstract protected function validateRemove(DateTime $oProcessDte);
+    abstract protected function validateRemove($aDatabaseData);
 }
 /* End of File */

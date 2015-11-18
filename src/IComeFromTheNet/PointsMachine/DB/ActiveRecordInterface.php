@@ -1,7 +1,6 @@
 <?php
 namespace IComeFromTheNet\PointsMachine\DB;
 
-use DateTime;
 
 /**
  * Defines an active record interface for entity objects
@@ -12,15 +11,13 @@ use DateTime;
 interface ActiveRecordInterface 
 {
     
-    public function save(DateTime $oProcessDte);
+    public function save();
     
     
-    public function remove(DateTime $oProcessDte);
-    
-    public function updateAll(DateTime $oProcessDte);
+    public function remove();
     
     
-    public function validate(DateTime $oProcessDte, $sOpt);
+    public function updateAll();
     
     
 }

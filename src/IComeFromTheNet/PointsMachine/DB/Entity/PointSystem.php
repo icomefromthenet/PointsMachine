@@ -2,9 +2,11 @@
 namespace IComeFromTheNet\PointsMachine\DB\Entity;
 
 use DateTime;
-use IComeFromTheNet\PointsMachine\DB\CommonEntity;
+use Valitron\Validator;
+use IComeFromTheNet\PointsMachine\DB\TemporalEntity;
 use IComeFromTheNet\PointsMachine\DB\ActiveRecordInterface;
 use IComeFromTheNet\PointsMachine\PointsMachineException;
+
 
 /**
  * Entity for the points system
@@ -12,8 +14,41 @@ use IComeFromTheNet\PointsMachine\PointsMachineException;
  * @author Lewis Dyer <getintouch@icomefromthenet.com>
  * @since 1.0
  */
-class PointSystem extends CommonEntity implements ActiveRecordInterface
+class PointSystem extends  TemporalEntity implements ActiveRecordInterface
 {
+    
+    
+    
+    protected $aValidation = [
+       'integer' => [
+            ['episode_id']
+        ]
+        ,'lengthBetween' => [
+            ['system_name','1','100'],['system_name_slug','1','100']
+        ]
+        ,'slug' => [
+            ['system_name_slug']
+        ]
+        ,'required' => [
+            ['system_id','system_name','system_name_slug','enabled_from','enabled_to']
+        ]
+        ,'instanceOf' => [
+            ['enabled_from','DateTime'],['enabled_to','DateTime']
+        ]
+        ,'alphaNum' => [
+            ['system_name']
+        ]
+        ,'min' => [
+           ['episode_id',1]
+        ]
+        ,'max' => [
+           ['episode_id',4294967295]
+        ]
+        
+    ];
+    
+    //--------------------------------------------------------------------------
+    # Public Properties
     
     public $iEpisodeID;
     
@@ -28,6 +63,9 @@ class PointSystem extends CommonEntity implements ActiveRecordInterface
     public $oEnabledTo;
     
     
+    
+    //--------------------------------------------------------------------------
+    # Entity Hooks
     
     protected function createNewEntity($aDatabaseData)
     {
@@ -123,30 +161,71 @@ class PointSystem extends CommonEntity implements ActiveRecordInterface
         return $bSuccess;
     }
     
+    //--------------------------------------------------------------------------
+    # Validation Hooks
     
-    protected function validateNewEpisode(DateTime $oProcessDte)
+    protected function getDataForValidation()
     {
+        return array(
+            'episode_id' => $this->iEpisodeID
+            ,'system_id'  => $this->sSystemID
+            ,'system_name' => $this->sSystemName
+            ,'system_name_slug' => $this->sSystemNameSlug
+            ,'enabled_from' => $this->oEnabledFrom
+            ,'enabled_to' => $this->oEnabledTo
+        );
+    }
+    
+    
+    protected function validateNewEpisode($aDatabaseData)
+    {
+        $aData = $this->getDataForValidation();
+        $aRules = $this->aValidation;
         
+        // we need the episode if going to create new episode
+        array_push($aValidFunc['required'],['episode_id']);
+        
+        
+        return $this->validate($aData,$aRules);
     }
    
-    protected function validateNew(DateTime $oProcessDte)
+    protected function validateNew($aDatabaseData)
     {
+        $aData = $this->getDataForValidation();
+        $aRules = $this->aValidation;
         
+        return $this->validate($aData,$aRules);
     }
     
-    protected function validateUpdate(DateTime $oProcessDte)
+    protected function validateUpdate($aDatabaseData)
     {
+        $aData = $this->getDataForValidation();
+        $aRules = $this->aValidation;
         
+        // we need the episode if to do an update
+        array_push($aValidFunc['required'],['episode_id']);
+        
+        
+        return $this->validate($aData,$aRules);
     }
           
-    protected function validateRemove(DateTime $oProcessDte)
+    protected function validateRemove($aDatabaseData)
     {
+        $aData = $this->getDataForValidation();
+        $aRules = $this->aValidation;
         
+        // we need the episode if to do an remove
+        array_push($aValidFunc['required'],['episode_id']);
+        
+        return $this->validate($aData,$aRules);
     }
     
     
+    //--------------------------------------------------------------------------
+    # Active Record Interface
     
-    public function updateAll(DateTime $oProcessDte)
+    
+    public function updateAll()
     {
         
         

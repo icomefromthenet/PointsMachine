@@ -33,7 +33,7 @@ abstract class TemporalEntity  extends CommonEntity
     #  ActiveRecordInterface
     
     
-    public function save(DateTime $oProcessDte)
+    public function save()
     {
         $bSuccess          = false;
         $this->aLastResult = array( 'result' => '','msg' =>'');
@@ -57,7 +57,7 @@ abstract class TemporalEntity  extends CommonEntity
                 // override the now as only create current entitie
                 $this->oEnabledFrom = $oNow;
                 
-                if(true === $this->validateNew()) {
+                if(true === $this->validateNew($aDatabaseData)) {
                     $this->createNewEntity($aDatabaseData);
                 }
                 
@@ -67,14 +67,14 @@ abstract class TemporalEntity  extends CommonEntity
                 // override the now as only store current changes
                 $this->oEnabledFrom = $oNow;
                 
-                if(true === $this->validateNewEpisode()) {
+                if(true === $this->validateNewEpisode($aDatabaseData)) {
                     $this->createNewEpisode($aDatabaseData);  
                 }
             
                 
             } elseif(false === empty($this->iEpisodeID) && $oNow->format('Y-m-d') === $this->oEnabledFrom->format('Y-m-d')) {
                 
-                if(true === $this->validateUpdate()) {
+                if(true === $this->validateUpdate($aDatabaseData)) {
                     $this->updateExistingEpisode($aDatabaseData);
                 }
                 
@@ -94,7 +94,9 @@ abstract class TemporalEntity  extends CommonEntity
         return $this->aLastResult['result'];
     }
     
-    public function remove(DateTime $oProcessDte)
+     // -------------------------------------------------------------
+    
+    public function remove()
     {
         $oGateway              = $this->getTableGateway();
         $oBuilder              = $oGateway->getEntityBuilder();
@@ -118,7 +120,7 @@ abstract class TemporalEntity  extends CommonEntity
                     
                 } else {
                     
-                    if(true === $this->validateRemove()) {
+                    if(true === $this->validateRemove($aDatabaseData)) {
                         $this->closeEpisode($aDatabaseData);
                     }
                 }
@@ -147,13 +149,8 @@ abstract class TemporalEntity  extends CommonEntity
     //-----------------------------------------------------------------
     # Extra Validator Helpers
     
-    abstract protected function validateNewEpisode(DateTime $oProcessDte);
+    abstract protected function validateNewEpisode($aDatabaseData);
    
-    abstract protected function validateNew(DateTime $oProcessDte);
-    
-    abstract protected function validateUpdate(DateTime $oProcessDte);
-          
-    abstract protected function validateRemove(DateTime $oProcessDte);
     
    
 }
