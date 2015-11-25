@@ -549,7 +549,7 @@ return [
                 ,'system_id'  =>'9B753E70-881B-F53E-2D46-8151BED1BBAF'
                 ,'chain_name'  =>'Donation Chain'
                 ,'chain_name_slug'  =>'donations_chain'
-                ,'rounding_option' => null
+                ,'rounding_option' => 0
                 ,'cap_value'    => null
                 ,'enabled_from' => (new DateTime())->format('Y-m-d')
                 ,'enabled_to'   =>  (new DateTime('3000-01-01'))->format('Y-m-d') 

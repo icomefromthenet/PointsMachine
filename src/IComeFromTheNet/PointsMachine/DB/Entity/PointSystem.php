@@ -35,9 +35,6 @@ class PointSystem extends  TemporalEntity implements ActiveRecordInterface
         ,'instanceOf' => [
             ['enabled_from','DateTime'],['enabled_to','DateTime']
         ]
-        ,'alphaNum' => [
-            ['system_name']
-        ]
         ,'min' => [
            ['episode_id',1]
         ]
@@ -85,11 +82,14 @@ class PointSystem extends  TemporalEntity implements ActiveRecordInterface
                  ->end()
                ->insert(); 
 
+    
+
         if($bSuccess) {
             $this->aLastResult['result'] = true;
             $this->aLastResult['msg']    = 'Inserted new Points System Episode';
             
-            $this->iEpisodeID = $oGateway->lastInsertId();
+            $this->iEpisodeID =  (int) $oGateway->lastInsertId();
+            
             
         } else {
             $this->aLastResult['result'] = false;
@@ -104,8 +104,50 @@ class PointSystem extends  TemporalEntity implements ActiveRecordInterface
     {
         $bSuccess          = false;
         $oGateway          = $this->getTableGateway();
+     
+        $oNow = $oGateway->getNow();
+      
+            # stop the last entity
+            $bUpdated = $oGateway->updateQuery()
+                    ->start()
+                        ->addColumn('enabled_to',$oNow)
+                    ->where()
+                        ->filterByEpisode($aDatabaseData['episode_id'])
+                    ->end()
+                ->update();
+            
+            if(true === $bUpdated) {
+            
+                # Create the new Episode
+                $bSuccess = $oGateway->insertQuery()
+                         ->start()
+                            ->addColumn('system_id'       , $aDatabaseData['system_id'])
+                            ->addColumn('system_name'     , $aDatabaseData['system_name'])
+                            ->addColumn('system_name_slug', $aDatabaseData['system_name_slug'])
+                            ->addColumn('enabled_from'    , $oNow)
+                            ->addColumn('enabled_to'      , $aDatabaseData['enabled_to'])
+                         ->end()
+                       ->insert(); 
         
-        
+                if($bSuccess) {
+                    $this->aLastResult['result'] = true;
+                    $this->aLastResult['msg']    = 'Created new Points System Episode';
+                    
+                    $this->iEpisodeID = (int) $oGateway->lastInsertId();
+                    
+                  
+                } else {
+                    $this->aLastResult['result'] = false;
+                    $this->aLastResult['msg']    = 'Unable to create new Points System Episode.';
+                 
+                }
+                
+            } else {
+                
+                $this->aLastResult['result'] = false;
+                $this->aLastResult['msg']    = 'Unable to close the previous episode for system '.$this->sSystemID;
+                
+            }
         
         
         return $bSuccess;
@@ -114,6 +156,35 @@ class PointSystem extends  TemporalEntity implements ActiveRecordInterface
     
     protected function updateExistingEpisode($aDatabaseData)
     {
+        $bSuccess          = false;
+        $oGateway          = $this->getTableGateway();
+       
+        # new episode on new entity
+        $bSuccess = $oGateway->updateQuery()
+                 ->start()
+                    ->addColumn('system_id'       , $aDatabaseData['system_id'])
+                    ->addColumn('system_name'     , $aDatabaseData['system_name'])
+                    ->addColumn('system_name_slug', $aDatabaseData['system_name_slug'])
+                ->where()
+                    ->filterByEpisode($aDatabaseData['episode_id'])
+                    ->filterBySystem($aDatabaseData['system_id'])
+                 ->end()
+               ->update(); 
+
+
+        if($bSuccess) {
+            $this->aLastResult['result'] = true;
+            $this->aLastResult['msg']    = 'Updated existing Points System Episode';
+            
+            $this->iEpisodeID = (int) $oGateway->lastInsertId();
+            
+        } else {
+            $this->aLastResult['result'] = false;
+            $this->aLastResult['msg']    = 'Unable to update existing Points System Episode.';
+        }
+        
+        
+       return $bSuccess;
         
         
     }
@@ -152,10 +223,10 @@ class PointSystem extends  TemporalEntity implements ActiveRecordInterface
 
         if($bSuccess) {
             $this->aLastResult['result'] = true;
-            $this->aLastResult['msg']    = 'Deleted this episode';
+            $this->aLastResult['msg']    = 'Closed this episode';
         } else {
             $this->aLastResult['result'] = false;
-            $this->aLastResult['msg']    = 'Unable to delete this episode';
+            $this->aLastResult['msg']    = 'Unable to close this episode';
         }
         
         return $bSuccess;
@@ -183,7 +254,7 @@ class PointSystem extends  TemporalEntity implements ActiveRecordInterface
         $aRules = $this->aValidation;
         
         // we need the episode if going to create new episode
-        array_push($aValidFunc['required'],['episode_id']);
+        array_push($aRules['required'],['episode_id']);
         
         
         return $this->validate($aData,$aRules);
@@ -203,7 +274,7 @@ class PointSystem extends  TemporalEntity implements ActiveRecordInterface
         $aRules = $this->aValidation;
         
         // we need the episode if to do an update
-        array_push($aValidFunc['required'],['episode_id']);
+        array_push($aRules['required'],['episode_id']);
         
         
         return $this->validate($aData,$aRules);
@@ -215,7 +286,7 @@ class PointSystem extends  TemporalEntity implements ActiveRecordInterface
         $aRules = $this->aValidation;
         
         // we need the episode if to do an remove
-        array_push($aValidFunc['required'],['episode_id']);
+        array_push($aRules['required'],['episode_id']);
         
         return $this->validate($aData,$aRules);
     }

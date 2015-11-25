@@ -17,16 +17,54 @@ class SystemEntityTest extends TestWithContainer
     protected $aFixtures = ['example-system.php','system-before.php'];
     
     
-    /*
-    public function testEntitySave()
+    
+    
+    public function testEntityOperations()
     {
         
-        $oExpectedDataset = $this->getDataSet(array_merge($this->aFixtures
-                                                            ,['system-create-after.php'])
-                                                            )
-                                ->getTable('pt_system');
+        $oExpectedDataset = $this->getDataSet( ['example-system.php','system-after.php'])
+                                 ->getTable('pt_system');
         
+        $this->entityRemoveFailsWhenMissingEpisodeDataTest();
+        $this->entitySaveNewEntityTest();
+        $this->entityUpdateExistingEpisodeTest();
+        $this->entityUpdateCauseNewVersionTest();
+        $this->entityRemoveFailsOnRelationsKeyCheckTest();
+        $this->entityRemoveSucessfulTest();
         
+        $this->assertTablesEqual($oExpectedDataset,$this->getConnection()->createDataSet()->getTable('pt_system'));
+    }
+    
+    //--------------------------------------------------------------------------
+    # Database Operations
+    
+     public function entityRemoveFailsWhenMissingEpisodeDataTest()
+    {
+        $oContainer = $this->getContainer();
+        $oGateway   = $oContainer->getGatewayCollection()->getGateway('pt_system');
+        $oLogger    = $oContainer->getAppLogger();
+        $oProcessingDate = new DateTime();
+        
+        # this is a non temporal update, this won't change the version.
+
+        $oEntity = new PointSystem($oGateway,$oLogger);
+        
+        $sExistingSystemID   =
+        $iExistingEpisode = 1;
+        
+        $oEntity->sSystemID =  '9B753E70-881B-F53E-2D46-8151BED1BBAF';
+        $oEntity->iEpisodeID = null;
+        
+        $bResult = $oEntity->remove($oProcessingDate);
+        $aResult = $oEntity->getLastQueryResult();
+        
+        $this->assertFalse($aResult['result']);
+        $this->assertEquals('Require and Episode Id',$aResult['msg']);
+        $this->assertFalse($bResult);
+    }
+    
+    protected function entitySaveNewEntityTest()
+    {
         $oContainer = $this->getContainer();
         $oGateway   = $oContainer->getGatewayCollection()->getGateway('pt_system');
         $oLogger    = $oContainer->getAppLogger();
@@ -47,26 +85,20 @@ class SystemEntityTest extends TestWithContainer
         $oEntity->sSystemNameSlug = $sSystemSlug;
         
         // save the entity
-        $bResult = $oEntity->save($oProcessingDate);
+        $bResult = $oEntity->save();
         $aResult = $oEntity->getLastQueryResult();
+      
         
         $this->assertTrue($aResult['result']);
         $this->assertEquals('Inserted new Points System Episode',$aResult['msg']);
         $this->assertTrue($bResult);
+        $this->assertEquals(5,$oEntity->iEpisodeID);
 
         
-        $this->assertTablesEqual($oExpectedDataset, $this->getConnection()->createDataSet()->getTable('pt_system'));
-        
-    } */
+    } 
     
-    public function testEntityUpdate()
+    public function entityUpdateExistingEpisodeTest()
     {
-        
-       $oExpectedDataset = $this->getDataSet(array_merge($this->aFixtures
-                                                            ,['system-update-after.php'])
-                                                            )
-                                ->getTable('pt_system');
-        
         
         $oContainer = $this->getContainer();
         $oGateway   = $oContainer->getGatewayCollection()->getGateway('pt_system');
@@ -75,11 +107,10 @@ class SystemEntityTest extends TestWithContainer
         
         # this is a non temporal update, this won't change the version.
 
-
-        $sNewName = 'Test Donations System';
-        $sNewSlug = 'test_donations_system';
+        $sNewName = 'Existing Episode Updated';
+        $sNewSlug = 'existing_episode_updated';
         $sExistingSystemID   = '5CC68937-12BF-C9B9-97E0-3745649101F4';
-        $iExistingEpisode = 1;
+        $iExistingEpisode = 3;
         
         $oEntity = new PointSystem($oGateway,$oLogger);
         
@@ -88,25 +119,20 @@ class SystemEntityTest extends TestWithContainer
         $oEntity->sSystemNameSlug = $sNewSlug;
         $oEntity->iEpisodeID = $iExistingEpisode;
         
-        $bResult = $oEntity->save($oProcessingDate);
+        $bResult = $oEntity->save();
         $aResult = $oEntity->getLastQueryResult();
+        
         
         $this->assertTrue($bResult);
         $this->assertTrue($aResult['result']);
-        $this->assertEquals('Updated All the Points System Episodes',$aResult['msg']);
-        
-        $this->assertTablesEqual($oExpectedDataset,$this->getConnection()->createDataSet()->getTable('pt_system'));
+        $this->assertEquals('Updated existing Points System Episode',$aResult['msg']);
+       
         
     }
     
-    /**
-     *
-     * @expectedException IComeFromTheNet\PointsMachine\PointsMachineException
-     * @expectedExceptionMessage Require and Episode Id and Entity Id to delete and episode
-     * 
-     */ 
-    public function testRemoveFailsWhenMissingEpisodeData()
+    public function entityUpdateCauseNewVersionTest()
     {
+        
         $oContainer = $this->getContainer();
         $oGateway   = $oContainer->getGatewayCollection()->getGateway('pt_system');
         $oLogger    = $oContainer->getAppLogger();
@@ -114,26 +140,33 @@ class SystemEntityTest extends TestWithContainer
         
         # this is a non temporal update, this won't change the version.
 
+        $sNewName = 'New Episode Created';
+        $sNewSlug = 'new_episode_created';
+        $sExistingSystemID   = '6663DE9B-9076-3670-C50A-94EE64016AB6';
+        $iExistingEpisode = 4;
+        
         $oEntity = new PointSystem($oGateway,$oLogger);
         
-        $sExistingSystemID   =
-        $iExistingEpisode = 1;
+        $oEntity->sSystemID = $sExistingSystemID;
+        $oEntity->sSystemName =$sNewName;
+        $oEntity->sSystemNameSlug = $sNewSlug;
+        $oEntity->iEpisodeID = $iExistingEpisode;
+        $oEntity->oEnabledFrom = new DateTime('now - 10 day');
         
-        $oEntity->sSystemID =  '9B753E70-881B-F53E-2D46-8151BED1BBAF';
-        $oEntity->iEpisodeID = null;
+        $bResult = $oEntity->save();
+        $aResult = $oEntity->getLastQueryResult();
         
-        $oEntity->remove($oProcessingDate);
+        
+        $this->assertTrue($bResult);
+        $this->assertTrue($aResult['result']);
+        $this->assertEquals('Created new Points System Episode',$aResult['msg']);
+        $this->assertEquals(6,$oEntity->iEpisodeID);
+        
     }
+  
     
-    /*
-    public function testRemoveFailsOnRelationsKeyCheck()
+    public function entityRemoveFailsOnRelationsKeyCheckTest()
     {
-        $oExpectedDataset = $this->getDataSet(array_merge($this->aFixtures
-                                                            ,['system-remove-after.php'])
-                                                            )
-                                ->getTable('pt_system');
-        
-        
         $oContainer = $this->getContainer();
         $oGateway   = $oContainer->getGatewayCollection()->getGateway('pt_system');
         $oLogger    = $oContainer->getAppLogger();
@@ -144,11 +177,10 @@ class SystemEntityTest extends TestWithContainer
         
          
                 
-        $aTablesFailed[] = $oSystemZoneGateway->getMetaData()->getName();   
-        $aTablesFailed[] = $oAdjGroupLimitGateway->getMetaData()->getName();   
-        $aTablesFailed[] = $oRuleChainGateway->getMetaData()->getName();   
+        $aTablesFailed[] = 'SystemZone';
+        $aTablesFailed[] = 'AdjustmentGroup';
+        $aTablesFailed[] = 'RuleChain';
     
-        
         
         # this is a non temporal update, this won't change the version.
 
@@ -172,13 +204,36 @@ class SystemEntityTest extends TestWithContainer
         
     }
     
-    public function testRemoveSucessful()
+    public function entityRemoveSucessfulTest()
     {
-       # add another record for us to remove 
-       $this->loadDataSet(array('example-system.php','system-remove-before.php')) ;
-       
+        $oContainer = $this->getContainer();
+        $oGateway   = $oContainer->getGatewayCollection()->getGateway('pt_system');
+        $oLogger    = $oContainer->getAppLogger();
+        $oProcessingDate = new DateTime();
         
-      $this->assertTablesEqual((new ArrayDataSet(__DIR__.'/fixture/'.'system-remove-after.php'))->getTable('pt_system'), $this->getConnection()->createDataSet()->getTable('pt_system'));
-    } */
+        $oNow = $oGateway->getNow();
+        
+        # this is a non temporal update, this won't change the version.
+
+        $sExistingSystemID   = '583D9777-AA78-47EC-BCB6-EB60471B2C32';
+        $iExistingEpisode = 2;
+        
+        $oEntity = new PointSystem($oGateway,$oLogger);
+        
+        $oEntity->sSystemID = $sExistingSystemID;
+        $oEntity->iEpisodeID = $iExistingEpisode;
+        
+        
+        $bResult = $oEntity->remove();
+        $aResult = $oEntity->getLastQueryResult();
+        
+        
+        $this->assertTrue($bResult);
+        $this->assertTrue($aResult['result']);
+        $this->assertEquals('Closed this episode',$aResult['msg']);
+        $this->assertEquals($oNow,$oEntity->oEnabledTo);
+      
+      
+    } 
 }
 /* End of File */

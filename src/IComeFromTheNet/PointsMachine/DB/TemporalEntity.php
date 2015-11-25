@@ -40,7 +40,8 @@ abstract class TemporalEntity  extends CommonEntity
         $oGateway          = $this->getTableGateway();
         $oBuilder          = $oGateway->getEntityBuilder();
         
-                
+        $oGateway->getAdapter()->beginTransaction();
+              
         try {
         
             $oNow = $oGateway->getNow();
@@ -51,14 +52,17 @@ abstract class TemporalEntity  extends CommonEntity
             
             $this->oEnabledTo   = DateTime::createFromFormat('d-m-Y','01-01-3000');
             $aDatabaseData     = $oBuilder->demolish($this);
-        
+            $bSuccess           = false;
+            
+           
+            
             if(true === empty($this->iEpisodeID)) {
                 
                 // override the now as only create current entitie
                 $this->oEnabledFrom = $oNow;
-                
+               
                 if(true === $this->validateNew($aDatabaseData)) {
-                    $this->createNewEntity($aDatabaseData);
+                    $bSuccess = $this->createNewEntity($aDatabaseData);
                 }
                 
                 
@@ -67,16 +71,19 @@ abstract class TemporalEntity  extends CommonEntity
                 // override the now as only store current changes
                 $this->oEnabledFrom = $oNow;
                 
+               
+                
                 if(true === $this->validateNewEpisode($aDatabaseData)) {
-                    $this->createNewEpisode($aDatabaseData);  
+                  $bSuccess =  $this->createNewEpisode($aDatabaseData);  
                 }
             
                 
             } elseif(false === empty($this->iEpisodeID) && $oNow->format('Y-m-d') === $this->oEnabledFrom->format('Y-m-d')) {
                 
                 if(true === $this->validateUpdate($aDatabaseData)) {
-                    $this->updateExistingEpisode($aDatabaseData);
+                  $bSuccess =  $this->updateExistingEpisode($aDatabaseData);
                 }
+                  
                 
             } else {
                 
@@ -84,12 +91,19 @@ abstract class TemporalEntity  extends CommonEntity
                 $this->aLastResult['msg'] = 'Unable to decide which operation to use';
             }
             
+            if($bSuccess) {
+                $oGateway->getAdapter()->commit();
+            }
+            
         } catch (Exception $e) {
+            $oGateway->getAdapter()->rollback();
             $this->getAppLogger()->error($e->getMessage());
         
             $this->aLastResult['result'] = false;
             $this->aLastResult['msg'] = $e->getMessage();
+            
         }
+        
         
         return $this->aLastResult['result'];
     }
@@ -105,31 +119,37 @@ abstract class TemporalEntity  extends CommonEntity
         
         if(false === empty($this->iEpisodeID)) {
            
+            $oGateway->getAdapter()->beginTransaction();
+           
             try {
            
                 $this->oEnabledTo   = $oGateway->getNow();
-                $aDatabaseData = $oBuilder->demolish($this);   
-               
+                $aDatabaseData      = $oBuilder->demolish($this);   
+                $bSuccess           = false;
+                
                 # Check for Referential integrity in time 
                 
-                $aCheckAry = $this->checkTemportalFK($aDatabaseData);
+                $aCheckAry          = $this->checkTemportalFK($aDatabaseData);
                 
                 if(true === in_array(true,$aCheckAry)) {
+                    $oGateway->getAdapter()->rollback();
                     $this->aLastResult['result'] = false;
                     $this->aLastResult['msg']    = 'Temporal Referential integrity violated check '.implode(',',array_keys(array_filter($aCheckAry,function($v){return $v;})));
                     
                 } else {
                     
                     if(true === $this->validateRemove($aDatabaseData)) {
-                        $this->closeEpisode($aDatabaseData);
+                        $bSuccess = $this->closeEpisode($aDatabaseData);
+                        $oGateway->getAdapter()->commit();
                     }
+                    
                 }
+                
                 
             
             } catch (Exception $e) {
+                $oGateway->getAdapter()->rollback();
                 $this->getAppLogger()->error($e->getMessage());
-            
-               
                 $this->aLastResult['msg'] = $e->getMessage();
             }
             

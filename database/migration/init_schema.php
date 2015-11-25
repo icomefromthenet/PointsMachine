@@ -21,7 +21,7 @@ class init_schema implements EntityInterface
         $table->addColumn('enabled_to','date',array());
     
         $table->setPrimaryKey(array('episode_id'));
-        $table->addUniqueIndex(array('system_id','enabled_from'),'pt_system_uiq1');
+        $table->addUniqueIndex(array('system_id','enabled_to'),'pt_system_uiq1');
         
         
         $table = $sc->createTable("pt_system_zone");
@@ -34,7 +34,7 @@ class init_schema implements EntityInterface
         $table->addColumn('enabled_to'    ,'date',array());
     
         $table->setPrimaryKey(array('episode_id'));
-        $table->addUniqueIndex(array('zone_id','enabled_from'),'pr_sys_zone_uk1');
+        $table->addUniqueIndex(array('zone_id','enabled_to'),'pr_sys_zone_uk1');
         $table->addForeignKeyConstraint('pt_system',array('system_id'),array('system_id'),array(),'pt_sys_zone_fk1');
         
         
@@ -52,7 +52,7 @@ class init_schema implements EntityInterface
         $table->addColumn('enabled_to','date',array());
         
         $table->setPrimaryKey(array('episode_id'));
-        $table->addUniqueIndex(array('event_type_id','enabled_from'),'pt_event_type_uiq1');
+        $table->addUniqueIndex(array('event_type_id','enabled_to'),'pt_event_type_uiq1');
         
         
         # Event Instances
@@ -83,7 +83,7 @@ class init_schema implements EntityInterface
         $table->addColumn('enabled_to','date',array());  
         
         $table->setPrimaryKey(array('episode_id'));
-        $table->addUniqueIndex(array('score_group_id','enabled_from'),'pt_score_gp_uiq1');
+        $table->addUniqueIndex(array('score_group_id','enabled_to'),'pt_score_gp_uiq1');
         
         
         # Scores instance table
@@ -98,7 +98,7 @@ class init_schema implements EntityInterface
         $table->addColumn('score_group_id','guid',array("unsigned" => true));
         
         $table->setPrimaryKey(array('episode_id'));
-        $table->addUniqueIndex(array('score_id','enabled_from'),'pt_score_uiq1');
+        $table->addUniqueIndex(array('score_id','enabled_to'),'pt_score_uiq1');
         $table->addForeignKeyConstraint('pt_score_group',array('score_group_id'),array('score_group_id'),array(),'pt_score_fk1');
         
    }
@@ -123,7 +123,7 @@ class init_schema implements EntityInterface
        $table->addColumn('is_mandatory'  ,'smallint',array("unsigned" => true,'comment' => 'Group always be applied unless not linked to system and score groups'));
        
        $table->setPrimaryKey(array('episode_id'));
-       $table->addUniqueIndex(array('rule_group_id','enabled_from'),'pt_rule_gp_uiq1');
+       $table->addUniqueIndex(array('rule_group_id','enabled_to'),'pt_rule_gp_uiq1');
        
        
        # Rule Group Scores Groups Relations
@@ -136,7 +136,7 @@ class init_schema implements EntityInterface
        $table->addColumn('enabled_to','date',array());
        
        $table->setPrimaryKey(array('episode_id'));
-       $table->addUniqueIndex(array('rule_group_id','system_id','score_group_id','enabled_from'),'pt_rule_gp_limit_uiq1');
+       $table->addUniqueIndex(array('rule_group_id','system_id','score_group_id','enabled_to'),'pt_rule_gp_limit_uiq1');
        $table->addForeignKeyConstraint('pt_rule_group',array('rule_group_id'),array('rule_group_id'),array(),'pt_rule_gp_limit_fk1');
        $table->addForeignKeyConstraint('pt_score_group',array('score_group_id'),array('score_group_id'),array(),'pt_rule_gp_limit_fk2');
        $table->addForeignKeyConstraint('pt_system',array('system_id'),array('system_id'),array(),'pt_rule_gp_limit_fk3');
@@ -157,7 +157,7 @@ class init_schema implements EntityInterface
        
        
        $table->setPrimaryKey(array('episode_id'));
-       $table->addUniqueIndex(array('rule_id','rule_group_id','enabled_from'),'pt_rule_uiq1');
+       $table->addUniqueIndex(array('rule_id','rule_group_id','enabled_to'),'pt_rule_uiq1');
        $table->addForeignKeyConstraint('pt_rule_group',array('rule_group_id'),array('rule_group_id'),array(),'pt_rule_fk1');
     
        
@@ -170,7 +170,7 @@ class init_schema implements EntityInterface
        $table->addColumn('enabled_to','date',array());
 
        $table->setPrimaryKey(array('episode_id'));
-       $table->addUniqueIndex(array('zone_id','rule_id','enabled_from'),'pt_rule_sys_zone_uiq1');
+       $table->addUniqueIndex(array('zone_id','rule_id','enabled_to'),'pt_rule_sys_zone_uiq1');
        $table->addForeignKeyConstraint('pt_rule',array('rule_id'),array('rule_id'),array(),'pt_rule_sys_zone_fk1');
        $table->addForeignKeyConstraint('pt_system_zone',array('zone_id'),array('zone_id'),array(),'pt_rule_sys_zone_fk2');
        
@@ -257,7 +257,7 @@ class init_schema implements EntityInterface
        $table->addColumn('enabled_to','date',array());
 
        $table->setPrimaryKey(array('episode_id'));
-       $table->addUniqueIndex(array('rule_chain_id','enabled_from'),'pt_rule_chain_uiq1');
+       $table->addUniqueIndex(array('rule_chain_id','enabled_to'),'pt_rule_chain_uiq1');
        $table->addForeignKeyConstraint('pt_event_type',array('event_type_id'),array('event_type_id'),array(),'pt_rule_chain_fk1');
        $table->addForeignKeyConstraint('pt_system',array('system_id'),array('system_id'),array(),'pt_rule_chain_fk2');
        
@@ -273,7 +273,7 @@ class init_schema implements EntityInterface
 
     
        $table->setPrimaryKey(array('episode_id'));
-       $table->addUniqueIndex(array('chain_member_id','enabled_from'),'pt_chain_member_uiq1');
+       $table->addUniqueIndex(array('chain_member_id','enabled_to'),'pt_chain_member_uiq1');
        $table->addForeignKeyConstraint('pt_rule_chain',array('rule_chain_id'),array('rule_chain_id'),array(),'pt_chain_member_fk1');
        $table->addForeignKeyConstraint('pt_rule_group',array('rule_group_id'),array('rule_group_id'),array(),'pt_chain_member_fk2');
        
