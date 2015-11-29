@@ -74,6 +74,7 @@ class PointSystem extends  TemporalEntity implements ActiveRecordInterface
         # new episode on new entity
         $bSuccess = $oGateway->insertQuery()
                  ->start()
+                    ->addColumn('episode_id'      , null)
                     ->addColumn('system_id'       , $aDatabaseData['system_id'])
                     ->addColumn('system_name'     , $aDatabaseData['system_name'])
                     ->addColumn('system_name_slug', $aDatabaseData['system_name_slug'])
@@ -86,7 +87,7 @@ class PointSystem extends  TemporalEntity implements ActiveRecordInterface
 
         if($bSuccess) {
             $this->aLastResult['result'] = true;
-            $this->aLastResult['msg']    = 'Inserted new Points System Episode';
+            $this->aLastResult['msg']    = 'Created new Points System Episode';
             
             $this->iEpisodeID =  (int) $oGateway->lastInsertId();
             
@@ -118,29 +119,9 @@ class PointSystem extends  TemporalEntity implements ActiveRecordInterface
             
             if(true === $bUpdated) {
             
-                # Create the new Episode
-                $bSuccess = $oGateway->insertQuery()
-                         ->start()
-                            ->addColumn('system_id'       , $aDatabaseData['system_id'])
-                            ->addColumn('system_name'     , $aDatabaseData['system_name'])
-                            ->addColumn('system_name_slug', $aDatabaseData['system_name_slug'])
-                            ->addColumn('enabled_from'    , $oNow)
-                            ->addColumn('enabled_to'      , $aDatabaseData['enabled_to'])
-                         ->end()
-                       ->insert(); 
-        
-                if($bSuccess) {
-                    $this->aLastResult['result'] = true;
-                    $this->aLastResult['msg']    = 'Created new Points System Episode';
-                    
-                    $this->iEpisodeID = (int) $oGateway->lastInsertId();
-                    
-                  
-                } else {
-                    $this->aLastResult['result'] = false;
-                    $this->aLastResult['msg']    = 'Unable to create new Points System Episode.';
-                 
-                }
+                $aDatabaseData['enabled_from'] = $oNow;
+                $bSuccess = $this->createNewEntity($aDatabaseData);
+            
                 
             } else {
                 

@@ -1,6 +1,7 @@
 <?php
 namespace IComeFromTheNet\PointsMachine\DB\Gateway;
 
+use DateTime;
 use IComeFromTheNet\PointsMachine\DB\CommonTable;
 use IComeFromTheNet\PointsMachine\DB\Query\PointSystemQuery;
 
@@ -20,7 +21,32 @@ class PointSystemGateway extends CommonTable
     */
     public function newQueryBuilder()
     {
-        return $this->head = new PointSystemQuery($this->adapter,$this);
+        $this->head = new PointSystemQuery($this->adapter,$this);
+        $this->head->setDefaultAlias($this->getTableQueryAlias());
+        
+        return $this->head;
+    }
+    
+    
+    /**
+     * Check if a system with the given id is current
+     * 
+     * NOW should be date fetch from the database.
+     * 
+     * @param string    $sSystemId  The Entity ID
+     * @param DateTime  $oNow       The Now data form the database
+     */ 
+    public function checkSystemIsCurrent($sSystemId, DateTime $oNow)
+    {
+        
+        return (boolean) $this->newQueryBuilder()
+                    ->select(1)
+                    ->from($this->getMetaData()->getName(),$this->getTableQueryAlias())
+                    ->filterByCurrent($oNow)
+                    ->filterBySystem($sSystemId)
+                    ->end()
+                ->fetchColumn(0);
+        
     }
     
     

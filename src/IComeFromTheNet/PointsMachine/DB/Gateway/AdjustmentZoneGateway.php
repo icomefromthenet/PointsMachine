@@ -1,6 +1,7 @@
 <?php
 namespace IComeFromTheNet\PointsMachine\DB\Gateway;
 
+use DateTime;
 use IComeFromTheNet\PointsMachine\DB\CommonTable;
 use IComeFromTheNet\PointsMachine\DB\Query\AdjustmentZoneQuery;
 
@@ -20,9 +21,31 @@ class AdjustmentZoneGateway extends CommonTable
     */
     public function newQueryBuilder()
     {
-        return $this->head = new AdjustmentZoneQuery($this->adapter,$this);
+        $this->head = new AdjustmentZoneQuery($this->adapter,$this);
+        $this->head->setDefaultAlias($this->getTableQueryAlias());
+        
+        return $this->head;
     }
     
+    
+     /**
+     * Check if a system zone has a current relation to a adjustment rule
+     *
+     * @param string    $sSystemZoneId  The System Zone Entity ID
+     * @return boolean true if a record exists
+     */ 
+    public function checkZoneIsCurrent($sSystemZoneId)
+    {
+        
+        return (boolean) $this->newQueryBuilder()
+                    ->select(1)
+                    ->from($this->getMetaData()->getName(),$this->getTableQueryAlias())
+                    ->filterByCurrent(new DateTime('3000-01-01'))
+                    ->filterBySystemZone($sSystemZoneId)
+                    ->end()
+                ->fetchColumn(0);
+        
+    }
     
     
 }

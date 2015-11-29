@@ -47,9 +47,9 @@ class AdjustmentZoneQuery extends CommonQuery
             $sAlias = $sAlias .'.';
         }
         
-        $paramType = $oGateway->getMetaData()->getColumn('system_zone_id')->getType();
+        $paramType = $oGateway->getMetaData()->getColumn('zone_id')->getType();
         
-        return $this->andWhere($sAlias."system_zone_id = ".$this->createNamedParameter($sGUID,$paramType));
+        return $this->andWhere($sAlias."zone_id = ".$this->createNamedParameter($sGUID,$paramType));
         
     }
   

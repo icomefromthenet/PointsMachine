@@ -40,8 +40,6 @@ abstract class TemporalEntity  extends CommonEntity
         $oGateway          = $this->getTableGateway();
         $oBuilder          = $oGateway->getEntityBuilder();
         
-        $oGateway->getAdapter()->beginTransaction();
-              
         try {
         
             $oNow = $oGateway->getNow();
@@ -53,8 +51,7 @@ abstract class TemporalEntity  extends CommonEntity
             $this->oEnabledTo   = DateTime::createFromFormat('d-m-Y','01-01-3000');
             $aDatabaseData     = $oBuilder->demolish($this);
             $bSuccess           = false;
-            
-           
+          
             
             if(true === empty($this->iEpisodeID)) {
                 
@@ -70,8 +67,7 @@ abstract class TemporalEntity  extends CommonEntity
                 
                 // override the now as only store current changes
                 $this->oEnabledFrom = $oNow;
-                
-               
+             
                 
                 if(true === $this->validateNewEpisode($aDatabaseData)) {
                   $bSuccess =  $this->createNewEpisode($aDatabaseData);  
@@ -80,6 +76,7 @@ abstract class TemporalEntity  extends CommonEntity
                 
             } elseif(false === empty($this->iEpisodeID) && $oNow->format('Y-m-d') === $this->oEnabledFrom->format('Y-m-d')) {
                 
+                 
                 if(true === $this->validateUpdate($aDatabaseData)) {
                   $bSuccess =  $this->updateExistingEpisode($aDatabaseData);
                 }
@@ -91,17 +88,15 @@ abstract class TemporalEntity  extends CommonEntity
                 $this->aLastResult['msg'] = 'Unable to decide which operation to use';
             }
             
-            if($bSuccess) {
-                $oGateway->getAdapter()->commit();
-            }
+            
             
         } catch (Exception $e) {
-            $oGateway->getAdapter()->rollback();
+           
             $this->getAppLogger()->error($e->getMessage());
         
             $this->aLastResult['result'] = false;
             $this->aLastResult['msg'] = $e->getMessage();
-            
+            throw $e; 
         }
         
         
@@ -114,12 +109,10 @@ abstract class TemporalEntity  extends CommonEntity
     {
         $oGateway              = $this->getTableGateway();
         $oBuilder              = $oGateway->getEntityBuilder();
-        $this->aLastResult     = array( 'result' => '','msg' =>'');
+        $this->aLastResult     = array( 'result' => false,'msg' =>'');
         
         
         if(false === empty($this->iEpisodeID)) {
-           
-            $oGateway->getAdapter()->beginTransaction();
            
             try {
            
@@ -132,15 +125,13 @@ abstract class TemporalEntity  extends CommonEntity
                 $aCheckAry          = $this->checkTemportalFK($aDatabaseData);
                 
                 if(true === in_array(true,$aCheckAry)) {
-                    $oGateway->getAdapter()->rollback();
                     $this->aLastResult['result'] = false;
                     $this->aLastResult['msg']    = 'Temporal Referential integrity violated check '.implode(',',array_keys(array_filter($aCheckAry,function($v){return $v;})));
                     
                 } else {
                     
                     if(true === $this->validateRemove($aDatabaseData)) {
-                        $bSuccess = $this->closeEpisode($aDatabaseData);
-                        $oGateway->getAdapter()->commit();
+                        $this->closeEpisode($aDatabaseData);
                     }
                     
                 }
@@ -148,9 +139,12 @@ abstract class TemporalEntity  extends CommonEntity
                 
             
             } catch (Exception $e) {
-                $oGateway->getAdapter()->rollback();
+                
                 $this->getAppLogger()->error($e->getMessage());
                 $this->aLastResult['msg'] = $e->getMessage();
+                $this->aLastResult['result'] = false;
+                
+                throw $e;
             }
             
         }

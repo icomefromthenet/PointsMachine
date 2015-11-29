@@ -49,8 +49,6 @@ class SystemEntityTest extends TestWithContainer
 
         $oEntity = new PointSystem($oGateway,$oLogger);
         
-        $sExistingSystemID   =
-        $iExistingEpisode = 1;
         
         $oEntity->sSystemID =  '9B753E70-881B-F53E-2D46-8151BED1BBAF';
         $oEntity->iEpisodeID = null;
@@ -90,7 +88,7 @@ class SystemEntityTest extends TestWithContainer
       
         
         $this->assertTrue($aResult['result']);
-        $this->assertEquals('Inserted new Points System Episode',$aResult['msg']);
+        $this->assertEquals('Created new Points System Episode',$aResult['msg']);
         $this->assertTrue($bResult);
         $this->assertEquals(5,$oEntity->iEpisodeID);
 

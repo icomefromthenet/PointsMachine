@@ -199,10 +199,18 @@ class CommonQuery extends AbstractQuery
      */
     public function filterByCurrent(DateTime $oCurrent)
     {
-       $this->filterByEnabledBeforeAndOn($oCurrent);
-       $this->filterByDisabledAfterAndOn($oCurrent);
+        $oGateway = $this->getGateway();
+        $sAlias   = $this->getDefaultAlias();
+        if(false === empty($sAlias)) {
+            $sAlias = $sAlias .'.';
+        }
         
-       return $this;    
+        
+        $paramType = $oGateway->getMetaData()->getColumn('enabled_to')->getType();
+        
+        
+        return $this->andWhere($this->expr()->eq($sAlias."enabled_to",$this->createNamedParameter($oCurrent,$paramType)));
+       
     }
     
     /**

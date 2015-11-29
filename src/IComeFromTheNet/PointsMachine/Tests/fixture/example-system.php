@@ -15,10 +15,10 @@ return [
         [
             [
                'episode_id' => 1
+               ,'system_id' => '9B753E70-881B-F53E-2D46-8151BED1BBAF'
                ,'zone_id' => '03D119A2-1B66-423C-401F-7CE384450CE5'
                ,'zone_name' => 'Healer'
                ,'zone_name_slug' => 'healer'
-               ,'system_id' => '9B753E70-881B-F53E-2D46-8151BED1BBAF'
                ,'enabled_from' => (new DateTime())->format('Y-m-d')
                ,'enabled_to' => (new DateTime('3000-01-01'))->format('Y-m-d')
                
@@ -26,10 +26,10 @@ return [
             ]
             ,[
                'episode_id' => 2
+               ,'system_id' => '9B753E70-881B-F53E-2D46-8151BED1BBAF'
                ,'zone_id' => 'F4CDA42C-07F9-7DCE-3AC4-74994CFC2286'
                ,'zone_name' => 'Tank'
                ,'zone_name_slug' => 'tank'
-               ,'system_id' => '9B753E70-881B-F53E-2D46-8151BED1BBAF'
                ,'enabled_from' => (new DateTime())->format('Y-m-d')
                ,'enabled_to' => (new DateTime('3000-01-01'))->format('Y-m-d')
                
@@ -37,10 +37,10 @@ return [
             ]
             ,[
                'episode_id' => 3
+               ,'system_id' => '9B753E70-881B-F53E-2D46-8151BED1BBAF'
                ,'zone_id' => '5A6DB8CB-364F-6290-8C03-3BA6872B5D3F'
                ,'zone_name' => 'Mage'
                ,'zone_name_slug' => 'mage'
-               ,'system_id' => '9B753E70-881B-F53E-2D46-8151BED1BBAF'
                ,'enabled_from' => (new DateTime())->format('Y-m-d')
                ,'enabled_to' => (new DateTime('3000-01-01'))->format('Y-m-d')
                
@@ -48,10 +48,10 @@ return [
             ]
             ,[
                'episode_id' => 4
+               ,'system_id' => '9B753E70-881B-F53E-2D46-8151BED1BBAF'
                ,'zone_id' => '578A182E-7EB9-689F-B497-6AE8772E41B1'
                ,'zone_name' => 'Rogue'
                ,'zone_name_slug' => 'rogue'
-               ,'system_id' => '9B753E70-881B-F53E-2D46-8151BED1BBAF'
                ,'enabled_from' => (new DateTime())->format('Y-m-d')
                ,'enabled_to' => (new DateTime('3000-01-01'))->format('Y-m-d')
             ]   
