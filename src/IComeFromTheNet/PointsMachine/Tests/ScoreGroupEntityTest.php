@@ -215,7 +215,7 @@ class ScoreGroupEntityTest extends TestWithContainer
       
         
         $this->assertFalse($aResult['result']);
-        $this->assertEquals('Temporal Referential integrity violated check Score',$aResult['msg']);
+        $this->assertEquals('Temporal Referential integrity violated check Score,AdjustmentGroupLimit',$aResult['msg']);
         $this->assertFalse($bResult);
     }
     

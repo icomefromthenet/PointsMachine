@@ -47,5 +47,22 @@ class AdjustmentGroupLimitGateway extends CommonTable
         
     }
     
+    /**
+     * Check if a Score Group has a 'current' relation to a Adjustment Group
+     * 
+     * @param string    $sScoreGroupId  The Entity ID
+     * @return boolean true if a record is found
+     */ 
+    public function checkParentScoreGroupRequired($sScoreGroupId)
+    {
+        return (boolean) $this->newQueryBuilder()
+                    ->select(1)
+                    ->from($this->getMetaData()->getName(),$this->getTableQueryAlias())
+                    ->filterByCurrent(new DateTime('3000-01-01'))
+                    ->filterByScoreGroup($sScoreGroupId)
+                    ->end()
+                ->fetchColumn(0);
+    }
+    
 }
 /* End of Class */

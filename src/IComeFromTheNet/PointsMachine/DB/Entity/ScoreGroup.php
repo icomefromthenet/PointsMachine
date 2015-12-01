@@ -160,15 +160,18 @@ class ScoreGroup extends TemporalEntity implements ActiveRecordInterface
     
     protected function checkTemportalFK($aDatabaseData)
     {
-        $oGateway              = $this->getTableGateway();
-        $oScoreGateway     = $oGateway->getGatewayCollection()->getGateway('pt_score');
+        $oGateway               = $this->getTableGateway();
+        $oScoreGateway          = $oGateway->getGatewayCollection()->getGateway('pt_score');
+        $oAdjGroupLimitGateway  = $oGateway->getGatewayCollection()->getGateway('pt_score');
+       
         
         // Check for Referential integrity in time. That is
         // there this score group is related to a 'current' score)
         // to close this score group would invalidate the relation 
-        $bReqScore = $oScoreGateway->checkParentScoreGroupRequired($this->sScoreGroupID);
+        $bReqScore    = $oScoreGateway->checkParentScoreGroupRequired($this->sScoreGroupID);
+        $bReqAdjGroup = $oAdjGroupLimitGateway->checkParentScoreGroupRequired($this->sScoreGroupID);
         
-        return array('Score' => $bReqScore );
+        return array('Score' => $bReqScore, 'AdjustmentGroupLimit' => $bReqAdjGroup);
     }
     
     
