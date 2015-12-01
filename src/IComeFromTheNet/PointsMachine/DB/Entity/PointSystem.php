@@ -179,9 +179,9 @@ class PointSystem extends  TemporalEntity implements ActiveRecordInterface
         $oBuilder              = $oGateway->getEntityBuilder();
         
         # Check for Referential integrity in time 
-        $bReqSystemZone = $oSystemZoneGateway->checkParentSystemRequired($this->sSystemID,$this->oEnabledTo);
-        $bReqAdjGroup   =   $oAdjGroupLimitGateway->checkParentSystemRequired($this->sSystemID,$this->oEnabledTo);
-        $bReqRuleChain  = $oAdjGroupLimitGateway->checkParentSystemRequired($this->sSystemID,$this->oEnabledTo);
+        $bReqSystemZone = $oSystemZoneGateway->checkParentSystemRequired($this->sSystemID);
+        $bReqAdjGroup   =   $oAdjGroupLimitGateway->checkParentSystemRequired($this->sSystemID);
+        $bReqRuleChain  = $oAdjGroupLimitGateway->checkParentSystemRequired($this->sSystemID);
          
         
         return array('SystemZone' => $bReqSystemZone,'AdjustmentGroup' => $bReqAdjGroup, 'RuleChain' => $bReqRuleChain);
@@ -273,17 +273,6 @@ class PointSystem extends  TemporalEntity implements ActiveRecordInterface
     }
     
     
-    //--------------------------------------------------------------------------
-    # Active Record Interface
-    
-    
-    public function updateAll()
-    {
-        
-        
-    }
-    
-   
     
     
 }

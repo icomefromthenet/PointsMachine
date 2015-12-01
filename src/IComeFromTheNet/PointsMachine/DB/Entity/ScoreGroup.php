@@ -2,7 +2,7 @@
 namespace IComeFromTheNet\PointsMachine\DB\Entity;
 
 use DateTime;
-use IComeFromTheNet\PointsMachine\DB\CommonEntity;
+use IComeFromTheNet\PointsMachine\DB\TemporalEntity;
 use IComeFromTheNet\PointsMachine\DB\ActiveRecordInterface;
 use IComeFromTheNet\PointsMachine\PointsMachineException;
 
@@ -12,8 +12,36 @@ use IComeFromTheNet\PointsMachine\PointsMachineException;
  * @author Lewis Dyer <getintouch@icomefromthenet.com>
  * @since 1.0
  */
-class ScoreGroup extends CommonEntity implements ActiveRecordInterface
+class ScoreGroup extends TemporalEntity implements ActiveRecordInterface
 {
+    protected $aValidation = [
+       'integer' => [
+            ['episode_id']
+        ]
+        ,'lengthBetween' => [
+            ['group_name','1','100'],['group_name_slug','1','100']
+        ]
+        ,'slug' => [
+            ['group_name_slug']
+        ]
+        ,'required' => [
+            ['score_group_id','group_name','group_name_slug','enabled_from','enabled_to']
+        ]
+        ,'instanceOf' => [
+            ['enabled_from','DateTime'],['enabled_to','DateTime']
+        ]
+        ,'min' => [
+           ['episode_id',1]
+        ]
+        ,'max' => [
+           ['episode_id',4294967295]
+        ]
+        
+    ];
+    
+    //--------------------------------------------------------------------------
+    # Public Properties
+    
     
     public $iEpisodeID;
     
@@ -28,41 +56,207 @@ class ScoreGroup extends CommonEntity implements ActiveRecordInterface
     public $oEnabledTo;
     
     
+    //--------------------------------------------------------------------------
+    # Entity Hooks
     
-    public function saveEpisode(DateTime $oProcessDte)
+    
+    protected function createNewEntity($aDatabaseData)
     {
+        $bSuccess          = false;
+        $oGateway          = $this->getTableGateway();
+        
+
+        $bSuccess = $oGateway->insertQuery()
+         ->start()
+            ->addColumn('score_group_id'  , $aDatabaseData['score_group_id'])
+            ->addColumn('group_name'       , $aDatabaseData['group_name'])
+            ->addColumn('group_name_slug'  , $aDatabaseData['group_name_slug'])
+            ->addColumn('enabled_from'    , $aDatabaseData['enabled_from'])
+            ->addColumn('enabled_to'      , $aDatabaseData['enabled_to'])
+         ->end()
+        ->insert(); 
+
+        if($bSuccess) {
+                
+                $this->aLastResult['result'] = true;
+                $this->aLastResult['msg']    = 'Created new Score Group Episode';
+                $this->iEpisodeID            =  (int) $oGateway->lastInsertId();
+                     
+        } else {
+            
+            $this->aLastResult['result'] = false;
+            $this->aLastResult['msg']    = 'Unable to insert Score Group Episode.';
+            
+        }
+        
+        
+
+       return $bSuccess;
+    }
+    
+    protected function createNewEpisode($aDatabaseData)
+    {
+        $bSuccess          = false;
+        $oGateway          = $this->getTableGateway();
+     
+        $oNow = $oGateway->getNow();
+        $aDatabaseData['enabled_to'] = $oNow;
+      
+            
+        if(true === $this->closeEpisode($aDatabaseData)) {
+        
+            $aDatabaseData['enabled_from']  = $oNow;
+            $aDatabaseData['enabled_to']    = new DateTime('3000-01-01');  
+            
+            # up to the caller to rollback
+            if(false === $this->createNewEntity($aDatabaseData)) {
+                throw new PointsMachineException($this->aLastResult['msg']);
+            }
+            
+        } else {
+            
+            $this->aLastResult['result'] = false;
+            $this->aLastResult['msg']    = 'Unable to create new Score Group episode as unable to close the earlier episode';
+            
+        }
+        
+        
+        return $this->aLastResult['result'];
+    }
+    
+    
+    protected function updateExistingEpisode($aDatabaseData)
+    {
+        $bSuccess          = false;
+        $oGateway          = $this->getTableGateway();
        
+        # new episode on new entity
+        
+        $bSuccess = $oGateway->updateQuery()
+             ->start()
+                    ->addColumn('group_name'       , $aDatabaseData['group_name'])
+                    ->addColumn('group_name_slug'  , $aDatabaseData['group_name_slug'])
+                ->where()
+                    ->filterByEpisode($aDatabaseData['episode_id'])
+                    ->filterByScoreGroup($aDatabaseData['score_group_id'])
+             ->end()
+           ->update(); 
+           
+    
+         if($bSuccess) {
+            $this->aLastResult['result'] = true;
+            $this->aLastResult['msg']    = 'Updated existing Score Group Episode';
+            
+        } else {
+            $this->aLastResult['result'] = false;
+            $this->aLastResult['msg']    = 'Unable to update existing Score Group Episode';
+        }
+        
+ 
+       return $bSuccess;
+        
+        
     }
     
-    public function deleteEpisode(DateTime $oProcessDte)
+    protected function checkTemportalFK($aDatabaseData)
     {
-       
+        $oGateway              = $this->getTableGateway();
+        $oScoreGateway     = $oGateway->getGatewayCollection()->getGateway('pt_score');
+        
+        // Check for Referential integrity in time. That is
+        // there this score group is related to a 'current' score)
+        // to close this score group would invalidate the relation 
+        $bReqScore = $oScoreGateway->checkParentScoreGroupRequired($this->sScoreGroupID);
+        
+        return array('Score' => $bReqScore );
     }
     
-    public function validate(DateTime $oProcessDte)
+    
+    protected function closeEpisode($aDatabaseData)
     {
-         
+        $oGateway              = $this->getTableGateway();
+        
+        $bSuccess = $oGateway->updateQuery()
+                             ->start()
+                                ->addColumn('enabled_to' , $aDatabaseData['enabled_to'])
+                              ->where()
+                                ->filterByEpisode($aDatabaseData['episode_id'])
+                                ->filterByScoreGroup($aDatabaseData['score_group_id'])
+                                ->filterByCurrent(new DateTime('3000-01-01'))
+                             ->end()
+                           ->update(); 
+
+        if($bSuccess) {
+            $this->aLastResult['result'] = true;
+            $this->aLastResult['msg']    = 'Closed this episode';
+        } else {
+            $this->aLastResult['result'] = false;
+            $this->aLastResult['msg']    = 'Unable to close this episode';
+        }
+        
+        return $bSuccess;
     }
     
-    public function validateNewEpisode(DateTime $oProcessDte)
+    //--------------------------------------------------------------------------
+    # Validation Hooks
+    
+    protected function getDataForValidation()
     {
-        
-        
+        return array(
+            'episode_id'          => $this->iEpisodeID
+            ,'group_name'         => $this->sGroupName
+            ,'group_name_slug'    => $this->sGroupNameSlug
+            ,'enabled_from'       => $this->oEnabledFrom
+            ,'enabled_to'         => $this->oEnabledTo
+            ,'score_group_id'      => $this->sScoreGroupID
+        );
     }
     
     
-    public function validateNewEntity(DateTime $oProcessDte)
+    protected function validateNewEpisode($aDatabaseData)
     {
+        $aData = $this->getDataForValidation();
+        $aRules = $this->aValidation;
+        
+        // we need the episode if going to create new episode
+        array_push($aRules['required'],['episode_id']);
         
         
+        return $this->validate($aData,$aRules);
     }
-    
-    
-    public function validateUpdate(DateTime $oProcessDte)
+   
+    protected function validateNew($aDatabaseData)
     {
+        $aData = $this->getDataForValidation();
+        $aRules = $this->aValidation;
         
-        
+        return $this->validate($aData,$aRules);
     }
+    
+    protected function validateUpdate($aDatabaseData)
+    {
+        $aData = $this->getDataForValidation();
+        $aRules = $this->aValidation;
+        
+        // we need the episode if to do an update
+        array_push($aRules['required'],['episode_id']);
+        
+        
+        return $this->validate($aData,$aRules);
+    }
+          
+    protected function validateRemove($aDatabaseData)
+    {
+        $aData = $this->getDataForValidation();
+        $aRules = $this->aValidation;
+        
+        // we need the episode if to do an remove
+        array_push($aRules['required'],['episode_id']);
+        
+        return $this->validate($aData,$aRules);
+    }
+    
+    
     
 }
 /* End of File */

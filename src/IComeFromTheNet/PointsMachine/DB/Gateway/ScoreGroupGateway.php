@@ -20,8 +20,12 @@ class ScoreGroupGateway extends CommonTable
     */
     public function newQueryBuilder()
     {
-        return $this->head = new ScoreGroupQuery($this->adapter,$this);
+        $this->head = new ScoreGroupQuery($this->adapter,$this);
+        $this->head->setDefaultAlias($this->getTableQueryAlias());
+        
+        return $this->head;
     }
+    
     
     
     

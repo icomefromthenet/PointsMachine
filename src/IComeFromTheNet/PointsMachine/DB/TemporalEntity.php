@@ -48,11 +48,15 @@ abstract class TemporalEntity  extends CommonEntity
                 $this->oEnabledFrom = $oNow;
             }
             
-            $this->oEnabledTo   = DateTime::createFromFormat('d-m-Y','01-01-3000');
+            if(true === empty($this->oEnabledTo)) {
+                $this->oEnabledTo   = DateTime::createFromFormat('d-m-Y','01-01-3000');
+            }
+            
+            
             $aDatabaseData     = $oBuilder->demolish($this);
             $bSuccess           = false;
           
-            
+           
             if(true === empty($this->iEpisodeID)) {
                 
                 // override the now as only create current entitie
@@ -63,22 +67,25 @@ abstract class TemporalEntity  extends CommonEntity
                 }
                 
                 
-            } elseif(false === empty($this->iEpisodeID) && $oNow->format('Y-m-d') !== $this->oEnabledFrom->format('Y-m-d')) {
-                
+            } elseif(false === empty($this->iEpisodeID) 
+                     && $oNow->format('Y-m-d') !== $this->oEnabledFrom->format('Y-m-d')
+                     && $this->oEnabledTo->format('Y-m-d')   === '3000-01-01') {
+            
                 // override the now as only store current changes
                 $this->oEnabledFrom = $oNow;
              
                 
                 if(true === $this->validateNewEpisode($aDatabaseData)) {
-                  $bSuccess =  $this->createNewEpisode($aDatabaseData);  
+                    $bSuccess =  $this->createNewEpisode($aDatabaseData);  
                 }
             
                 
-            } elseif(false === empty($this->iEpisodeID) && $oNow->format('Y-m-d') === $this->oEnabledFrom->format('Y-m-d')) {
-                
+            } elseif(false === empty($this->iEpisodeID) 
+                    && $this->oEnabledFrom->format('Y-m-d') === $oNow->format('Y-m-d')  
+                    && $this->oEnabledTo->format('Y-m-d')   === '3000-01-01') {
                  
                 if(true === $this->validateUpdate($aDatabaseData)) {
-                  $bSuccess =  $this->updateExistingEpisode($aDatabaseData);
+                    $bSuccess =  $this->updateExistingEpisode($aDatabaseData);
                 }
                   
                 

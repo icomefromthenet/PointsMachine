@@ -286,16 +286,6 @@ class PointSystemZone extends TemporalEntity implements ActiveRecordInterface
     }
     
     
-    //--------------------------------------------------------------------------
-    # Active Record Interface
-    
-    
-    public function updateAll()
-    {
-        
-        
-    }
-    
    
     
 }

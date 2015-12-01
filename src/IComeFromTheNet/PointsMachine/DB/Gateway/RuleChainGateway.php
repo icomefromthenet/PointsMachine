@@ -21,25 +21,25 @@ class RuleChainGateway extends CommonTable
     */
     public function newQueryBuilder()
     {
-        return $this->head = new RuleChainQuery($this->adapter,$this);
+        $this->head = new RuleChainQuery($this->adapter,$this);
+        $this->head->setDefaultAlias($this->getTableQueryAlias());
+        
+        return $this->head;
     }
     
     /**
-     * Check if any Rule Chains have a requirement on a parent 
-     * being active after the given date.
-     * 
-     * NOW should be date fetch from the database.
+     * Check if a System has a 'current' relation to a Rule Chain.
      * 
      * @param string    $sSystemId  The Entity ID
-     * @param DateTime  $oNow       The Now data form the database
+     * @return boolean true if a record found
      */ 
-    public function checkParentSystemRequired($sSystemId, DateTime $oNow)
+    public function checkParentSystemRequired($sSystemId)
     {
         
         return (boolean) $this->newQueryBuilder()
                     ->select(1)
                     ->from($this->getMetaData()->getName(),$this->getTableQueryAlias())
-                    ->filterByDisabledAfter($oNow)
+                    ->filterByCurrent(new DateTime('3000-01-01'))
                     ->filterBySystem($sSystemId)
                     ->end()
                 ->fetchColumn(0);

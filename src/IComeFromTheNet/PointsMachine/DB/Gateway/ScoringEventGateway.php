@@ -20,7 +20,10 @@ class ScoringEventGateway extends CommonTable
     */
     public function newQueryBuilder()
     {
-        return $this->head = new ScoringEventQuery($this->adapter,$this);
+        $this->head = new ScoringEventQuery($this->adapter,$this);
+        $this->head->setDefaultAlias($this->getTableQueryAlias());
+        
+        return $this->head;
     }
     
     

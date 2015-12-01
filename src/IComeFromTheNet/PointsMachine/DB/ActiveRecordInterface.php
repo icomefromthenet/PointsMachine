@@ -17,8 +17,6 @@ interface ActiveRecordInterface
     public function remove();
     
     
-    public function updateAll();
-    
     
 }
 /* End of File */

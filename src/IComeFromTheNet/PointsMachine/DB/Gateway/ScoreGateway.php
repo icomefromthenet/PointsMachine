@@ -1,6 +1,7 @@
 <?php
 namespace IComeFromTheNet\PointsMachine\DB\Gateway;
 
+use DateTime;
 use IComeFromTheNet\PointsMachine\DB\CommonTable;
 use IComeFromTheNet\PointsMachine\DB\Query\ScoreQuery;
 
@@ -20,10 +21,30 @@ class ScoreGateway extends CommonTable
     */
     public function newQueryBuilder()
     {
-        return $this->head = new ScoreQuery($this->adapter,$this);
+        $this->head = new ScoreQuery($this->adapter,$this);
+        $this->head->setDefaultAlias($this->getTableQueryAlias());
+        
+        return $this->head;
     }
     
-    
+    /**
+     * Check if a score group has a 'current' relation to a score.
+     * 
+     * @param string    $sScoreGroupId  The Entity ID
+     * @return boolean true if a record found
+     */ 
+    public function checkParentScoreGroupRequired($sScoreGroupId)
+    {
+        
+        return (boolean) $this->newQueryBuilder()
+                    ->select(1)
+                    ->from($this->getMetaData()->getName(),$this->getTableQueryAlias())
+                    ->filterByCurrent(new DateTime('3000-01-01'))
+                    ->filterByScoreGroup($sScoreGroupId)
+                    ->end()
+                ->fetchColumn(0);
+        
+    }
     
 }
 /* End of Class */

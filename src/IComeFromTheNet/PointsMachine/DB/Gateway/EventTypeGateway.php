@@ -20,7 +20,10 @@ class EventTypeGateway extends CommonTable
     */
     public function newQueryBuilder()
     {
-        return $this->head = new EventTypeQuery($this->adapter,$this);
+        $this->head = new EventTypeQuery($this->adapter,$this);
+        $this->head->setDefaultAlias($this->getTableQueryAlias());
+        
+        return $this->head;
     }
     
     
