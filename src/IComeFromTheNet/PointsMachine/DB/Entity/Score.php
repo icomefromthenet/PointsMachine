@@ -164,8 +164,10 @@ class Score extends TemporalEntity implements ActiveRecordInterface
         
         $bSuccess = $oGateway->updateQuery()
              ->start()
-                    ->addColumn('score_name'       , $aDatabaseData['group_name'])
-                    ->addColumn('score_name_slug'  , $aDatabaseData['group_name_slug'])
+                    ->addColumn('score_name'       , $aDatabaseData['score_name'])
+                    ->addColumn('score_name_slug'  , $aDatabaseData['score_name_slug'])
+                    ->addColumn('score_value'      , $aDatabaseData['score_value'])   
+                    ->addColumn('score_group_id'   , $aDatabaseData['score_group_id'])   
                 ->where()
                     ->filterByEpisode($aDatabaseData['episode_id'])
                     ->filterByScore($aDatabaseData['score_id'])

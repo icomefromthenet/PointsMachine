@@ -30,11 +30,11 @@ class EntityScoreTest extends TestWithContainer
         $oGateway->getAdapater()->getConfiguration()->setSQLLogger($oLog);
             
         $this->entitySaveNewEntityTest();
-        //$this->entitySaveFailedWhenNonCurrentEpisode();
-        //$this->entityUpdateExistingEpisodeTest();
-        //$this->entityUpdateCauseNewVersionTest();
-        //$this->entityRemoveFailsOnRelationsKeyCheckTest();
-        //$this->entityRemoveSucessfulTest();
+        $this->entitySaveFailedWhenNonCurrentEpisode();
+        $this->entityUpdateExistingEpisodeTest();
+        $this->entityUpdateCauseNewVersionTest();
+        $this->entityUpdateFailsOnRelationsKeyCheckTest();
+        $this->entityRemoveSucessfulTest();
         
         $sSql  = ' SELECT episode_id, score_id, score_name, score_name_slug, ';
         $sSql .= '       score_value, score_group_id, enabled_from, enabled_to  ' ;
@@ -77,7 +77,7 @@ class EntityScoreTest extends TestWithContainer
         $this->assertEquals('Created new Score Episode',$aResult['msg']);
         $this->assertTrue($aResult['result']);
         $this->assertTrue($bResult);
-        $this->assertEquals(13,$oEntity->iEpisodeID);
+        $this->assertEquals(16,$oEntity->iEpisodeID);
 
         
     } 
@@ -86,23 +86,26 @@ class EntityScoreTest extends TestWithContainer
     {
         
         $oContainer = $this->getContainer();
-        $oGateway   = $oContainer->getGatewayCollection()->getGateway('pt_score_group');
+        $oGateway   = $oContainer->getGatewayCollection()->getGateway('pt_score');
         $oLogger    = $oContainer->getAppLogger();
         $oProcessingDate = new DateTime();
        
         // Build the entity to save
         
-        $sScoreGroupId   = '62A58FF0-97F7-1D23-A88D-C00D9542FF18';
-        $iEpisodeId   = 8; 
-        $sGroupName = 'Illegal op';
-        $sGroupSlug = 'illegan_op';
+        $sScoreId       = '6E34457C-BF12-20A0-AEC8-B8FE436CE304';
+        $sScoreGroupId  = '62A58FF0-97F7-1D23-A88D-C00D9542FF18';
+        $sScoreName     = 'Non Current Score';
+        $sScoreNameSlug = 'non_current_score';
+        $sScoreValue    = 0.7;
         
-        $oEntity = new ScoreGroup($oGateway,$oLogger);
+        $oEntity = new Score($oGateway,$oLogger);
         
-        $oEntity->sScoreGroupID = $sScoreGroupId;
-        $oEntity->sGroupName     = $sGroupName;    
-        $oEntity->sGroupNameSlug = $sGroupSlug;
-        $oEntity->iEpisodeID    = $iEpisodeId;
+        $oEntity->sScoreID       = $sScoreId;
+        $oEntity->sScoreGroupID  = $sScoreGroupId;
+        $oEntity->sScoreName     = $sScoreName;    
+        $oEntity->sScoreNameSlug = $sScoreNameSlug;
+        $oEntity->fScoreValue    = $sScoreValue;
+        $oEntity->iEpisodeID     = 12;
         $oEntity->oEnabledFrom   = (new DateTime('now - 8 day'));
         $oEntity->oEnabledTo     = (new DateTime('now -1 day'));
       
@@ -111,7 +114,6 @@ class EntityScoreTest extends TestWithContainer
         $bResult = $oEntity->save();
         $aResult = $oEntity->getLastQueryResult();
       
-        
         $this->assertFalse($aResult['result']);
         $this->assertEquals('Unable to decide which operation to use',$aResult['msg']);
         $this->assertFalse($bResult);
@@ -123,24 +125,26 @@ class EntityScoreTest extends TestWithContainer
     protected function entityUpdateExistingEpisodeTest()
     {
         $oContainer = $this->getContainer();
-        $oGateway   = $oContainer->getGatewayCollection()->getGateway('pt_score_group');
+        $oGateway   = $oContainer->getGatewayCollection()->getGateway('pt_score');
         $oLogger    = $oContainer->getAppLogger();
         $oProcessingDate = new DateTime();
        
         // Build the entity to save
         
-        $sScoreGroupId   = 'CD48671F-DE97-6C41-70B9-1060FDC4433D';
-        $iEpisodeId   = 6; 
-        $sGroupName = 'Can be Updated Again';
-        $sGroupSlug = 'can_be_updated_again';
+        $sScoreId       = 'BEA50E4D-0FCF-D858-62C0-2BCBB32FB746';
+        $sScoreGroupId  = 'B1FEA3E0-1568-6C33-2519-14FBCC13BCED';
+        $sScoreName     = 'Score Updated';
+        $sScoreNameSlug = 'score_updated';
+        $sScoreValue    = 0.9;
         
+        $oEntity = new Score($oGateway,$oLogger);
         
-        $oEntity = new ScoreGroup($oGateway,$oLogger);
-        
-        $oEntity->sScoreGroupID = $sScoreGroupId;
-        $oEntity->sGroupName     = $sGroupName;    
-        $oEntity->sGroupNameSlug = $sGroupSlug;
-        $oEntity->iEpisodeID    = $iEpisodeId;
+        $oEntity->sScoreID       = $sScoreId;
+        $oEntity->sScoreGroupID  = $sScoreGroupId;
+        $oEntity->sScoreName     = $sScoreName;    
+        $oEntity->sScoreNameSlug = $sScoreNameSlug;
+        $oEntity->fScoreValue    = $sScoreValue;
+        $oEntity->iEpisodeID     = 13;
         $oEntity->oEnabledFrom   = (new DateTime('now'));
         $oEntity->oEnabledTo     = (new DateTime('3000-01-01'));
       
@@ -151,7 +155,7 @@ class EntityScoreTest extends TestWithContainer
       
         
         $this->assertTrue($aResult['result']);
-        $this->assertEquals('Updated existing Score Group Episode',$aResult['msg']);
+        $this->assertEquals('Updated existing Score Episode',$aResult['msg']);
         $this->assertTrue($bResult);
         
         
@@ -160,100 +164,110 @@ class EntityScoreTest extends TestWithContainer
     protected function entityUpdateCauseNewVersionTest()
     {
         $oContainer = $this->getContainer();
-        $oGateway   = $oContainer->getGatewayCollection()->getGateway('pt_score_group');
+        $oGateway   = $oContainer->getGatewayCollection()->getGateway('pt_score');
         $oLogger    = $oContainer->getAppLogger();
         $oProcessingDate = new DateTime();
        
         // Build the entity to save
         
-        $sScoreGroupId   = '30FAB3CD-B30A-C750-DF96-41A38A0998BC';
-        $iEpisodeId   = 7; 
-        $sGroupName = 'Created New Version';
-        $sGroupSlug = 'created_new_version';
+        $sScoreId       = '000439C2-3A34-DAB8-C7AB-852CA6EC98D8';
+        $sScoreGroupId  = 'B1FEA3E0-1568-6C33-2519-14FBCC13BCED';
+        $sScoreName     = 'New Episode';
+        $sScoreNameSlug = 'new_episode';
+        $sScoreValue    = 0.7;
         
+        $oEntity = new Score($oGateway,$oLogger);
         
-        $oEntity = new ScoreGroup($oGateway,$oLogger);
-        
-        $oEntity->sScoreGroupID = $sScoreGroupId;
-        $oEntity->sGroupName     = $sGroupName;    
-        $oEntity->sGroupNameSlug = $sGroupSlug;
-        $oEntity->iEpisodeID    = $iEpisodeId;
-        $oEntity->oEnabledFrom   = (new DateTime('now - 7 day'));
+        $oEntity->sScoreID       = $sScoreId;
+        $oEntity->sScoreGroupID  = $sScoreGroupId;
+        $oEntity->sScoreName     = $sScoreName;    
+        $oEntity->sScoreNameSlug = $sScoreNameSlug;
+        $oEntity->fScoreValue    = $sScoreValue;
+        $oEntity->iEpisodeID     = 14;
+        $oEntity->oEnabledFrom   = (new DateTime('now - 1 day'));
         $oEntity->oEnabledTo     = (new DateTime('3000-01-01'));
+        
+        // save the entity
+        $bResult = $oEntity->save();
+        $aResult = $oEntity->getLastQueryResult();
+        
+        
+        //var_dump($this->oLog);
       
+        $this->assertTrue($aResult['result']);
+        $this->assertEquals('Created new Score Episode',$aResult['msg']);
+        $this->assertTrue($bResult);
+        
+    }
+    
+    protected function entityUpdateFailsOnRelationsKeyCheckTest()
+    {
+        $oContainer = $this->getContainer();
+        $oGateway   = $oContainer->getGatewayCollection()->getGateway('pt_score');
+        $oLogger    = $oContainer->getAppLogger();
+        $oProcessingDate = new DateTime();
+       
+        // Build the entity to save
+        
+        $sScoreId       = 'BEA50E4D-0FCF-D858-62C0-2BCBB32FB746';
+        $sScoreGroupId  = '62A58FF0-97F7-1D23-A88D-C00D9542FF18'; // non current score group
+        $sScoreName     = 'Score Updated';
+        $sScoreNameSlug = 'score_updated';
+        $sScoreValue    = 0.9;
+        
+        $oEntity = new Score($oGateway,$oLogger);
+        
+        $oEntity->sScoreID       = $sScoreId;
+        $oEntity->sScoreGroupID  = $sScoreGroupId;
+        $oEntity->sScoreName     = $sScoreName;    
+        $oEntity->sScoreNameSlug = $sScoreNameSlug;
+        $oEntity->fScoreValue    = $sScoreValue;
+        $oEntity->iEpisodeID     = 13;
+        $oEntity->oEnabledFrom   = (new DateTime('now'));
+        $oEntity->oEnabledTo     = (new DateTime('3000-01-01'));
+        
         
         // save the entity
         $bResult = $oEntity->save();
         $aResult = $oEntity->getLastQueryResult();
       
         
-        $this->assertTrue($aResult['result']);
-        $this->assertEquals('Created new Score Group Episode',$aResult['msg']);
-        $this->assertTrue($bResult);
-        
-    }
-    
-    protected function entityRemoveFailsOnRelationsKeyCheckTest()
-    {
-        $oContainer = $this->getContainer();
-        $oGateway   = $oContainer->getGatewayCollection()->getGateway('pt_score_group');
-        $oLogger    = $oContainer->getAppLogger();
-        $oProcessingDate = new DateTime();
-       
-        // Build the entity to save
-        
-        $sScoreGroupId  = 'B1FEA3E0-1568-6C33-2519-14FBCC13BCED';
-        $iEpisodeId     = 1; 
-         $sGroupName    = 'Enchanting Supplies';
-        $sGroupSlug     = 'enchanting_supplies';
-       
-        
-        $oEntity = new ScoreGroup($oGateway,$oLogger);
-        
-        $oEntity->sScoreGroupID  = $sScoreGroupId;
-        $oEntity->sGroupName     = $sGroupName;    
-        $oEntity->sGroupNameSlug = $sGroupSlug;
-        $oEntity->iEpisodeID     = $iEpisodeId;
-      
-        
-        // save the entity
-        $bResult = $oEntity->remove();
-        $aResult = $oEntity->getLastQueryResult();
-      
-        
         $this->assertFalse($aResult['result']);
-        $this->assertEquals('Temporal Referential integrity violated check Score,AdjustmentGroupLimit',$aResult['msg']);
+        $this->assertEquals('Temporal Referential integrity violated check ScoreGroup',$aResult['msg']);
         $this->assertFalse($bResult);
     }
     
     protected function entityRemoveSucessfulTest()
     {
         $oContainer = $this->getContainer();
-        $oGateway   = $oContainer->getGatewayCollection()->getGateway('pt_score_group');
+        $oGateway   = $oContainer->getGatewayCollection()->getGateway('pt_score');
         $oLogger    = $oContainer->getAppLogger();
         $oProcessingDate = new DateTime();
        
         // Build the entity to save
         
-        $sScoreGroupId  = '08AA3D4D-2166-2F9D-3C2F-393AFFC59125';
-        $iEpisodeId     = 5; 
-        $sGroupName    = 'No Relations';
-        $sGroupSlug     = 'no_relations';
-       
+        $sScoreId       = '58AEFC40-C976-70E4-9F92-134DAFDB86E9';
+        $sScoreGroupId  = 'B1FEA3E0-1568-6C33-2519-14FBCC13BCED';
+        $sScoreName     = 'Closed Score';
+        $sScoreNameSlug = 'closed_score';
+        $sScoreValue    = 0.7;
         
-        $oEntity = new ScoreGroup($oGateway,$oLogger);
+        $oEntity = new Score($oGateway,$oLogger);
         
+        $oEntity->sScoreID       = $sScoreId;
         $oEntity->sScoreGroupID  = $sScoreGroupId;
-        $oEntity->sGroupName     = $sGroupName;    
-        $oEntity->sGroupNameSlug = $sGroupSlug;
-        $oEntity->iEpisodeID     = $iEpisodeId;
-      
+        $oEntity->sScoreName     = $sScoreName;    
+        $oEntity->sScoreNameSlug = $sScoreNameSlug;
+        $oEntity->fScoreValue    = $sScoreValue;
+        $oEntity->iEpisodeID     = 15;
+        $oEntity->oEnabledFrom   = (new DateTime('now - 1 day'));
+        $oEntity->oEnabledTo     = (new DateTime('3000-01-01'));
         
         // save the entity
         $bResult = $oEntity->remove();
         $aResult = $oEntity->getLastQueryResult();
       
-        
+        $this->assertEquals((new DateTime('now'))->format('Y-m-d'),$oEntity->oEnabledTo->format('Y-m-d'));
         $this->assertTrue($aResult['result']);
         $this->assertEquals('Closed this episode',$aResult['msg']);
         $this->assertTrue($bResult);

@@ -57,7 +57,6 @@ abstract class TemporalEntity  extends CommonEntity
             
             $aDatabaseData     = $oBuilder->demolish($this);
             $bSuccess           = false;
-          
            
             if(true === empty($this->iEpisodeID)) {
                 
@@ -101,7 +100,14 @@ abstract class TemporalEntity  extends CommonEntity
                     && $this->oEnabledTo->format('Y-m-d')   === '3000-01-01') {
                  
                 if(true === $this->validateUpdate($aDatabaseData)) {
-                    $bSuccess =  $this->updateExistingEpisode($aDatabaseData);
+                    $aCheckAry  = $this->checkCreateTemportalFK($aDatabaseData);
+                    
+                    if(true === in_array(true,$aCheckAry)) {
+                        $this->aLastResult['result'] = false;
+                        $this->aLastResult['msg']    = 'Temporal Referential integrity violated check '.implode(',',array_keys(array_filter($aCheckAry,function($v){return $v;})));
+                    } else {
+                        $bSuccess =  $this->updateExistingEpisode($aDatabaseData);
+                    }
                 }
                   
                 
