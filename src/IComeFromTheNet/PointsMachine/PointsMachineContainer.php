@@ -63,6 +63,7 @@ use IComeFromTheNet\PointsMachine\Compiler\Driver\MYSQLDriver;
 use IComeFromTheNet\PointsMachine\Compiler\Driver\DriverFactory;
 
 use IComeFromTheNet\PointsMachine\Compiler\Gateway\TmpAdjRuleGateway;
+use IComeFromTheNet\PointsMachine\Compiler\Gateway\TmpAdjRuleDupGateway;
 use IComeFromTheNet\PointsMachine\Compiler\Gateway\TmpCrossJoinGateway;
 use IComeFromTheNet\PointsMachine\Compiler\Gateway\TmpScoresGateway;
 use IComeFromTheNet\PointsMachine\Compiler\Gateway\TmpCommonGateway;
@@ -221,6 +222,7 @@ class PointsMachineContainer extends Pimple
               // tmp result tables
               ,'pt_result_score'        => 'pt_result_score'
               ,'pt_result_rule'         => 'pt_result_rule'
+              ,'pt_result_rule_dup'     => 'pt_result_rule_dup'
               ,'pt_result_cjoin'        => 'pt_result_cjoin'
               ,'pt_result_common'       => 'pt_result_common'
               ,'pt_result_agg'          => 'pt_result_agg'
@@ -845,6 +847,34 @@ class PointsMachineContainer extends Pimple
             $oGateway         = new TmpAdjRuleGateway($sActualTableName, $oDatabase, $oEvent, $oTable , null, null);
     
             $oGateway->setTableQueryAlias('tmpa');
+            $oGateway->setGatewayCollection($c->getGatewayCollection());
+            $oGateway->setTableMaker($oDriver);
+            
+            return $oGateway;
+            
+        });
+        
+         $oGatewayCol->addGateway('pt_result_rule_dup',function() use($c, $oSchema, $aTableMap) {
+            $sActualTableName = $aTableMap['pt_result_rule_dup'];
+            $oEvent           = $c->getEventDispatcher();
+            $oLogger          = $c->getAppLogger();
+            $oDatabase        = $c->getDatabaseAdaper();
+            $oGatewayCol      = $c->getGatewayCollection();
+           
+       
+            $oTable = $oSchema->createTable($sActualTableName);
+            $oTable->addOption('temporary',true); 
+            $oTable->addOption('engine','Memory');
+            $oTable->addColumn('slot_id','integer',array("unsigned" => true, 'autoincrement' => true, 'comment' => 'Calculation Slot surrogate key'));
+            $oTable->addColumn('rule_id'          ,'guid' ,array('notnull' => false, 'comment' =>'The Adj Rule Entity'));
+
+            $oTable->setPrimaryKey(array('slot_id'));
+            
+            $oDriver          = $c->getTableDriver($oTable);
+            
+            $oGateway         = new TmpAdjRuleDupGateway($sActualTableName, $oDatabase, $oEvent, $oTable , null, null);
+    
+            $oGateway->setTableQueryAlias('tmpad');
             $oGateway->setGatewayCollection($c->getGatewayCollection());
             $oGateway->setTableMaker($oDriver);
             

@@ -6,14 +6,14 @@ use Mrkrstphr\DbUnit\DataSet\ArrayDataSet;
 use IComeFromTheNet\PointsMachine\Tests\Base\CompilerTest;
 use IComeFromTheNet\PointsMachine\PointsMachine;
 use IComeFromTheNet\PointsMachine\PointsMachineException;
-use IComeFromTheNet\PointsMachine\Compiler\Pass\CrossJoinPass;
+use IComeFromTheNet\PointsMachine\Compiler\Pass\AggValuePass;
 use IComeFromTheNet\PointsMachine\Compiler\CompileResult;
 
 
-class CrossJoinPassTest extends CompilerTest
+class PassAggValueTest extends CompilerTest
 {
    
-    protected $aFixtures = ['example-system.php','pass-cjoin-before.php'];
+    protected $aFixtures = ['example-system.php','pass-agg-before.php'];
      
      
      
@@ -23,13 +23,13 @@ class CrossJoinPassTest extends CompilerTest
         $oContainer = $this->getContainer();
         $oResult = new CompileResult();
         
-        $oPass = new CrossJoinPass($oContainer->getDatabaseAdaper(),$oContainer->getGatewayCollection());
+        $oPass = new AggValuePass($oContainer->getDatabaseAdaper(),$oContainer->getGatewayCollection());
         
         
         $oPass->execute(new DateTime('now'), $oResult);
         
-        $oExpectedDataset = $this->getDataSet(['example-system.php','pass-cjoin-after.php'])->getTable('pt_result_cjoin');
-        $oActualDataset = $this->getConnection()->createDataSet(array('pt_result_cjoin'))->getTable('pt_result_cjoin');
+        $oExpectedDataset = $this->getDataSet(['example-system.php','pass-agg-after.php'])->getTable('pt_result_agg');
+        $oActualDataset = $this->getConnection()->createDataSet(array('pt_result_agg'))->getTable('pt_result_agg');
         
         $this->assertTablesEqual($oExpectedDataset,$oActualDataset);
         

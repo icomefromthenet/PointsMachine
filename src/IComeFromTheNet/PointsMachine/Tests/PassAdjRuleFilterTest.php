@@ -6,14 +6,14 @@ use Mrkrstphr\DbUnit\DataSet\ArrayDataSet;
 use IComeFromTheNet\PointsMachine\Tests\Base\CompilerTest;
 use IComeFromTheNet\PointsMachine\PointsMachine;
 use IComeFromTheNet\PointsMachine\PointsMachineException;
-use IComeFromTheNet\PointsMachine\Compiler\Pass\RoundPass;
+use IComeFromTheNet\PointsMachine\Compiler\Pass\AdjRuleFilterPass;
 use IComeFromTheNet\PointsMachine\Compiler\CompileResult;
 
 
-class RoundPassTest extends CompilerTest
+class PassAdjRuleFilterTest extends CompilerTest
 {
    
-    protected $aFixtures = ['example-system.php','pass-round-before.php'];
+    protected $aFixtures = ['example-system.php','pass-adjrule-before.php'];
      
      
      
@@ -23,13 +23,13 @@ class RoundPassTest extends CompilerTest
         $oContainer = $this->getContainer();
         $oResult = new CompileResult();
         
-        $oPass = new RoundPass($oContainer->getDatabaseAdaper(),$oContainer->getGatewayCollection());
+        $oPass = new AdjRuleFilterPass($oContainer->getDatabaseAdaper(),$oContainer->getGatewayCollection());
         
         
         $oPass->execute(new DateTime('now'), $oResult);
         
-        $oExpectedDataset = $this->getDataSet(['example-system.php','pass-round-after.php'])->getTable('pt_result_score');
-        $oActualDataset = $this->getConnection()->createDataSet(array('pt_result_score'))->getTable('pt_result_score');
+        $oExpectedDataset = $this->getDataSet(['example-system.php','pass-adjrule-after.php'])->getTable('pt_result_rule');
+        $oActualDataset = $this->getConnection()->createDataSet(array('pt_result_rule'))->getTable('pt_result_rule');
         
         $this->assertTablesEqual($oExpectedDataset,$oActualDataset);
         

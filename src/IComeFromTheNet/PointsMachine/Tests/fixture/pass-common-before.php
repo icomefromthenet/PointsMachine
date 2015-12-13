@@ -36,7 +36,7 @@ return [
                 ,'system_id'  =>'9B753E70-881B-F53E-2D46-8151BED1BBAF'
                 ,'chain_name'  =>'Expired Withdrawal Chain A'
                 ,'chain_name_slug'  =>'expired_withdrawal_chain_a'
-                ,'rounding_option' => null
+                ,'rounding_option' => 0
                 ,'cap_value'    => null
                 ,'enabled_from' => (new DateTime('now - 7 day'))->format('Y-m-d')
                 ,'enabled_to'  =>  (new DateTime('now'))->format('Y-m-d')
@@ -50,7 +50,7 @@ return [
                 ,'system_id'  =>'9B753E70-881B-F53E-2D46-8151BED1BBAF'
                 ,'chain_name'  =>'Expired Chain B'
                 ,'chain_name_slug'  =>'expired_chain_b'
-                ,'rounding_option' => null
+                ,'rounding_option' => 0
                 ,'cap_value'    => null
                 ,'enabled_from' => (new DateTime('now'))->format('Y-m-d')
                 ,'enabled_to'   =>  (new DateTime('3000-01-01'))->format('Y-m-d') 

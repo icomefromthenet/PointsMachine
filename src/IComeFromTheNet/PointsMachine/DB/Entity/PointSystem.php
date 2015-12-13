@@ -170,7 +170,7 @@ class PointSystem extends  TemporalEntity implements ActiveRecordInterface
         
     }
     
-    protected function checkTemportalFK($aDatabaseData)
+    protected function checkRemoveTemportalFK($aDatabaseData)
     {
         $oGateway              = $this->getTableGateway();
         $oRuleChainGateway     = $oGateway->getGatewayCollection()->getGateway('pt_rule_chain');
@@ -185,6 +185,11 @@ class PointSystem extends  TemporalEntity implements ActiveRecordInterface
          
         
         return array('SystemZone' => $bReqSystemZone,'AdjustmentGroup' => $bReqAdjGroup, 'RuleChain' => $bReqRuleChain);
+    }
+    
+    protected function checkCreateTemportalFK($aDatabaseData) 
+    {
+        return array();
     }
     
     
@@ -229,7 +234,7 @@ class PointSystem extends  TemporalEntity implements ActiveRecordInterface
     }
     
     
-    protected function validateNewEpisode($aDatabaseData)
+    protected function validateNewEpisode()
     {
         $aData = $this->getDataForValidation();
         $aRules = $this->aValidation;
@@ -241,7 +246,7 @@ class PointSystem extends  TemporalEntity implements ActiveRecordInterface
         return $this->validate($aData,$aRules);
     }
    
-    protected function validateNew($aDatabaseData)
+    protected function validateNew()
     {
         $aData = $this->getDataForValidation();
         $aRules = $this->aValidation;
@@ -249,7 +254,7 @@ class PointSystem extends  TemporalEntity implements ActiveRecordInterface
         return $this->validate($aData,$aRules);
     }
     
-    protected function validateUpdate($aDatabaseData)
+    protected function validateUpdate()
     {
         $aData = $this->getDataForValidation();
         $aRules = $this->aValidation;
@@ -261,7 +266,7 @@ class PointSystem extends  TemporalEntity implements ActiveRecordInterface
         return $this->validate($aData,$aRules);
     }
           
-    protected function validateRemove($aDatabaseData)
+    protected function validateRemove()
     {
         $aData = $this->getDataForValidation();
         $aRules = $this->aValidation;

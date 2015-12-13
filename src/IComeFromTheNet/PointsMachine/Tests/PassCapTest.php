@@ -10,7 +10,7 @@ use IComeFromTheNet\PointsMachine\Compiler\Pass\CapPass;
 use IComeFromTheNet\PointsMachine\Compiler\CompileResult;
 
 
-class CapPassTest extends CompilerTest
+class PassCapTest extends CompilerTest
 {
    
     protected $aFixtures = ['example-system.php','pass-cap-before.php'];

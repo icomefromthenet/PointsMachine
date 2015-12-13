@@ -24,7 +24,9 @@ abstract class TemporalEntity  extends CommonEntity
     
     abstract protected function updateExistingEpisode($aDatabaseData); 
     
-    abstract protected function checkTemportalFK($aDatabaseData);
+    abstract protected function checkRemoveTemportalFK($aDatabaseData);
+    
+    abstract protected function checkCreateTemportalFK($aDatabaseData);
     
     abstract protected function closeEpisode($aDatabaseData);
     
@@ -63,7 +65,14 @@ abstract class TemporalEntity  extends CommonEntity
                 $this->oEnabledFrom = $oNow;
                
                 if(true === $this->validateNew($aDatabaseData)) {
-                    $bSuccess = $this->createNewEntity($aDatabaseData);
+                    $aCheckAry  = $this->checkCreateTemportalFK($aDatabaseData);
+                    
+                    if(true === in_array(true,$aCheckAry)) {
+                        $this->aLastResult['result'] = false;
+                        $this->aLastResult['msg']    = 'Temporal Referential integrity violated check '.implode(',',array_keys(array_filter($aCheckAry,function($v){return $v;})));
+                    } else {
+                           $bSuccess = $this->createNewEntity($aDatabaseData);    
+                    }
                 }
                 
                 
@@ -76,7 +85,14 @@ abstract class TemporalEntity  extends CommonEntity
              
                 
                 if(true === $this->validateNewEpisode($aDatabaseData)) {
-                    $bSuccess =  $this->createNewEpisode($aDatabaseData);  
+                    $aCheckAry  = $this->checkCreateTemportalFK($aDatabaseData);
+                    
+                    if(true === in_array(true,$aCheckAry)) {
+                        $this->aLastResult['result'] = false;
+                        $this->aLastResult['msg']    = 'Temporal Referential integrity violated check '.implode(',',array_keys(array_filter($aCheckAry,function($v){return $v;})));
+                    } else {
+                        $bSuccess =  $this->createNewEpisode($aDatabaseData);
+                    }
                 }
             
                 
@@ -129,7 +145,7 @@ abstract class TemporalEntity  extends CommonEntity
                 
                 # Check for Referential integrity in time 
                 
-                $aCheckAry          = $this->checkTemportalFK($aDatabaseData);
+                $aCheckAry          = $this->checkRemoveTemportalFK($aDatabaseData);
                 
                 if(true === in_array(true,$aCheckAry)) {
                     $this->aLastResult['result'] = false;
@@ -170,7 +186,7 @@ abstract class TemporalEntity  extends CommonEntity
     //-----------------------------------------------------------------
     # Extra Validator Helpers
     
-    abstract protected function validateNewEpisode($aDatabaseData);
+    abstract protected function validateNewEpisode();
    
     
    

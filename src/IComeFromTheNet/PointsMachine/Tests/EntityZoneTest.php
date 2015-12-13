@@ -8,7 +8,7 @@ use DBALGateway\Feature\BufferedQueryLogger;
 
 
 
-class ZoneEntityTest extends TestWithContainer
+class EntityZoneTest extends TestWithContainer
 {
     
     protected $aFixtures = ['example-system.php','zone-before.php'];
@@ -130,7 +130,7 @@ class ZoneEntityTest extends TestWithContainer
       
         
         $this->assertFalse($aResult['result']);
-        $this->assertEquals('Failed to create new Points System Zone Episode the given Points System is NOT current',$aResult['msg']);
+        $this->assertEquals('Temporal Referential integrity violated check PointSystem',$aResult['msg']);
         $this->assertFalse($bResult);
         
         

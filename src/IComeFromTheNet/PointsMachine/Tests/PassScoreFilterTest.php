@@ -6,14 +6,14 @@ use Mrkrstphr\DbUnit\DataSet\ArrayDataSet;
 use IComeFromTheNet\PointsMachine\Tests\Base\CompilerTest;
 use IComeFromTheNet\PointsMachine\PointsMachine;
 use IComeFromTheNet\PointsMachine\PointsMachineException;
-use IComeFromTheNet\PointsMachine\Compiler\Pass\CommonFilterPass;
+use IComeFromTheNet\PointsMachine\Compiler\Pass\ScoreFilterPass;
 use IComeFromTheNet\PointsMachine\Compiler\CompileResult;
 
 
-class ScoreFilterPassTest extends CompilerTest
+class PassScoreFilterTest extends CompilerTest
 {
    
-    protected $aFixtures = ['example-system.php','pass-common-before.php'];
+    protected $aFixtures = ['example-system.php','pass-score-before.php'];
      
      
      
@@ -23,13 +23,13 @@ class ScoreFilterPassTest extends CompilerTest
         $oContainer = $this->getContainer();
         $oResult = new CompileResult();
         
-        $oPass = new CommonFilterPass($oContainer->getDatabaseAdaper(),$oContainer->getGatewayCollection());
+        $oPass = new ScoreFilterPass($oContainer->getDatabaseAdaper(),$oContainer->getGatewayCollection());
         
         
         $oPass->execute(new DateTime('now'), $oResult);
         
-        $oExpectedDataset = $this->getDataSet(['example-system.php','pass-common-after.php'])->getTable('pt_result_common');
-        $oActualDataset = $this->getConnection()->createDataSet(array('pt_result_common'))->getTable('pt_result_common');
+        $oExpectedDataset = $this->getDataSet(['example-system.php','pass-score-after.php'])->getTable('pt_result_score');
+        $oActualDataset = $this->getConnection()->createDataSet(array('pt_result_score'))->getTable('pt_result_score');
         
         $this->assertTablesEqual($oExpectedDataset,$oActualDataset);
         

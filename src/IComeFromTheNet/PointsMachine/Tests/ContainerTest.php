@@ -11,7 +11,7 @@ class ContainerTest extends TestWithContainer
     public function getDataSet()
     {
        return new ArrayDataSet([
-           __DIR__.'/ExampleFixture.php',
+           __DIR__.'/fixture/example-system.php',
         ]);
     }
     
@@ -72,6 +72,12 @@ class ContainerTest extends TestWithContainer
         $oGateway = $oContainer->getGatewayCollection()->getGateway('pt_result_rule');
         $this->assertInstanceOf('IComeFromTheNet\PointsMachine\Compiler\Gateway\TmpAdjRuleGateway',$oGateway);
         $this->assertInstanceOf('IComeFromTheNet\PointsMachine\Compiler\Driver\DriverInterface',$oGateway->getTableMaker());
+        
+        
+        $oGateway = $oContainer->getGatewayCollection()->getGateway('pt_result_rule_dup');
+        $this->assertInstanceOf('IComeFromTheNet\PointsMachine\Compiler\Gateway\TmpAdjRuleDupGateway',$oGateway);
+        $this->assertInstanceOf('IComeFromTheNet\PointsMachine\Compiler\Driver\DriverInterface',$oGateway->getTableMaker());
+        
         
         $oGateway = $oContainer->getGatewayCollection()->getGateway('pt_result_cjoin');
         $this->assertInstanceOf('IComeFromTheNet\PointsMachine\Compiler\Gateway\TmpCrossJoinGateway',$oGateway);

@@ -160,10 +160,10 @@ abstract class CommonEntity implements ActiveRecordInterface
         
     }
     
-    abstract protected function validateNew($aDatabaseData);
+    abstract protected function validateNew();
     
-    abstract protected function validateUpdate($aDatabaseData);
+    abstract protected function validateUpdate();
           
-    abstract protected function validateRemove($aDatabaseData);
+    abstract protected function validateRemove();
 }
 /* End of File */

@@ -21,6 +21,7 @@ class CompilerTest extends TestWithContainer
         $oContainer        = $this->getContainer();
         $oTmpScoreGateway  = $oContainer->getGatewayCollection()->getGateway('pt_result_score');
         $oTmpRuleGateway   = $oContainer->getGatewayCollection()->getGateway('pt_result_rule');
+        $oTmpRuleDupGateway   = $oContainer->getGatewayCollection()->getGateway('pt_result_rule_dup');
         $oTmpCommonGateway = $oContainer->getGatewayCollection()->getGateway('pt_result_common');
         $oTmpCJoinGateway  = $oContainer->getGatewayCollection()->getGateway('pt_result_cjoin');
         $oTmpResHeaderGateway = $oContainer->getGatewayCollection()->getGateway('pt_result_agg');
@@ -33,6 +34,7 @@ class CompilerTest extends TestWithContainer
         $oTmpCommonGateway->getTableMaker()->createTable();
         $oTmpCJoinGateway->getTableMaker()->createTable();
         $oTmpResHeaderGateway->getTableMaker()->createTable();
+        $oTmpRuleDupGateway->getTableMaker()->createTable();
         
         $oTmpRankGateway->getTableMaker()->createTable();
         
@@ -44,6 +46,7 @@ class CompilerTest extends TestWithContainer
         $oContainer        = $this->getContainer();
         $oTmpScoreGateway  = $oContainer->getGatewayCollection()->getGateway('pt_result_score');
         $oTmpRuleGateway   = $oContainer->getGatewayCollection()->getGateway('pt_result_rule');
+        $oTmpRuleDupGateway   = $oContainer->getGatewayCollection()->getGateway('pt_result_rule_dup');
         $oTmpCommonGateway = $oContainer->getGatewayCollection()->getGateway('pt_result_common');
         $oTmpCJoinGateway  = $oContainer->getGatewayCollection()->getGateway('pt_result_cjoin');
         $oTmpResHeaderGateway = $oContainer->getGatewayCollection()->getGateway('pt_result_agg');
@@ -57,6 +60,7 @@ class CompilerTest extends TestWithContainer
         $oTmpCommonGateway->getTableMaker()->removeTable();
         $oTmpCJoinGateway->getTableMaker()->removeTable(); 
         $oTmpResHeaderGateway->getTableMaker()->removeTable();
+        $oTmpRuleDupGateway->getTableMaker()->removeTable();
         
         $oTmpRankGateway->getTableMaker()->removeTable();
          

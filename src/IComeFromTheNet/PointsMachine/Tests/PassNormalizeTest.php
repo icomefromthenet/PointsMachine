@@ -6,14 +6,14 @@ use Mrkrstphr\DbUnit\DataSet\ArrayDataSet;
 use IComeFromTheNet\PointsMachine\Tests\Base\CompilerTest;
 use IComeFromTheNet\PointsMachine\PointsMachine;
 use IComeFromTheNet\PointsMachine\PointsMachineException;
-use IComeFromTheNet\PointsMachine\Compiler\Pass\RankPass;
+use IComeFromTheNet\PointsMachine\Compiler\Pass\NormalizePass;
 use IComeFromTheNet\PointsMachine\Compiler\CompileResult;
 
 
-class AdjRuleFilterPassTest extends CompilerTest
+class PassNormalizeTest extends CompilerTest
 {
    
-    protected $aFixtures = ['example-system.php','pass-rank-before.php'];
+    protected $aFixtures = ['example-system.php','pass-normalize-before.php'];
      
      
      
@@ -23,13 +23,13 @@ class AdjRuleFilterPassTest extends CompilerTest
         $oContainer = $this->getContainer();
         $oResult = new CompileResult();
         
-        $oPass = new RankPass($oContainer->getDatabaseAdaper(),$oContainer->getGatewayCollection());
+        $oPass = new NormalizePass($oContainer->getDatabaseAdaper(),$oContainer->getGatewayCollection());
         
         
         $oPass->execute(new DateTime('now'), $oResult);
         
-        $oExpectedDataset = $this->getDataSet(['example-system.php','pass-rank-after.php'])->getTable('pt_result_rank');
-        $oActualDataset = $this->getConnection()->createDataSet(array('pt_result_rank'))->getTable('pt_result_rank');
+        $oExpectedDataset = $this->getDataSet(['example-system.php','pass-normalize-after.php'])->getTable('pt_result_rule');
+        $oActualDataset = $this->getConnection()->createDataSet(array('pt_result_rule'))->getTable('pt_result_rule');
         
         $this->assertTablesEqual($oExpectedDataset,$oActualDataset);
         

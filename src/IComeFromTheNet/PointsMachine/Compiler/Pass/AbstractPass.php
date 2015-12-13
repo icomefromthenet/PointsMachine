@@ -128,6 +128,21 @@ abstract class AbstractPass
     }
     
     /**
+     * Fetch the table name for this rules dup tmp table
+     *  
+     * @return string the tmp table name
+     * @access protected
+     */ 
+    protected function getRuleDupTmpTableName()
+    {
+        return $this->getGatewayCollection()
+                            ->getGateway('pt_result_rule_dup')
+                            ->getMetaData()
+                            ->getName();
+        
+    }
+    
+    /**
      * Fetch the table name for the Score tmp table
      *  
      * @return string the tmp table name

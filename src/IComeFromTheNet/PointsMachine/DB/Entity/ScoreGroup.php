@@ -60,6 +60,28 @@ class ScoreGroup extends TemporalEntity implements ActiveRecordInterface
     # Entity Hooks
     
     
+    protected function checkRemoveTemportalFK($aDatabaseData)
+    {
+        $oGateway               = $this->getTableGateway();
+        $oScoreGateway          = $oGateway->getGatewayCollection()->getGateway('pt_score');
+        $oAdjGroupLimitGateway  = $oGateway->getGatewayCollection()->getGateway('pt_score');
+       
+        
+        // Check for Referential integrity in time. That is
+        // there this score group is related to a 'current' score)
+        // to close this score group would invalidate the relation 
+        $bReqScore    = $oScoreGateway->checkParentScoreGroupRequired($this->sScoreGroupID);
+        $bReqAdjGroup = $oAdjGroupLimitGateway->checkParentScoreGroupRequired($this->sScoreGroupID);
+        
+        return array('Score' => $bReqScore, 'AdjustmentGroupLimit' => $bReqAdjGroup);
+    }
+    
+    protected function checkCreateTemportalFK($aDatabaseData)
+    {
+        return array();
+    }
+    
+    
     protected function createNewEntity($aDatabaseData)
     {
         $bSuccess          = false;
@@ -158,23 +180,7 @@ class ScoreGroup extends TemporalEntity implements ActiveRecordInterface
         
     }
     
-    protected function checkTemportalFK($aDatabaseData)
-    {
-        $oGateway               = $this->getTableGateway();
-        $oScoreGateway          = $oGateway->getGatewayCollection()->getGateway('pt_score');
-        $oAdjGroupLimitGateway  = $oGateway->getGatewayCollection()->getGateway('pt_score');
-       
-        
-        // Check for Referential integrity in time. That is
-        // there this score group is related to a 'current' score)
-        // to close this score group would invalidate the relation 
-        $bReqScore    = $oScoreGateway->checkParentScoreGroupRequired($this->sScoreGroupID);
-        $bReqAdjGroup = $oAdjGroupLimitGateway->checkParentScoreGroupRequired($this->sScoreGroupID);
-        
-        return array('Score' => $bReqScore, 'AdjustmentGroupLimit' => $bReqAdjGroup);
-    }
-    
-    
+   
     protected function closeEpisode($aDatabaseData)
     {
         $oGateway              = $this->getTableGateway();
@@ -216,7 +222,7 @@ class ScoreGroup extends TemporalEntity implements ActiveRecordInterface
     }
     
     
-    protected function validateNewEpisode($aDatabaseData)
+    protected function validateNewEpisode()
     {
         $aData = $this->getDataForValidation();
         $aRules = $this->aValidation;
@@ -228,7 +234,7 @@ class ScoreGroup extends TemporalEntity implements ActiveRecordInterface
         return $this->validate($aData,$aRules);
     }
    
-    protected function validateNew($aDatabaseData)
+    protected function validateNew()
     {
         $aData = $this->getDataForValidation();
         $aRules = $this->aValidation;
@@ -236,7 +242,7 @@ class ScoreGroup extends TemporalEntity implements ActiveRecordInterface
         return $this->validate($aData,$aRules);
     }
     
-    protected function validateUpdate($aDatabaseData)
+    protected function validateUpdate()
     {
         $aData = $this->getDataForValidation();
         $aRules = $this->aValidation;
@@ -248,7 +254,7 @@ class ScoreGroup extends TemporalEntity implements ActiveRecordInterface
         return $this->validate($aData,$aRules);
     }
           
-    protected function validateRemove($aDatabaseData)
+    protected function validateRemove()
     {
         $aData = $this->getDataForValidation();
         $aRules = $this->aValidation;

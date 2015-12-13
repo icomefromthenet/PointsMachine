@@ -30,6 +30,48 @@ class AdjRuleFilterPass extends AbstractPass
     const PASS_PRIORITY = 30;
     
     
+     protected function includeMandatoryAdjustmentRuleGroups(DateTime $oProcessingDate)
+    {
+        $sSql               = '';
+        $sRuleTmpTable      = $this->getRuleTmpTableName();
+        $sCommonTmpTable    = $this->getCommonTmpTableName();
+        $sRuleCMemberTable  = $this->getChainMemberTableName();
+        $sRuleGroupTable    = $this->getRuleGroupTableName();
+        $sRuleTable         = $this->getRuleTableName();
+        $sRuleDupTable      = $this->getRuleDupTmpTableName();
+        $oDatabase          = $this->getDatabaseAdapter();
+        
+        # build the dup table
+        
+        $sSql  = ' INSERT INTO '.$sRuleDupTable .' (rule_id) '.PHP_EOL;
+        $sSql .= ' SELECT  rule_id FROM '.$sRuleTmpTable.' ;'.PHP_EOL;
+       //D39CDDFB-09DF-00F1-ED5B-ECE0C04782CD
+        $oDatabase->executeUpdate($sSql);
+   
+        # find current groups that part of the a current chain that are mandatory and fetch all their current rules
+        # key word here is current.
+        
+        $sSql  = ' INSERT INTO '.$sRuleTmpTable .' (rule_id) '.PHP_EOL;
+        $sSql .= ' SELECT  rule_id '.PHP_EOL;
+        $sSql .= ' FROM '.$sRuleCMemberTable.' j '.PHP_EOL;
+        $sSql .= ' CROSS JOIN  '.$sCommonTmpTable .' c '.PHP_EOL;
+        $sSql .= ' JOIN '.$sRuleGroupTable.'  rg ON rg.rule_group_id = j.rule_group_id '.PHP_EOL;
+        $sSql .= ' JOIN '.$sRuleTable.'       r  ON r.rule_group_id  = rg.rule_group_id '.PHP_EOL;
+        $sSql .= ' WHERE rg.is_mandatory = 1 '.PHP_EOL;
+        $sSql .= ' AND j.rule_chain_id = c.rule_chain_id '.PHP_EOL;
+        $sSql .= ' AND j.enabled_from  <= c.processing_date AND j.enabled_to  > c.processing_date ';
+        $sSql .= ' AND rg.enabled_from <= c.processing_date AND rg.enabled_to > c.processing_date ';
+        $sSql .= ' AND r.enabled_from  <= c.processing_date AND r.enabled_to  > c.processing_date ';
+        $sSql .= ' AND NOT EXISTS (SELECT 1 FROM '.$sRuleDupTable.' rd WHERE rd.rule_id = r.rule_id); '.PHP_EOL;
+        $sSql .=  PHP_EOL;
+        
+        $oDatabase->exec($sSql);
+        
+        
+        return $sSql;
+        
+    }
+    
     
     protected function matchRule(DateTime $oProcessingDate)
     {
@@ -61,7 +103,7 @@ class AdjRuleFilterPass extends AbstractPass
             $sSql .= 'AND j.rule_id = k.rule_id ';
         $sSql .= ');'.PHP_EOL;
         
-        
+       
         
         # Remove rules that have a zone link that not match the assigned zone
         
@@ -77,6 +119,7 @@ class AdjRuleFilterPass extends AbstractPass
                             $sSql .= 'AND k.rule_id = j.rule_id ';
                             $sSql .=')> 0,0,1);'.PHP_EOL;
    
+      
          
         $sSql  .= 'DELETE k FROM '.$sRuleTmpTable .' k ';    
         $sSql .= 'WHERE NOT EXISTS (SELECT 1 FROM '.$sRuleZoneTable.' j ,'.$sCommonTmpTable.' l ';
@@ -86,9 +129,11 @@ class AdjRuleFilterPass extends AbstractPass
                             $sSql .= 'AND l.system_zone_id = j.zone_id) ';
         $sSql .= 'AND k.apply_all_zone = 0 ';        
         $sSql .= 'OR k.rule_ep IS NULL; '.PHP_EOL;
+     
+          
+        $oDatabase = $this->getDatabaseAdapter();
+        $oDatabase->exec($sSql);
        
-        
-        return $sSql;
     }
     
     protected function matchRuleGroup(DateTime $oProcessingDate)
@@ -102,7 +147,8 @@ class AdjRuleFilterPass extends AbstractPass
                             ->getGateway('pt_rule_group_limits')
                             ->getMetaData()
                             ->getName();                    
-                
+               
+          
         
         $sSql .=  'UPDATE '.$sRuleTmpTable .' k ';
         $sSql .= 'SET  k.rule_group_ep = (';
@@ -112,7 +158,7 @@ class AdjRuleFilterPass extends AbstractPass
             $sSql .= 'AND j.rule_group_id = k.rule_group_id ';
         $sSql .= ');'.PHP_EOL;
         
-        
+         
 
         # filter out rule groups that are not linked to the current system
 
@@ -125,6 +171,7 @@ class AdjRuleFilterPass extends AbstractPass
                     $sSql .= 'AND j.system_id IS NOT NULL ';  
         $sSql .= ') > 0,0,1);'.PHP_EOL;
         
+      
     
         $sSql .= 'DELETE k FROM '.$sRuleTmpTable .' k ';    
         $sSql .= 'WHERE NOT EXISTS ( ';
@@ -136,6 +183,8 @@ class AdjRuleFilterPass extends AbstractPass
                             $sSql .= ')';
         $sSql .= 'AND k.apply_all_sys = 0;'.PHP_EOL;
         
+      
+     
         
         # filter out rule groups not linked to the score group
         # we won't know until we do the join on score and rules which record to filter
@@ -155,9 +204,10 @@ class AdjRuleFilterPass extends AbstractPass
         $sSql  .= 'DELETE k FROM '.$sRuleTmpTable .' k ';   
         $sSql .= 'WHERE k.rule_group_ep IS NULL;'.PHP_EOL;
         
-        
-        return $sSql;
-
+        $oDatabase = $this->getDatabaseAdapter();
+        $oDatabase->exec($sSql);
+       
+       
     }
     
     protected function matchRuleChainMember(DateTime $oProcessingDate)
@@ -195,8 +245,16 @@ class AdjRuleFilterPass extends AbstractPass
         $sSql .= 'DELETE k FROM '.$sRuleTmpTable .' k ';    
         $sSql .= 'WHERE k.chain_member_ep IS NULL; '.PHP_EOL;
         
-        return $sSql;
+        $oDatabase = $this->getDatabaseAdapter();
+        $oDatabase->exec($sSql);
+       
+        //var_dump($oDatabase->executeQuery('SELECT  rule_id, rule_group_id,rule_group_ep FROM '.$sRuleTmpTable)->fetchAll());
+        //exit;  
+        
+        
     }
+    
+   
     
     
     /**
@@ -211,13 +269,10 @@ class AdjRuleFilterPass extends AbstractPass
             
             $oDatabase = $this->getDatabaseAdapter();
             
-            $sSql  = '';
-            $sSql .= $this->matchRule($oProcessingDate);
-            $sSql .= $this->matchRuleGroup($oProcessingDate);
-            $sSql .= $this->matchRuleChainMember($oProcessingDate);
-           
-            
-            $oDatabase->executeUpdate($sSql);
+            $this->includeMandatoryAdjustmentRuleGroups($oProcessingDate);
+            $this->matchRule($oProcessingDate);
+            $this->matchRuleGroup($oProcessingDate);
+            $this->matchRuleChainMember($oProcessingDate);
             
             $oResult->addResult(__CLASS__,'Executed Successfully');
         }

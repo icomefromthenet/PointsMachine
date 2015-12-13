@@ -11,7 +11,7 @@ use PHPUnit_Extensions_Database_DataSet_DataSetFilter;
 use PHPUnit_Extensions_Database_DataSet_QueryDataSet;
 
 
-class SystemEntityTest extends TestWithContainer
+class EntitySystemTest extends TestWithContainer
 {
     
     protected $aFixtures = ['example-system.php','system-before.php'];

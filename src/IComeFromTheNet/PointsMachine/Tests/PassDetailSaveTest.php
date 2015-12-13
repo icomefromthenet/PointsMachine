@@ -6,14 +6,14 @@ use Mrkrstphr\DbUnit\DataSet\ArrayDataSet;
 use IComeFromTheNet\PointsMachine\Tests\Base\CompilerTest;
 use IComeFromTheNet\PointsMachine\PointsMachine;
 use IComeFromTheNet\PointsMachine\PointsMachineException;
-use IComeFromTheNet\PointsMachine\Compiler\Pass\AdjRuleFilterPass;
+use IComeFromTheNet\PointsMachine\Compiler\Pass\DetailSavePass;
 use IComeFromTheNet\PointsMachine\Compiler\CompileResult;
 
 
-class AdjRuleFilterPassTest extends CompilerTest
+class PassDetailSaveTest extends CompilerTest
 {
    
-    protected $aFixtures = ['example-system.php','pass-adjrule-before.php'];
+    protected $aFixtures = ['example-system.php','pass-detail-before.php'];
      
      
      
@@ -23,13 +23,13 @@ class AdjRuleFilterPassTest extends CompilerTest
         $oContainer = $this->getContainer();
         $oResult = new CompileResult();
         
-        $oPass = new AdjRuleFilterPass($oContainer->getDatabaseAdaper(),$oContainer->getGatewayCollection());
+        $oPass = new DetailSavePass($oContainer->getDatabaseAdaper(),$oContainer->getGatewayCollection());
         
         
         $oPass->execute(new DateTime('now'), $oResult);
         
-        $oExpectedDataset = $this->getDataSet(['example-system.php','pass-adjrule-after.php'])->getTable('pt_result_rule');
-        $oActualDataset = $this->getConnection()->createDataSet(array('pt_result_rule'))->getTable('pt_result_rule');
+        $oExpectedDataset = $this->getDataSet(['example-system.php','pass-detail-after.php'])->getTable('pt_result_detail');
+        $oActualDataset = $this->getConnection()->createDataSet(array('pt_result_detail'))->getTable('pt_result_detail');
         
         $this->assertTablesEqual($oExpectedDataset,$oActualDataset);
         

@@ -62,22 +62,34 @@ class PointSystemZone extends TemporalEntity implements ActiveRecordInterface
     //--------------------------------------------------------------------------
     # Entity Hooks
     
-    protected function canChangeToSystem($sSystemID) 
+    
+    protected function checkCreateTemportalFK($aDatabaseData) 
     {
         $oGateway          = $this->getTableGateway();
         $oSystemGateway    = $oGateway->getGatewayCollection()->getGateway('pt_system');
-        $bResult           = true;
+        $bResult           = array();
+        $sSystemID         = $aDatabaseData['system_id'];
         
         // Check if the system linked is current (Valid in time)
         // rather do this after the insert but that would require a transaction
         // This code too low level to control transactions, as this lib not high throughput system a pre check is not a likely problem.
         if(false === $oSystemGateway->checkSystemIsCurrent($sSystemID,new DateTime('3000-01-01'))) {
-            $bResult = false;
-            $this->aLastResult['result'] = false;
-            $this->aLastResult['msg']    = 'Failed to create new Points System Zone Episode the given Points System is NOT current';
+            $bResult['PointSystem'] = true;
         } 
         
+        
         return $bResult;
+    }
+    
+    protected function checkRemoveTemportalFK($aDatabaseData)
+    {
+        $oGateway              = $this->getTableGateway();
+        $oRuleZonesGateway     = $oGateway->getGatewayCollection()->getGateway('pt_rule_sys_zone');
+        
+        # Check for Referential integrity in time (Is there a 'current' record where this zone is related to a adjustment rule)
+        $bReqZone = $oRuleZonesGateway->checkZoneIsCurrent($this->sZoneID);
+        
+        return array('AdjustmentZone' => $bReqZone);
     }
     
     
@@ -87,35 +99,30 @@ class PointSystemZone extends TemporalEntity implements ActiveRecordInterface
         $oGateway          = $this->getTableGateway();
         
         
-        if(true === $this->canChangeToSystem($aDatabaseData['system_id'])) {
+        $bSuccess = $oGateway->insertQuery()
+         ->start()
+            ->addColumn('system_id'       , $aDatabaseData['system_id'])
+            ->addColumn('zone_id'         , $aDatabaseData['zone_id'])
+            ->addColumn('zone_name'       , $aDatabaseData['zone_name'])
+            ->addColumn('zone_name_slug'  , $aDatabaseData['zone_name_slug'])
+            ->addColumn('enabled_from'    , $aDatabaseData['enabled_from'])
+            ->addColumn('enabled_to'      , $aDatabaseData['enabled_to'])
+         ->end()
+        ->insert(); 
 
-                $bSuccess = $oGateway->insertQuery()
-                 ->start()
-                    ->addColumn('system_id'       , $aDatabaseData['system_id'])
-                    ->addColumn('zone_id'         , $aDatabaseData['zone_id'])
-                    ->addColumn('zone_name'       , $aDatabaseData['zone_name'])
-                    ->addColumn('zone_name_slug'  , $aDatabaseData['zone_name_slug'])
-                    ->addColumn('enabled_from'    , $aDatabaseData['enabled_from'])
-                    ->addColumn('enabled_to'      , $aDatabaseData['enabled_to'])
-                 ->end()
-                ->insert(); 
-        
-                if($bSuccess) {
-                        
-                        $this->aLastResult['result'] = true;
-                        $this->aLastResult['msg']    = 'Created new Points System Zone Episode';
-                        $this->iEpisodeID            =  (int) $oGateway->lastInsertId();
-                             
-                } else {
-                    
-                    $this->aLastResult['result'] = false;
-                    $this->aLastResult['msg']    = 'Unable to insert Points System Zone Episode.';
-                    
-                }
+        if($bSuccess) {
                 
-                
-        } 
+                $this->aLastResult['result'] = true;
+                $this->aLastResult['msg']    = 'Created new Points System Zone Episode';
+                $this->iEpisodeID            =  (int) $oGateway->lastInsertId();
+                     
+        } else {
             
+            $this->aLastResult['result'] = false;
+            $this->aLastResult['msg']    = 'Unable to insert Points System Zone Episode.';
+            
+        }
+    
        return $bSuccess;
     }
     
@@ -157,30 +164,26 @@ class PointSystemZone extends TemporalEntity implements ActiveRecordInterface
        
         # new episode on new entity
         
-        if(true === $this->canChangeToSystem($aDatabaseData['system_id'])) {
+         $bSuccess = $oGateway->updateQuery()
+             ->start()
+                ->addColumn('system_id'       , $aDatabaseData['system_id'])
+                ->addColumn('zone_name'       , $aDatabaseData['zone_name'])
+                ->addColumn('zone_name_slug'  , $aDatabaseData['zone_name_slug'])
+            ->where()
+                ->filterByEpisode($aDatabaseData['episode_id'])
+                ->filterByZone($aDatabaseData['zone_id'])
+             ->end()
+           ->update(); 
+           
+    
+         if($bSuccess) {
+            $this->aLastResult['result'] = true;
+            $this->aLastResult['msg']    = 'Updated existing Points System Zone Episode';
             
-             $bSuccess = $oGateway->updateQuery()
-                 ->start()
-                    ->addColumn('system_id'       , $aDatabaseData['system_id'])
-                    ->addColumn('zone_name'       , $aDatabaseData['zone_name'])
-                    ->addColumn('zone_name_slug'  , $aDatabaseData['zone_name_slug'])
-                ->where()
-                    ->filterByEpisode($aDatabaseData['episode_id'])
-                    ->filterByZone($aDatabaseData['zone_id'])
-                 ->end()
-               ->update(); 
-               
-        
-             if($bSuccess) {
-                $this->aLastResult['result'] = true;
-                $this->aLastResult['msg']    = 'Updated existing Points System Zone Episode';
-                
-            } else {
-                $this->aLastResult['result'] = false;
-                $this->aLastResult['msg']    = 'Unable to update existing Points System Zone Episode.';
-            }
-            
-        } 
+        } else {
+            $this->aLastResult['result'] = false;
+            $this->aLastResult['msg']    = 'Unable to update existing Points System Zone Episode.';
+        }
         
 
        return $bSuccess;
@@ -188,16 +191,6 @@ class PointSystemZone extends TemporalEntity implements ActiveRecordInterface
         
     }
     
-    protected function checkTemportalFK($aDatabaseData)
-    {
-        $oGateway              = $this->getTableGateway();
-        $oRuleZonesGateway     = $oGateway->getGatewayCollection()->getGateway('pt_rule_sys_zone');
-        
-        # Check for Referential integrity in time (Is there a 'current' record where this zone is related to a adjustment rule)
-        $bReqZone = $oRuleZonesGateway->checkZoneIsCurrent($this->sZoneID);
-        
-        return array('AdjustmentZone' => $bReqZone);
-    }
     
     
     protected function closeEpisode($aDatabaseData)
@@ -242,7 +235,7 @@ class PointSystemZone extends TemporalEntity implements ActiveRecordInterface
     }
     
     
-    protected function validateNewEpisode($aDatabaseData)
+    protected function validateNewEpisode()
     {
         $aData = $this->getDataForValidation();
         $aRules = $this->aValidation;
@@ -254,7 +247,7 @@ class PointSystemZone extends TemporalEntity implements ActiveRecordInterface
         return $this->validate($aData,$aRules);
     }
    
-    protected function validateNew($aDatabaseData)
+    protected function validateNew()
     {
         $aData = $this->getDataForValidation();
         $aRules = $this->aValidation;
@@ -262,7 +255,7 @@ class PointSystemZone extends TemporalEntity implements ActiveRecordInterface
         return $this->validate($aData,$aRules);
     }
     
-    protected function validateUpdate($aDatabaseData)
+    protected function validateUpdate()
     {
         $aData = $this->getDataForValidation();
         $aRules = $this->aValidation;
@@ -274,7 +267,7 @@ class PointSystemZone extends TemporalEntity implements ActiveRecordInterface
         return $this->validate($aData,$aRules);
     }
           
-    protected function validateRemove($aDatabaseData)
+    protected function validateRemove()
     {
         $aData = $this->getDataForValidation();
         $aRules = $this->aValidation;

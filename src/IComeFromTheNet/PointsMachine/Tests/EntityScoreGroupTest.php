@@ -7,8 +7,7 @@ use IComeFromTheNet\PointsMachine\Tests\Base\TestWithContainer;
 use DBALGateway\Feature\BufferedQueryLogger;
 
 
-
-class ScoreGroupEntityTest extends TestWithContainer
+class EntityScoreGroupTest extends TestWithContainer
 {
     
     protected $aFixtures = ['example-system.php','scoregroup-before.php'];
