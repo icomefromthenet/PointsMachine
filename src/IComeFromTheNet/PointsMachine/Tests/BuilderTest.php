@@ -196,6 +196,60 @@ class BuilderTest extends TestWithContainer
         
     }
     
+    public function testRuleChainBuilder()
+    {
+          $oBuilder = $this->getContainer()
+                          ->getGatewayCollection()
+                          ->getGateway('pt_rule_chain')
+                          ->getEntityBuilder();
+      
+         $sAlais   = $oBuilder->getTableQueryAlias().'_';
+        
+         # test build
+        
+         $aRawEntity = array(
+             $sAlais.'episode_id'      => 1,
+             $sAlais.'rule_chain_id'   =>  'B5D37F95-525F-9E4F-A5B7-F6EA3A269A34',
+             $sAlais.'event_type_id'   =>  'H5D37F95-525F-9E4F-A5B7-F6EA3A269A34',
+             $sAlais.'system_id'       =>  'I5D37F95-525F-9E4F-A5B7-F6EA3A269A34',
+             $sAlais.'chain_name'      => 'Chain A',
+             $sAlais.'chain_name_slug' => 'chain_a',
+             $sAlais.'rounding_option' => 2,
+             $sAlais.'cap_value'       => 100,
+             $sAlais.'enabled_from'    => new DateTime(),
+             $sAlais.'enabled_to'      => new DateTime('3000-01-01'),
+         );
+        
+         $oEntity = $oBuilder->build($aRawEntity);
+        
+         $this->assertEquals($aRawEntity[$sAlais.'episode_id'],$oEntity->iEpisodeID);
+         $this->assertEquals($aRawEntity[$sAlais.'rule_chain_id'],$oEntity->sRuleChainID);
+         $this->assertEquals($aRawEntity[$sAlais.'event_type_id'],$oEntity->sEventTypeID);
+         $this->assertEquals($aRawEntity[$sAlais.'system_id'],$oEntity->sSystemID);
+         $this->assertEquals($aRawEntity[$sAlais.'chain_name'],$oEntity->sChainName);
+         $this->assertEquals($aRawEntity[$sAlais.'chain_name_slug'],$oEntity->sChainNameSlug);
+         $this->assertEquals($aRawEntity[$sAlais.'rounding_option'],$oEntity->iRoundingOption);
+         $this->assertEquals($aRawEntity[$sAlais.'cap_value'],$oEntity->fCapValue);
+         $this->assertEquals($aRawEntity[$sAlais.'enabled_from'],$oEntity->oEnabledFrom);
+         $this->assertEquals($aRawEntity[$sAlais.'enabled_to'],$oEntity->oEnabledTo);
+        
+        
+         $aRawEntity = $oBuilder->demolish($oEntity);
+        
+         $this->assertEquals($oEntity->iEpisodeID,$aRawEntity['episode_id']);
+         $this->assertEquals($oEntity->sRuleChainID,$aRawEntity['rule_chain_id']);
+         $this->assertEquals($oEntity->sEventTypeID,$aRawEntity['event_type_id']);
+         $this->assertEquals($oEntity->sSystemID,$aRawEntity['system_id']);
+         $this->assertEquals($oEntity->sChainName,$aRawEntity['chain_name']);
+         $this->assertEquals($oEntity->sChainNameSlug,$aRawEntity['chain_name_slug']);
+         $this->assertEquals($oEntity->iRoundingOption,$aRawEntity['rounding_option']);
+         $this->assertEquals($oEntity->fCapValue,$aRawEntity['cap_value']);
+         $this->assertEquals($oEntity->oEnabledFrom,$aRawEntity['enabled_from']);
+         $this->assertEquals($oEntity->oEnabledTo,$aRawEntity['enabled_to']);
+       
+        
+     }
+    
     
     // public function testEventTypesBuilder()
     // {
@@ -643,59 +697,7 @@ class BuilderTest extends TestWithContainer
     
   
     
-    // public function testRuleChainBuilder()
-    // {
-    //      $oBuilder = $this->getContainer()
-    //                      ->getGatewayCollection()
-    //                      ->getGateway('pt_rule_chain')
-    //                      ->getEntityBuilder();
-      
-    //     $sAlais   = $oBuilder->getTableQueryAlias().'_';
-        
-    //     # test build
-        
-    //     $aRawEntity = array(
-    //         $sAlais.'episode_id'      => 1,
-    //         $sAlais.'rule_chain_id'   =>  'B5D37F95-525F-9E4F-A5B7-F6EA3A269A34',
-    //         $sAlais.'event_type_id'   =>  'H5D37F95-525F-9E4F-A5B7-F6EA3A269A34',
-    //         $sAlais.'system_id'       =>  'I5D37F95-525F-9E4F-A5B7-F6EA3A269A34',
-    //         $sAlais.'chain_name'      => 'Chain A',
-    //         $sAlais.'chain_name_slug' => 'chain_a',
-    //         $sAlais.'rounding_option' => 2,
-    //         $sAlais.'cap_value'       => 100,
-    //         $sAlais.'enabled_from'    => new DateTime(),
-    //         $sAlais.'enabled_to'      => new DateTime('3000-01-01'),
-    //     );
-        
-    //     $oEntity = $oBuilder->build($aRawEntity);
-        
-    //     $this->assertEquals($aRawEntity[$sAlais.'episode_id'],$oEntity->iEpisodeID);
-    //     $this->assertEquals($aRawEntity[$sAlais.'rule_chain_id'],$oEntity->sRuleChainID);
-    //     $this->assertEquals($aRawEntity[$sAlais.'event_type_id'],$oEntity->sEventTypeID);
-    //     $this->assertEquals($aRawEntity[$sAlais.'system_id'],$oEntity->sSystemID);
-    //     $this->assertEquals($aRawEntity[$sAlais.'chain_name'],$oEntity->sChainName);
-    //     $this->assertEquals($aRawEntity[$sAlais.'chain_name_slug'],$oEntity->sChainNameSlug);
-    //     $this->assertEquals($aRawEntity[$sAlais.'rounding_option'],$oEntity->iRoundingOption);
-    //     $this->assertEquals($aRawEntity[$sAlais.'cap_value'],$oEntity->fCapValue);
-    //     $this->assertEquals($aRawEntity[$sAlais.'enabled_from'],$oEntity->oEnabledFrom);
-    //     $this->assertEquals($aRawEntity[$sAlais.'enabled_to'],$oEntity->oEnabledTo);
-        
-        
-    //     $aRawEntity = $oBuilder->demolish($oEntity);
-        
-    //     $this->assertEquals($oEntity->iEpisodeID,$aRawEntity['episode_id']);
-    //     $this->assertEquals($oEntity->sRuleChainID,$aRawEntity['rule_chain_id']);
-    //     $this->assertEquals($oEntity->sEventTypeID,$aRawEntity['event_type_id']);
-    //     $this->assertEquals($oEntity->sSystemID,$aRawEntity['system_id']);
-    //     $this->assertEquals($oEntity->sChainName,$aRawEntity['chain_name']);
-    //     $this->assertEquals($oEntity->sChainNameSlug,$aRawEntity['chain_name_slug']);
-    //     $this->assertEquals($oEntity->iRoundingOption,$aRawEntity['rounding_option']);
-    //     $this->assertEquals($oEntity->fCapValue,$aRawEntity['cap_value']);
-    //     $this->assertEquals($oEntity->oEnabledFrom,$aRawEntity['enabled_from']);
-    //     $this->assertEquals($oEntity->oEnabledTo,$aRawEntity['enabled_to']);
-       
-        
-    // }
+   
     
     //  public function testRuleChainMemberBuilder()
     // {

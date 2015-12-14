@@ -1,6 +1,7 @@
 <?php
 namespace IComeFromTheNet\PointsMachine\DB\Gateway;
 
+use DateTime;
 use IComeFromTheNet\PointsMachine\DB\CommonTable;
 use IComeFromTheNet\PointsMachine\DB\Query\EventTypeQuery;
 
@@ -26,6 +27,27 @@ class EventTypeGateway extends CommonTable
         return $this->head;
     }
     
+    
+     /**
+     * Check if a event type with the given id is current
+     * 
+     * NOW should be date fetch from the database.
+     * 
+     * @param string    $sEventTypeId  The Entity ID
+     * @param DateTime  $oNow       The Now data form the database
+     */ 
+    public function checkEventTypeIsCurrent($sEventTypeId, DateTime $oNow)
+    {
+        
+        return (boolean) $this->newQueryBuilder()
+                    ->select(1)
+                    ->from($this->getMetaData()->getName(),$this->getTableQueryAlias())
+                    ->filterByCurrent($oNow)
+                    ->filterByEventType($sEventTypeId)
+                    ->end()
+                ->fetchColumn(0);
+        
+    }
     
     
 }
