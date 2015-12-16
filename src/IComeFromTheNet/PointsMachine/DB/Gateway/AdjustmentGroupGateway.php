@@ -1,6 +1,7 @@
 <?php
 namespace IComeFromTheNet\PointsMachine\DB\Gateway;
 
+use DateTime;
 use IComeFromTheNet\PointsMachine\DB\CommonTable;
 use IComeFromTheNet\PointsMachine\DB\Query\AdjustmentGroupQuery;
 
@@ -25,6 +26,27 @@ class AdjustmentGroupGateway extends CommonTable
         
         return $this->head;
     }
+    
+     /**
+     * Check if a Adjustment Group with the given id is current
+     * 
+     * 
+     * @param string    $sAdjGroupId  The Entity ID
+     * @param DateTime  $oNow       The Now data form the database
+     */ 
+    public function checkAdjGroupIsCurrent($sAdjGroupId, DateTime $oNow)
+    {
+        
+        return (boolean) $this->newQueryBuilder()
+                    ->select(1)
+                    ->from($this->getMetaData()->getName(),$this->getTableQueryAlias())
+                    ->filterByCurrent($oNow)
+                    ->filterByAdjustmentGroup($sAdjGroupId)
+                    ->end()
+                ->fetchColumn(0);
+        
+    }
+    
     
     
 }

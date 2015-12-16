@@ -249,6 +249,51 @@ class BuilderTest extends TestWithContainer
        
         
      }
+     
+    public function testRuleChainMemberBuilder()
+    {
+          $oBuilder = $this->getContainer()
+                          ->getGatewayCollection()
+                          ->getGateway('pt_chain_member')
+                          ->getEntityBuilder();
+      
+         $sAlais   = $oBuilder->getTableQueryAlias().'_';
+        
+         # test build
+        
+         $aRawEntity = array(
+             $sAlais.'episode_id'      => 1,
+             $sAlais.'chain_member_id' =>  'B5D37F95-525F-9E4F-A5B7-F6EA3A269A34',
+             $sAlais.'rule_chain_id'   =>  'H5D37F95-525F-9E4F-A5B7-F6EA3A269A34',
+             $sAlais.'rule_group_id'   =>  'I5D37F95-525F-9E4F-A5B7-F6EA3A269A34',
+             $sAlais.'order_seq'       => 2,
+             $sAlais.'enabled_from'    => new DateTime(),
+             $sAlais.'enabled_to'      => new DateTime('3000-01-01'),
+         );
+        
+         $oEntity = $oBuilder->build($aRawEntity);
+        
+         $this->assertEquals($aRawEntity[$sAlais.'episode_id'],$oEntity->iEpisodeID);
+         $this->assertEquals($aRawEntity[$sAlais.'rule_chain_id'],$oEntity->sRuleChainID);
+         $this->assertEquals($aRawEntity[$sAlais.'chain_member_id'],$oEntity->sRuleChainMemberID);
+         $this->assertEquals($aRawEntity[$sAlais.'rule_group_id'],$oEntity->sAdjustmentGroupID);
+         $this->assertEquals($aRawEntity[$sAlais.'order_seq'],$oEntity->iOrderSeq);
+         $this->assertEquals($aRawEntity[$sAlais.'enabled_from'],$oEntity->oEnabledFrom);
+         $this->assertEquals($aRawEntity[$sAlais.'enabled_to'],$oEntity->oEnabledTo);
+        
+        
+         $aRawEntity = $oBuilder->demolish($oEntity);
+        
+         $this->assertEquals($oEntity->iEpisodeID,$aRawEntity['episode_id']);
+         $this->assertEquals($oEntity->sRuleChainID,$aRawEntity['rule_chain_id']);
+         $this->assertEquals($oEntity->sRuleChainMemberID,$aRawEntity['chain_member_id']);
+         $this->assertEquals($oEntity->sAdjustmentGroupID,$aRawEntity['rule_group_id']);
+         $this->assertEquals($oEntity->iOrderSeq,$aRawEntity['order_seq']);
+         $this->assertEquals($oEntity->oEnabledFrom,$aRawEntity['enabled_from']);
+         $this->assertEquals($oEntity->oEnabledTo,$aRawEntity['enabled_to']);
+       
+        
+     }
     
     
     // public function testEventTypesBuilder()
@@ -699,50 +744,7 @@ class BuilderTest extends TestWithContainer
     
    
     
-    //  public function testRuleChainMemberBuilder()
-    // {
-    //      $oBuilder = $this->getContainer()
-    //                      ->getGatewayCollection()
-    //                      ->getGateway('pt_chain_member')
-    //                      ->getEntityBuilder();
-      
-    //     $sAlais   = $oBuilder->getTableQueryAlias().'_';
-        
-    //     # test build
-        
-    //     $aRawEntity = array(
-    //         $sAlais.'episode_id'      => 1,
-    //         $sAlais.'chain_member_id' =>  'B5D37F95-525F-9E4F-A5B7-F6EA3A269A34',
-    //         $sAlais.'rule_chain_id'   =>  'H5D37F95-525F-9E4F-A5B7-F6EA3A269A34',
-    //         $sAlais.'rule_group_id'   =>  'I5D37F95-525F-9E4F-A5B7-F6EA3A269A34',
-    //         $sAlais.'order_seq'       => 2,
-    //         $sAlais.'enabled_from'    => new DateTime(),
-    //         $sAlais.'enabled_to'      => new DateTime('3000-01-01'),
-    //     );
-        
-    //     $oEntity = $oBuilder->build($aRawEntity);
-        
-    //     $this->assertEquals($aRawEntity[$sAlais.'episode_id'],$oEntity->iEpisodeID);
-    //     $this->assertEquals($aRawEntity[$sAlais.'rule_chain_id'],$oEntity->sRuleChainID);
-    //     $this->assertEquals($aRawEntity[$sAlais.'chain_member_id'],$oEntity->sRuleChainMemberID);
-    //     $this->assertEquals($aRawEntity[$sAlais.'rule_group_id'],$oEntity->sAdjustmentGroupID);
-    //     $this->assertEquals($aRawEntity[$sAlais.'order_seq'],$oEntity->iOrderSeq);
-    //     $this->assertEquals($aRawEntity[$sAlais.'enabled_from'],$oEntity->oEnabledFrom);
-    //     $this->assertEquals($aRawEntity[$sAlais.'enabled_to'],$oEntity->oEnabledTo);
-        
-        
-    //     $aRawEntity = $oBuilder->demolish($oEntity);
-        
-    //     $this->assertEquals($oEntity->iEpisodeID,$aRawEntity['episode_id']);
-    //     $this->assertEquals($oEntity->sRuleChainID,$aRawEntity['rule_chain_id']);
-    //     $this->assertEquals($oEntity->sRuleChainMemberID,$aRawEntity['chain_member_id']);
-    //     $this->assertEquals($oEntity->sAdjustmentGroupID,$aRawEntity['rule_group_id']);
-    //     $this->assertEquals($oEntity->iOrderSeq,$aRawEntity['order_seq']);
-    //     $this->assertEquals($oEntity->oEnabledFrom,$aRawEntity['enabled_from']);
-    //     $this->assertEquals($oEntity->oEnabledTo,$aRawEntity['enabled_to']);
-       
-        
-    // }
+  
     
 }
 /* End of Class */

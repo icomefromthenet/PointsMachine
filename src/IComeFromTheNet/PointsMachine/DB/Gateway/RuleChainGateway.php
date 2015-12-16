@@ -46,5 +46,23 @@ class RuleChainGateway extends CommonTable
         
     }
     
+    /**
+     * Check if a Rule Chain with the given id is current
+     * 
+     * @param string    $sRuleChainId  The Entity ID
+     * @param DateTime  $oNow       The Now data form the database
+     */ 
+    public function checkRuleChainIsCurrent($sRuleChainId, DateTime $oNow)
+    {
+        
+        return (boolean) $this->newQueryBuilder()
+                    ->select(1)
+                    ->from($this->getMetaData()->getName(),$this->getTableQueryAlias())
+                    ->filterByCurrent($oNow)
+                    ->filterByRuleChain($sRuleChainId)
+                    ->end()
+                ->fetchColumn(0);
+    }
+    
 }
 /* End of Class */
