@@ -39,19 +39,19 @@ class DetailSavePass extends AbstractPass
             $sCommonTmpTableName = $this->getCommonTmpTableName();
             $sScoreTmpTableName  = $this->getScoreTmpTableName(); 
             $sRuleTmpTableName  = $this->getRuleTmpTableName();  
-            $sAdjGroupTableName = $this->getRuleTableName();
+            $sAdjGroupTableName = $this->getRuleGroupTableName();
             $sAggTmpTableName   = $this->getAggValueTmpTableName();
             
             
             # Save the rules into rules transaction table
             $sSql  =" INSERT INTO $sTranRuleTableName ";
-            $sSql .=" ('event_id','score_ep','rule_ep','score_modifier','score_multiplier','order_seq') ";
+            $sSql .=" (`event_id`, `score_ep`, `rule_ep`, `score_modifier`, `score_multiplier`, `order_seq`) ";
             $sSql .=" SELECT c.event_id
                         , s.score_ep
                         , r.rule_ep 
                         , ru.override_modifier   as score_modifier
                         , ru.override_multiplier as score_multiplier
-                        , IF(ag.order_method = 1, r.rank_hight,r.rank_low) as order_seq";
+                        , IF(ag.order_method = 1, r.rank_high,r.rank_low) as order_seq";
             $sSql .=" FROM $sRankTmpTableName r ";
             $sSql .=" CROSS JOIN $sCommonTmpTableName c ";
             $sSql .=" JOIN $sScoreTmpTableName s ON s.slot_id = r.score_slot_id ";
@@ -62,14 +62,14 @@ class DetailSavePass extends AbstractPass
             
             # Save the group Agg into the group transaction table
             
-            $sSql = "INSER INTO $sTranAdjGroupTableName ";
-            $sSql .=" ('event_id','score_ep','rule_group_ep','score_modifier','score_multiplier','order_seq') ";
+            $sSql = "INSERT INTO $sTranAdjGroupTableName ";
+            $sSql .=" (`event_id`, `score_ep`, `rule_group_ep`, `score_modifier`, `score_multiplier`, `order_seq`) ";
             $sSql .=" SELECT c.event_id
                         , s.score_ep
                         , r.rule_group_ep 
-                        , r._modifier   as score_modifier
+                        , r.modifier   as score_modifier
                         , r.multiplier as score_multiplier
-                        , rn.rank as order_seq";
+                        , r.rank as order_seq ";
             $sSql .=" FROM $sAggTmpTableName r ";
             $sSql .=" CROSS JOIN $sCommonTmpTableName c ";
             $sSql .=" JOIN $sScoreTmpTableName s ON s.slot_id = r.score_slot_id ";
@@ -78,8 +78,8 @@ class DetailSavePass extends AbstractPass
             
             # Save the scores in the scores table
             $sSql = "INSERT INTO $sTranScoreTableName ";
-            $sSql .= " (event_id, score_ep, score_group_ep, score_base, score_cal_raw, score_cal_rounded, score_cal_capped)";
-            $sSql .=" SELECT c.event_id, s.score_ep, s.score_group_ep, s.score_base, s.score_cal_raw, s.score_al_rounded, s.score_cal_capped ";
+            $sSql .= " (`event_id`, `score_ep`, `score_group_ep`, `score_base`, `score_cal_raw`, `score_cal_rounded`, `score_cal_capped`)";
+            $sSql .=" SELECT `c`.`event_id`, `s`.`score_ep`, `s`.`score_group_ep`, `s`.`score_base`, `s`.`score_cal_raw`, `s`.`score_cal_rounded`, `s`.`score_cal_capped` ";
             $sSql .=" FROM  $sScoreTmpTableName s";
             $sSql .=" CROSS JOIN $sCommonTmpTableName c ";
           
@@ -88,8 +88,8 @@ class DetailSavePass extends AbstractPass
             
             # save the common into the common table
             $sSql  =" INSERT $sTranEventTableName ";
-            $sSql .=" (event_id, system_ep, zone_ep, event_type_ep, created_date, processing_date, occured_date ) ";
-            $sSql .=" SELECT c.event_id, c.system_ep, c.system_zone_ep, c.event_type_ep, NOW() , c.processing_date, c.processing_date ";
+            $sSql .=" (`event_id`, `system_ep`, `zone_ep`, `event_type_ep`, `created_date`, `processing_date`, `occured_date` ) ";
+            $sSql .=" SELECT `c`.`event_id`, `c`.`system_ep`, `c`.`system_zone_ep`, `c`.`event_type_ep`, NOW() , `c`.`processing_date`, `c`.`processing_date` ";
             $sSql .=" FROM $sCommonTmpTableName c ";
         
             

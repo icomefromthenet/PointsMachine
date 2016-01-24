@@ -56,8 +56,42 @@ return [
             ,'max_value' => null
             
         ]
-    
         
+        /* Mandatory Rules are added From the Discount Group*/
+    
+        ,[
+            'slot_id' => 6  
+            ,'rule_ep' => 3
+            ,'rule_id' =>  '3235B350-593C-7F7C-22BD-6089A36C155B' // 'Medium Discount'
+            ,'rule_group_ep' => 2
+            ,'rule_group_id' => '586DB7DF-57C3-F7D5-639D-0A9779AF79BD'
+            ,'chain_member_ep' => 3
+            ,'chain_member_id' => '3E0CC551-1AC8-402F-84BD-C597FEE3B749'
+            ,'apply_all_score' => 0
+            ,'apply_all_sys'   => 0
+            ,'apply_all_zone'  => 1
+            ,'override_modifier'   => null
+            ,'override_multiplier' => null
+            ,'max_value' => null
+            
+        ]
+        
+        ,[
+            'slot_id' => 7  
+            ,'rule_ep' => 5
+            ,'rule_id' =>  'EAF03EED-16AC-557E-6267-7F54ADD83197' //'Healer Discount'
+            ,'rule_group_ep' => 2
+            ,'rule_group_id' => '586DB7DF-57C3-F7D5-639D-0A9779AF79BD'
+            ,'chain_member_ep' => 3
+            ,'chain_member_id' => '3E0CC551-1AC8-402F-84BD-C597FEE3B749'
+            ,'apply_all_score' => 0
+            ,'apply_all_sys'   => 0
+            ,'apply_all_zone'  => 0 // rule that links this rule to a single zone so not be true
+            ,'override_modifier'   => null
+            ,'override_multiplier' => null
+            ,'max_value' => null
+            
+        ]
     
     ]
     

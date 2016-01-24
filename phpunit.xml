@@ -25,6 +25,7 @@
     <testsuites>
         <testsuite name="default">
             <directory suffix="Test.php">src/IComeFromTheNet/PointsMachine/Tests/</directory>
+            <exclude>src/IComeFromTheNet/PointsMachine/Tests/Base</exclude>
         </testsuite>
     </testsuites>  
     

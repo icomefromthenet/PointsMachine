@@ -28,6 +28,15 @@ class CompilerTest extends TestWithContainer
         
         $oTmpRankGateway    = $oContainer->getGatewayCollection()->getGateway('pt_result_rank');
         
+        
+        $oTmpScoreGateway->getTableMaker()->removeTable();
+        $oTmpRuleGateway->getTableMaker()->removeTable();
+        $oTmpCommonGateway->getTableMaker()->removeTable();
+        $oTmpCJoinGateway->getTableMaker()->removeTable(); 
+        $oTmpResHeaderGateway->getTableMaker()->removeTable();
+        $oTmpRuleDupGateway->getTableMaker()->removeTable();
+        $oTmpRankGateway->getTableMaker()->removeTable();
+        
         # Create the tmp tables
         $oTmpScoreGateway->getTableMaker()->createTable();
         $oTmpRuleGateway->getTableMaker()->createTable();
@@ -41,31 +50,7 @@ class CompilerTest extends TestWithContainer
         parent::setUp();
     }
     
-    public function  tearDown()
-    {
-        $oContainer        = $this->getContainer();
-        $oTmpScoreGateway  = $oContainer->getGatewayCollection()->getGateway('pt_result_score');
-        $oTmpRuleGateway   = $oContainer->getGatewayCollection()->getGateway('pt_result_rule');
-        $oTmpRuleDupGateway   = $oContainer->getGatewayCollection()->getGateway('pt_result_rule_dup');
-        $oTmpCommonGateway = $oContainer->getGatewayCollection()->getGateway('pt_result_common');
-        $oTmpCJoinGateway  = $oContainer->getGatewayCollection()->getGateway('pt_result_cjoin');
-        $oTmpResHeaderGateway = $oContainer->getGatewayCollection()->getGateway('pt_result_agg');
-        
-        $oTmpRankGateway    = $oContainer->getGatewayCollection()->getGateway('pt_result_rank');
-        
-        
-        # Create the tmp tables
-        $oTmpScoreGateway->getTableMaker()->removeTable();
-        $oTmpRuleGateway->getTableMaker()->removeTable();
-        $oTmpCommonGateway->getTableMaker()->removeTable();
-        $oTmpCJoinGateway->getTableMaker()->removeTable(); 
-        $oTmpResHeaderGateway->getTableMaker()->removeTable();
-        $oTmpRuleDupGateway->getTableMaker()->removeTable();
-        
-        $oTmpRankGateway->getTableMaker()->removeTable();
-         
-        parent::tearDown();
-    }
+    
      
    
     

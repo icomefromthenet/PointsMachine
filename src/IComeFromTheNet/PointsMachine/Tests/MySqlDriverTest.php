@@ -27,13 +27,8 @@ class MySqlDriverTest extends TestWithContainer
    }
    
    
-    public function getDataSet()
-    {
-       return new ArrayDataSet([
-           __DIR__.'/ExampleFixture.php',
-        ]);
-    }
-    
+   protected $aFixtures = ['example-system.php'];
+      
     
     public function testFetchedFromContainer()
     {

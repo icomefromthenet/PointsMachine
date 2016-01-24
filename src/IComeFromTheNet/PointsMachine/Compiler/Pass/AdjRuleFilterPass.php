@@ -45,7 +45,7 @@ class AdjRuleFilterPass extends AbstractPass
         
         $sSql  = ' INSERT INTO '.$sRuleDupTable .' (rule_id) '.PHP_EOL;
         $sSql .= ' SELECT  rule_id FROM '.$sRuleTmpTable.' ;'.PHP_EOL;
-       //D39CDDFB-09DF-00F1-ED5B-ECE0C04782CD
+      
         $oDatabase->executeUpdate($sSql);
    
         # find current groups that part of the a current chain that are mandatory and fetch all their current rules

@@ -45,9 +45,7 @@ return [
         [
     
             [ /* Rule points to expired group, really should not happend if domain model used but could happen
-                if manual insert are used.
-                I added a query to clear them so need to test it
-                */
+                if manual insert are used. I added a query to clear them so need to test it */
                  'episode_id' => 7
                 ,'rule_id' => '69095838-68B6-6A75-8117-890AC26F04FF'
                 ,'rule_group_id' =>'D19258EA-F6A1-9719-B98A-C7FE4DF2647A' //expired group
@@ -62,8 +60,7 @@ return [
                 
             ]
             
-            ,[ /* valid rule for the all group created upove
-                */
+            ,[ /* valid rule for the all group created above */
                  'episode_id' => 8
                 ,'rule_id' => '2F1577C8-903E-979F-4BAD-4D79313AD445'
                 ,'rule_group_id' =>'F777BD13-1991-B950-2405-86138A62129A' //all group

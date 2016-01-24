@@ -9,12 +9,8 @@ use IComeFromTheNet\PointsMachine\Compiler\Driver\DriverFactory;
 class DriverFactoryTest extends TestWithContainer
 {
    
-    public function getDataSet()
-    {
-       return new ArrayDataSet([
-           __DIR__.'/ExampleFixture.php',
-        ]);
-    }
+    protected $aFixtures = ['example-system.php'];
+    
     
     
     public function testDriverFetchMysql()
