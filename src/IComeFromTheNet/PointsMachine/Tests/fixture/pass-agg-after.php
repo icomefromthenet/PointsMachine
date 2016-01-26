@@ -13,7 +13,7 @@ return [
             ,'rank' => 1
             ,'modifier' => 8
             ,'multiplier' => 10
-            ,'cumval' => 85
+            ,'cumval' => 13 // 0.5 * 10 +8
         ]    
         
         
@@ -24,7 +24,7 @@ return [
             ,'rank' => 1
             ,'modifier' => 8
             ,'multiplier' => 10
-            ,'cumval' => 85
+            ,'cumval' => 13 // 0.5 * 10 +8
         ]
         
         ,[
@@ -34,7 +34,7 @@ return [
             ,'rank' => 1
             ,'modifier' => 8
             ,'multiplier' => 10
-            ,'cumval' => 85
+            ,'cumval' => 13 // 0.5 * 10 +8
         ]
         
         
