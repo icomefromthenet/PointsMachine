@@ -95,7 +95,8 @@ class AggValuePass extends AbstractPass
             
             # Calculate the Cumulative value with a variable for Cumulative Value
             # where doing slow update because we can't refer to same TMP table twice in a query
-            $sSql  = " SELECT agg.score_slot_id, agg.rule_group_ep, agg.rule_group_id ,@running_total := @running_total + (r.score_base + max(agg.modifier)) * max(agg.multiplier) AS cumulative_sum ";
+            # for each score order of operations is that we process the multiplier first and then add the modifier
+            $sSql  = " SELECT agg.score_slot_id, agg.rule_group_ep, agg.rule_group_id ,@running_total := @running_total + (r.score_base * max(agg.multiplier)) + max(agg.modifier) AS cumulative_sum ";
             $sSql .= " FROM  $sAggTmpTableName agg ";
             $sSql .= " JOIN  $sScoreTmpTableName r on agg.score_slot_id = r.slot_id ";
             $sSql .= " JOIN  (SELECT @running_total := 0) rt ";
