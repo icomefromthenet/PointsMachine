@@ -112,8 +112,6 @@ class init_schema implements EntityInterface
        $table->addColumn('rule_group_id','guid',array());
        $table->addColumn('rule_group_name','string',array("length" => 100));
        $table->addColumn('rule_group_name_slug','string',array("length" => 100));
-       $table->addColumn('enabled_from'  ,'date',array());
-       $table->addColumn('enabled_to'    ,'date',array());
        $table->addColumn('max_multiplier','float',array("unsigned" => true, 'comment' => 'Max value of multiplier once all rules are combined in this group allows group capping','notnull' => false));
        $table->addColumn('min_multiplier','float',array("unsigned" => true, 'comment' => 'Min value of multiplier once all rules are combined in this group allows group capping','notnull' => false));
        $table->addColumn('max_modifier'  ,'float',array("unsigned" => true, 'comment' => 'Max value of modifier once all rules are combined in this group allows group capping','notnull' => false));
@@ -121,6 +119,9 @@ class init_schema implements EntityInterface
        $table->addColumn('max_count'     ,'integer',array("unsigned" => true, 'comment' => 'Max number of scroing rules that can be used that linked to this group'));
        $table->addColumn('order_method'  ,'smallint',array("default" => 1, "unsigned" => true, 'comment' => 'method of order to use 1= max 0=min','notnull' => false));
        $table->addColumn('is_mandatory'  ,'smallint',array("unsigned" => true,'comment' => 'Group always be applied unless not linked to system and score groups'));
+       $table->addColumn('enabled_from'  ,'date',array());
+       $table->addColumn('enabled_to'    ,'date',array());
+       
        
        $table->setPrimaryKey(array('episode_id'));
        $table->addUniqueIndex(array('rule_group_id','enabled_to'),'pt_rule_gp_uiq1');

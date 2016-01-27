@@ -2,8 +2,7 @@
 namespace IComeFromTheNet\PointsMachine\DB\Entity;
 
 use DateTime;
-use IComeFromTheNet\PointsMachine\DB\CommonEntity;
-use IComeFromTheNet\PointsMachine\DB\ActiveRecordInterface;
+use IComeFromTheNet\PointsMachine\DB\TemporalEntity;
 use IComeFromTheNet\PointsMachine\PointsMachineException;
 
 /**
@@ -12,7 +11,7 @@ use IComeFromTheNet\PointsMachine\PointsMachineException;
  * @author Lewis Dyer <getintouch@icomefromthenet.com>
  * @since 1.0
  */
-class AdjustmentGroup extends CommonEntity implements ActiveRecordInterface
+class AdjustmentGroup extends TemporalEntity 
 {
     
       
@@ -98,6 +97,10 @@ class AdjustmentGroup extends CommonEntity implements ActiveRecordInterface
         return $bResult;
     }
     
+    protected function checkCreateTemportalFK($aDatabaseData) 
+    {
+        return array();
+    }
     
     protected function createNewEntity($aDatabaseData)
     {
@@ -124,7 +127,7 @@ class AdjustmentGroup extends CommonEntity implements ActiveRecordInterface
         if($bSuccess) {
                 
                 $this->aLastResult['result'] = true;
-                $this->aLastResult['msg']    = 'Created new Adjustment Group Episode';
+                $this->aLastResult['msg']    = 'Created new AdjustmentGroup Episode';
                 $this->iEpisodeID            =  (int) $oGateway->lastInsertId();
                      
         } else {

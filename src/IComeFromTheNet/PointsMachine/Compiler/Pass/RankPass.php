@@ -34,7 +34,7 @@ class RankPass extends AbstractPass
      * Executes this pass.
      * 
      * @return boolean true if successful.
-     */ 
+     */
     public function execute(DateTime $oProcessingDate, CompileResult $oResult)
     {
         
@@ -55,10 +55,12 @@ class RankPass extends AbstractPass
             $sSql .="  FROM $sJoinTmpTableName j ";
             $sSql .="  JOIN $sRuleTmpTableName rt ON j.rule_slot_id = rt.slot_id;  ".PHP_EOL;
         
+           $this->getDatabaseAdaper()->executeUpdate($sSql);
+         
             
             # Rank the scores by High to LOW
             
-            $sSql .= "UPDATE $sRankTableName x ";
+            $sSql  = "UPDATE $sRankTableName x ";
             $sSql .= " SET rank_high = ( ";
                 $sSql .= " SELECT count(r.slot_id) ";
                 $sSql .=" FROM $sJoinTmpTableName j "; 
@@ -69,10 +71,13 @@ class RankPass extends AbstractPass
                 $sSql .=" ORDER BY r.max_value DESC, r.slot_id DESC ";
             $sSql .= " ); ".PHP_EOL;
             
+            $this->getDatabaseAdaper()->executeUpdate($sSql);
+         
+            
             
             # Rank the scores Low To High
             
-            $sSql .= "UPDATE $sRankTableName x ";
+            $sSql  = "UPDATE $sRankTableName x ";
             $sSql .= " SET rank_low = ( ";
                        $sSql .= " SELECT count(r.slot_id) ";
                 $sSql .=" FROM $sJoinTmpTableName j "; 
@@ -83,6 +88,7 @@ class RankPass extends AbstractPass
                 $sSql .=" ORDER BY r.max_value ASC, r.slot_id ASC ";
             $sSql .= " ); ".PHP_EOL;
             
+            $this->getDatabaseAdaper()->executeUpdate($sSql);
             
             
             # fetch ranks for the rule groups.
