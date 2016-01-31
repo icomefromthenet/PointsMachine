@@ -87,12 +87,20 @@ class AdjustmentGroup extends TemporalEntity
         $oChainMemberGateway    =  $oGateway->getGatewayCollection()->getGateway('pt_chain_member'); 
         
         $bResult           = array();
-        $sChainMemberId    = $aDatabaseData['rule_chain_id'];
+        $sAdjGroupId       = $aDatabaseData['rule_group_id'];
         
         
-        if(true === $oChainMemberGateway->checkParentChainRequired($sChainMemberId)) {
+        if(true === $oChainMemberGateway->checkParentAdjGroupRequired($sAdjGroupId)) {
             $bResult['RuleChainMember'] = true;
         } 
+        
+        if(true === $oRuleGatway->checkParentAdjGroupRequired($sAdjGroupId)) {
+            $bResult['AdjustmentRule'] = true;
+        }
+        
+        if(true === $oRuleGroupLimitGateway->checkParentAdjGroupRequired($sAdjGroupId)) {
+            $bResult['RuleLimit'] = true;
+        }
         
         return $bResult;
     }

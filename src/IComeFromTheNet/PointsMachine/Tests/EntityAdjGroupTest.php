@@ -29,15 +29,14 @@ class EntityAdjGroupMemberTest extends TestWithContainer
         $oGateway->getAdapater()->getConfiguration()->setSQLLogger($oLog);
             
         $this->entitySaveNewEntityTest();
-        //$this->entitySaveFailedWhenNonCurrentEpisode();
-        //$this->entityUpdateExistingEpisodeTest();
-        //$this->entityUpdateCauseNewVersionTest();
+        $this->entityUpdateExistingEpisodeTest();
+        $this->entityUpdateCauseNewVersionTest();
         //$this->entityCreateFailsOnFKTest();
         //$this->entityRemoveFailsOnRelationsKeyCheckTest();
-        //$this->entityRemoveSucessfulTest();
+        $this->entityRemoveSucessfulTest();
         
         $sSql  = ' SELECT episode_id, rule_group_id, rule_group_name, rule_group_name_slug, ';
-        $sSql .= '       max_multiplier, min_multiplier, max_modifier, max_count  ' ;
+        $sSql .= '       max_multiplier, min_multiplier, max_modifier, min_modifier, max_count,  ' ;
         $sSql .= '       order_method, is_mandatory, enabled_from, enabled_to  ' ;
         $sSql .= ' FROM pt_rule_group';
         
@@ -99,48 +98,7 @@ class EntityAdjGroupMemberTest extends TestWithContainer
         
     } 
     
-    protected function entitySaveFailedWhenNonCurrentEpisode()
-    {
-        
-        $oContainer = $this->getContainer();
-        $oGateway   = $oContainer->getGatewayCollection()->getGateway('pt_rule_group');
-        $oLogger    = $oContainer->getAppLogger();
-        $oProcessingDate = new DateTime();
-       
-        // Build the entity to save
-        
-        $sChainMemberId  = '11A09C6D-C851-5874-8667-72BE94DD1A47';
-        $sRuleChainId    = '78841FAC-F8F2-F7F9-ECF3-6A749BEFD0F5';
-        $sAdjRuleGroupId = '586DB7DF-57C3-F7D5-639D-0A9779AF79BD';
-        $iOrderSeq       = 2;
-        $oEnabledFrom    = (new DateTime('now - 7 day'));
-        $oEnabledTo      = (new DateTime('now - 1 day'));
-      
-        
-        $oEntity = new AdjustmentGroup($oGateway,$oLogger);
-      
-        $oEntity->sAdjustmentGroupID = $sChainMemberId;
-        $oEntity->sRuleChainID   = $sRuleChainId;
-        $oEntity->sAdjustmentGroupID = $sAdjRuleGroupId;
-        $oEntity->iOrderSeq = $iOrderSeq;
-        $oEntity->oEnabledFrom  = $oEnabledFrom;
-        $oEntity->oEnabledTo    = $oEnabledTo ;
-        $oEntity->iEpisodeID    = 3;
-      
-        
-        // save the entity
-        $bResult = $oEntity->save();
-        $aResult = $oEntity->getLastQueryResult();
-      
-        
-        $this->assertFalse($aResult['result']);
-        $this->assertEquals('Unable to decide which operation to use',$aResult['msg']);
-        $this->assertFalse($bResult);
-    
-    
-        
-    }
-    
+  
     protected function entityUpdateExistingEpisodeTest()
     {
         $oContainer = $this->getContainer();
@@ -150,23 +108,37 @@ class EntityAdjGroupMemberTest extends TestWithContainer
        
         // Build the entity to save
         
-        $sChainMemberId  = 'DB02441C-EBDC-7C79-AFF9-353402F9DB04';
-        $sRuleChainId    = '78841FAC-F8F2-F7F9-ECF3-6A749BEFD0F5';
-        $sAdjRuleGroupId = '586DB7DF-57C3-F7D5-639D-0A9779AF79BD';
-        $iOrderSeq       = 7;
+        $iEpisodeId       = 4;   
+        $sAdjRuleGroupId = '634539B7-AB03-2DF7-67D6-2A7A5AF0BDF3';
+        $sGroupName      = 'Is Updated';
+        $sGroupNameSlug  = 'is_updated';
+        $fMaxMultiplier  = null;
+        $fMinMultiplier  = null;
+        $fMaxModifier    = 5;
+        $fMinModifier    = 0.1;
+        $iMaxCount       = 1;
+        $iOrderMethod    = null;
+        $bIsMandatory    = true;
         $oEnabledFrom    = (new DateTime('now'));
         $oEnabledTo      = (new DateTime('3000-01-01'));
       
         
         $oEntity = new AdjustmentGroup($oGateway,$oLogger);
       
-        $oEntity->sAdjustmentGroupID = $sChainMemberId;
-        $oEntity->sRuleChainID   = $sRuleChainId;
+        $oEntity->iEpisodeID         = $iEpisodeId;  
         $oEntity->sAdjustmentGroupID = $sAdjRuleGroupId;
-        $oEntity->iOrderSeq = $iOrderSeq;
-        $oEntity->oEnabledFrom  = $oEnabledFrom;
-        $oEntity->oEnabledTo    = $oEnabledTo ;
-        $oEntity->iEpisodeID    = 4;
+        $oEntity->sGroupName         = $sGroupName;
+        $oEntity->sGroupNameSlug     = $sGroupNameSlug;  
+        $oEntity->fMaxMultiplier     = $fMaxMultiplier;
+        $oEntity->fMinMultiplier     = $fMinMultiplier;
+        $oEntity->fMaxModifier       = $fMaxModifier;
+        $oEntity->fMinModifier       = $fMinModifier;
+        $oEntity->iMaxCount          = $iMaxCount;
+        $oEntity->iOrderMethod       = $iOrderMethod;
+        $oEntity->bIsMandatory       = $bIsMandatory;
+        $oEntity->oEnabledFrom       = $oEnabledFrom;
+        $oEntity->oEnabledTo         = $oEnabledTo;
+        
         
         // save the entity
         $bResult = $oEntity->save();
@@ -190,23 +162,36 @@ class EntityAdjGroupMemberTest extends TestWithContainer
        
         // Build the entity to save
         
-        $sChainMemberId  = '1D7A2FC4-E1F0-5BCE-F2AB-93AF302BCEFA';
-        $sRuleChainId    = '78841FAC-F8F2-F7F9-ECF3-6A749BEFD0F5';
-        $sAdjRuleGroupId = '586DB7DF-57C3-F7D5-639D-0A9779AF79BD';
-        $iOrderSeq       = 8;
-        $oEnabledFrom    = (new DateTime('now - 1 day'));
+        $iEpisodeId      = 5;   
+        $sAdjRuleGroupId = 'EF82C808-2F84-62C3-1534-E5AFDF7DCDCB';
+        $sGroupName      = 'Is New Version';
+        $sGroupNameSlug  = 'is_new_version';
+        $fMaxMultiplier  = 200;
+        $fMinMultiplier  = 100;
+        $fMaxModifier    = 5;
+        $fMinModifier    = 0.1;
+        $iMaxCount       = 1;
+        $iOrderMethod    = null;
+        $bIsMandatory    = true;
+        $oEnabledFrom    = (new DateTime('now -1 day'));
         $oEnabledTo      = (new DateTime('3000-01-01'));
       
         
         $oEntity = new AdjustmentGroup($oGateway,$oLogger);
       
-        $oEntity->sAdjustmentGroupID = $sChainMemberId;
-        $oEntity->sRuleChainID   = $sRuleChainId;
+        $oEntity->iEpisodeID         = $iEpisodeId;
         $oEntity->sAdjustmentGroupID = $sAdjRuleGroupId;
-        $oEntity->iOrderSeq = $iOrderSeq;
-        $oEntity->oEnabledFrom  = $oEnabledFrom;
-        $oEntity->oEnabledTo    = $oEnabledTo ;
-        $oEntity->iEpisodeID    = 5;
+        $oEntity->sGroupName         = $sGroupName;
+        $oEntity->sGroupNameSlug     = $sGroupNameSlug;  
+        $oEntity->fMaxMultiplier     = $fMaxMultiplier;
+        $oEntity->fMinMultiplier     = $fMinMultiplier;
+        $oEntity->fMaxModifier       = $fMaxModifier;
+        $oEntity->fMinModifier       = $fMinModifier;
+        $oEntity->iMaxCount          = $iMaxCount;
+        $oEntity->iOrderMethod       = $iOrderMethod;
+        $oEntity->bIsMandatory       = $bIsMandatory;
+        $oEntity->oEnabledFrom       = $oEnabledFrom;
+        $oEntity->oEnabledTo         = $oEnabledTo;
         
         // save the entity
         $bResult = $oEntity->save();
@@ -216,11 +201,11 @@ class EntityAdjGroupMemberTest extends TestWithContainer
         $this->assertTrue($aResult['result']);
         $this->assertEquals('Created new AdjustmentGroup Episode',$aResult['msg']);
         $this->assertTrue($bResult);
-        $this->assertEquals(8,$oEntity->iEpisodeID);
+        $this->assertEquals(7,$oEntity->iEpisodeID);
         
     }
     
-     protected function entityCreateFailsOnFKTest()
+     protected function entityRemoveFailsOnRelationsKeyCheckTest()
     {
         $oContainer = $this->getContainer();
         $oGateway   = $oContainer->getGatewayCollection()->getGateway('pt_rule_group');
@@ -229,18 +214,36 @@ class EntityAdjGroupMemberTest extends TestWithContainer
        
         // Build the entity to save
       
-        $sChainMemberId  = 'A8561585-9AC4-BD0B-8C2F-52164B7E3E1C';
-        $sRuleChainId    = 'CDB50A01-F629-4809-2A06-A44813709925'; // non current rule chain
-        $sAdjRuleGroupId = 'A94BB0F5-6568-EAF7-E7D9-FAE0D861496B'; // non current adj rule group
-        $iOrderSeq       = 8;
-       
+       $iEpisodeId      = null;   
+        $sAdjRuleGroupId = 'BFB63A44-5FB4-BA2F-EF52-CDC9634E21A0';
+        $sGroupName      = 'A New Group';
+        $sGroupNameSlug  = 'a_new_group';
+        $fMaxMultiplier  = null;
+        $fMinMultiplier  = null;
+        $fMaxModifier    = 5;
+        $fMinModifier    = 0.1;
+        $iMaxCount       = 1;
+        $iOrderMethod    = null;
+        $bIsMandatory    = true;
+        $oEnabledFrom    = (new DateTime('now'));
+        $oEnabledTo      = (new DateTime('3000-01-01'));
+      
         
         $oEntity = new AdjustmentGroup($oGateway,$oLogger);
       
-        $oEntity->sAdjustmentGroupID = $sChainMemberId;
-        $oEntity->sRuleChainID   = $sRuleChainId;
+       $oEntity->iEpisodeID         = $iEpisodeId;
         $oEntity->sAdjustmentGroupID = $sAdjRuleGroupId;
-        $oEntity->iOrderSeq = $iOrderSeq;
+        $oEntity->sGroupName         = $sGroupName;
+        $oEntity->sGroupNameSlug     = $sGroupNameSlug;  
+        $oEntity->fMaxMultiplier     = $fMaxMultiplier;
+        $oEntity->fMinMultiplier     = $fMinMultiplier;
+        $oEntity->fMaxModifier       = $fMaxModifier;
+        $oEntity->fMinModifier       = $fMinModifier;
+        $oEntity->iMaxCount          = $iMaxCount;
+        $oEntity->iOrderMethod       = $iOrderMethod;
+        $oEntity->bIsMandatory       = $bIsMandatory;
+        $oEntity->oEnabledFrom       = $oEnabledFrom;
+        $oEntity->oEnabledTo         = $oEnabledTo;
         
         
         // save the entity
@@ -254,7 +257,7 @@ class EntityAdjGroupMemberTest extends TestWithContainer
     }
     
     
-    protected function entityRemoveFailsOnRelationsKeyCheckTest()
+    protected function entityCreateFailsOnFKTest()
     {
         // no keys to check yet
     }
@@ -268,24 +271,36 @@ class EntityAdjGroupMemberTest extends TestWithContainer
        
         // Build the entity to save
         
-         $sChainMemberId  = '824DF964-D106-5704-58CD-86E51620B803';
-        $sRuleChainId    = '78841FAC-F8F2-F7F9-ECF3-6A749BEFD0F5';
-        $sAdjRuleGroupId = '586DB7DF-57C3-F7D5-639D-0A9779AF79BD';
-        $iOrderSeq       = 2;
-        $oEnabledFrom    = (new DateTime('now'));
+        $iEpisodeId      = 3;   
+        $sAdjRuleGroupId = '1A44C9FC-B7FA-0EFE-4F1D-7952A6BA7A60';
+        $sGroupName      = 'Can be closed';
+        $sGroupNameSlug  = 'can_be_closed';
+        $fMaxMultiplier  = null;
+        $fMinMultiplier  = null;
+        $fMaxModifier    = 5;
+        $fMinModifier    = 0.1;
+        $iMaxCount       = 1;
+        $iOrderMethod    = null;
+        $bIsMandatory    = true;
+        $oEnabledFrom    = (new DateTime('now - 1 day'));
         $oEnabledTo      = (new DateTime('3000-01-01'));
       
         
         $oEntity = new AdjustmentGroup($oGateway,$oLogger);
       
-        $oEntity->sAdjustmentGroupID = $sChainMemberId;
-        $oEntity->sRuleChainID   = $sRuleChainId;
+        $oEntity->iEpisodeID         = $iEpisodeId;
         $oEntity->sAdjustmentGroupID = $sAdjRuleGroupId;
-        $oEntity->iOrderSeq = $iOrderSeq;
-        $oEntity->oEnabledFrom  = $oEnabledFrom;
-        $oEntity->oEnabledTo    = $oEnabledTo ;
-        $oEntity->iEpisodeID    = 6;
-        
+        $oEntity->sGroupName         = $sGroupName;
+        $oEntity->sGroupNameSlug     = $sGroupNameSlug;  
+        $oEntity->fMaxMultiplier     = $fMaxMultiplier;
+        $oEntity->fMinMultiplier     = $fMinMultiplier;
+        $oEntity->fMaxModifier       = $fMaxModifier;
+        $oEntity->fMinModifier       = $fMinModifier;
+        $oEntity->iMaxCount          = $iMaxCount;
+        $oEntity->iOrderMethod       = $iOrderMethod;
+        $oEntity->bIsMandatory       = $bIsMandatory;
+        $oEntity->oEnabledFrom       = $oEnabledFrom;
+        $oEntity->oEnabledTo         = $oEnabledTo;
         
         // save the entity
         $bResult = $oEntity->remove();
@@ -293,7 +308,7 @@ class EntityAdjGroupMemberTest extends TestWithContainer
       
         
         $this->assertTrue($aResult['result']);
-        $this->assertEquals('Closed this AdjustmentGroup episode',$aResult['msg']);
+        $this->assertEquals('Closed this Adjustment Group episode',$aResult['msg']);
         $this->assertTrue($bResult);
     }
        

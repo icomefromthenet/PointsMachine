@@ -47,5 +47,24 @@ class RuleChainMemberGateway extends CommonTable
         
     }
     
+     /**
+     * Check if a AdjGroup has a 'current' relation to a ChainMember.
+     * 
+     * @param string    $sAdjGroupId  The Entity ID
+     * @return boolean true if a record found
+     */ 
+    public function checkParentAdjGroupRequired($sAdjGroupId)
+    {
+        return (boolean) $this->newQueryBuilder()
+                ->select(1)
+                ->from($this->getMetaData()->getName(),$this->getTableQueryAlias())
+                ->filterByCurrent(new DateTime('3000-01-01'))
+                ->filterByAdjustmentGroup($sAdjGroupId)
+                ->end()
+            ->fetchColumn(0);
+    
+        
+    }
+    
 }
 /* End of Class */
