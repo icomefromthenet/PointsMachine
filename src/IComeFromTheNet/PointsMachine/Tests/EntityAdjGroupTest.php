@@ -7,7 +7,7 @@ use IComeFromTheNet\PointsMachine\Tests\Base\TestWithContainer;
 use DBALGateway\Feature\BufferedQueryLogger;
 
 
-class EntityAdjGroupMemberTest extends TestWithContainer
+class EntityAdjGroupTest extends TestWithContainer
 {
     
     protected $aFixtures = ['example-system.php','adj-group-before.php'];
@@ -308,7 +308,7 @@ class EntityAdjGroupMemberTest extends TestWithContainer
       
         
         $this->assertTrue($aResult['result']);
-        $this->assertEquals('Closed this Adjustment Group episode',$aResult['msg']);
+        $this->assertEquals('Closed this AdjustmentGroup episode',$aResult['msg']);
         $this->assertTrue($bResult);
     }
        

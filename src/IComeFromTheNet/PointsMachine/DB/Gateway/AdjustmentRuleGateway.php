@@ -47,5 +47,25 @@ class AdjustmentRuleGateway extends CommonTable
         
     }
     
+    /**
+     * Check if a Adjustment Rule with the given id is current
+     * 
+     * 
+     * @param string    $sAdjRukleId  The Entity ID
+     * @param DateTime  $oNow       The Now data form the database
+     */ 
+    public function checkAdjRuleIsCurrent($sAdjRuleId)
+    {
+        
+        return (boolean) $this->newQueryBuilder()
+                    ->select(1)
+                    ->from($this->getMetaData()->getName(),$this->getTableQueryAlias())
+                    ->filterByCurrent(new DateTime('3000-01-01'))
+                    ->filterByAdjustmentRule($sAdjRuleId)
+                    ->end()
+                ->fetchColumn(0);
+        
+    }
+    
 }
 /* End of Class */

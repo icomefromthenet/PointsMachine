@@ -47,5 +47,26 @@ class PointSystemZoneGateway extends CommonTable
     }
     
     
+    
+    /**
+     * Check if a System Zone with the given id is current
+     * 
+     * 
+     * @param string    $sSystemZoneId  The Entity ID
+     * @param DateTime  $oNow       The Now data form the database
+     */ 
+    public function checkSystemZoneIsCurrent($sSystemZoneId)
+    {
+        
+        return (boolean) $this->newQueryBuilder()
+                    ->select(1)
+                    ->from($this->getMetaData()->getName(),$this->getTableQueryAlias())
+                    ->filterByCurrent(new DateTime('3000-01-01'))
+                    ->filterByZone($sSystemZoneId)
+                    ->end()
+                ->fetchColumn(0);
+        
+    }
+    
 }
 /* End of Class */

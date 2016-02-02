@@ -550,7 +550,7 @@ class BuilderTest extends TestWithContainer
     //     $aRawEntity = array(
     //         $sAlais.'episode_id'      => 1,
     //         $sAlais.'rule_id'         => 'B5D37F95-525F-9E4F-A5B7-F6EA3A269A34',
-    //         $sAlais.'system_zone_id'   => 'C5D37F95-525F-9E4F-A5B7-F6EA3A269A34',
+    //         $sAlais.'zone_id'         => 'C5D37F95-525F-9E4F-A5B7-F6EA3A269A34',
     //         $sAlais.'enabled_from'    => new DateTime(),
     //         $sAlais.'enabled_to'      => new DateTime('3000-01-01'),
     //     );
@@ -559,7 +559,7 @@ class BuilderTest extends TestWithContainer
         
     //     $this->assertEquals($aRawEntity[$sAlais.'episode_id'],$oEntity->iEpisodeID);
     //     $this->assertEquals($aRawEntity[$sAlais.'rule_id'],$oEntity->sAdjustmentRuleID);
-    //     $this->assertEquals($aRawEntity[$sAlais.'system_zone_id'],$oEntity->sSystemZoneID);
+    //     $this->assertEquals($aRawEntity[$sAlais.'zone_id'],$oEntity->sSystemZoneID);
     //     $this->assertEquals($aRawEntity[$sAlais.'enabled_from'],$oEntity->oEnabledFrom);
     //     $this->assertEquals($aRawEntity[$sAlais.'enabled_to'],$oEntity->oEnabledTo);
         
@@ -567,7 +567,7 @@ class BuilderTest extends TestWithContainer
         
     //     $this->assertEquals($oEntity->iEpisodeID,$aRawEntity['episode_id']);
     //     $this->assertEquals($oEntity->sAdjustmentRuleID,$aRawEntity['rule_id']);
-    //     $this->assertEquals($oEntity->sSystemZoneID,$aRawEntity['system_zone_id']);
+    //     $this->assertEquals($oEntity->sSystemZoneID,$aRawEntity['zone_id']);
     //     $this->assertEquals($oEntity->oEnabledFrom,$aRawEntity['enabled_from']);
     //     $this->assertEquals($oEntity->oEnabledTo,$aRawEntity['enabled_to']);
         

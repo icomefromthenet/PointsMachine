@@ -237,10 +237,10 @@ class AdjustmentGroup extends TemporalEntity
 
         if($bSuccess) {
             $this->aLastResult['result'] = true;
-            $this->aLastResult['msg']    = 'Closed this Adjustment Group episode';
+            $this->aLastResult['msg']    = 'Closed this AdjustmentGroup episode';
         } else {
             $this->aLastResult['result'] = false;
-            $this->aLastResult['msg']    = 'Unable to close this Adjustment Group episode';
+            $this->aLastResult['msg']    = 'Unable to close this AdjustmentGroup episode';
         }
         
         return $bSuccess;
