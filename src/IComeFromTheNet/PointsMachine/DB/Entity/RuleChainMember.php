@@ -65,11 +65,11 @@ class RuleChainMember extends TemporalEntity
         $sAdjGroupId  = $aDatabaseData['rule_group_id']; 
         $sChainId     = $aDatabaseData['rule_chain_id'];
         
-        if(false === $oAdjGroupGateway->checkAdjGroupIsCurrent($sAdjGroupId,new DateTime('3000-01-01'))) {
+        if(false === $oAdjGroupGateway->checkAdjGroupIsCurrent($sAdjGroupId)) {
             $bResult['AdjustmentGroup'] = true;
         } 
         
-        if(false === $oRuleChainGateway->checkRuleChainIsCurrent($sChainId,new DateTime('3000-01-01')) ) {
+        if(false === $oRuleChainGateway->checkRuleChainIsCurrent($sChainId) ) {
             $bResult['RuleChain'] = true;
         }
         

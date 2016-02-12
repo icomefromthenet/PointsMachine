@@ -184,7 +184,7 @@ class PointSystem extends  TemporalEntity implements ActiveRecordInterface
         $bReqRuleChain  = $oAdjGroupLimitGateway->checkParentSystemRequired($this->sSystemID);
          
         
-        return array('SystemZone' => $bReqSystemZone,'AdjustmentGroup' => $bReqAdjGroup, 'RuleChain' => $bReqRuleChain);
+        return array('SystemZone' => $bReqSystemZone,'AdjustmentGroupLimit' => $bReqAdjGroup, 'RuleChain' => $bReqRuleChain);
     }
     
     protected function checkCreateTemportalFK($aDatabaseData) 

@@ -51,7 +51,7 @@ class CalculationAdjGroupBuilder extends CommonBuilder
             'rule_group_ep'     => $oCalculation->iAdjustmentGroupEP,
             'score_modifier'    => $oCalculation->fScoreModifier,
             'score_multiplier'  => $oCalculation->fScoreMultiplier,
-            'iOrderSeq'         => $oCalculation->iOrderSeq
+            'order_seq'         => $oCalculation->iOrderSeq
         );
         
     }

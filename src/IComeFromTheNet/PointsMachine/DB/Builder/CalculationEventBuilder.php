@@ -23,18 +23,18 @@ class CalculationEventBuilder extends CommonBuilder
       */
     public function build($data)
     {
-        $oRule = new CalculationEvent($this->oGateway, $this->oLogger);
+        $oCalculation = new CalculationEvent($this->oGateway, $this->oLogger);
         $sAlias = $this->getTableQueryAlias();
         
-        $oRule->iScoringEventID     = $this->getField($data,'event_id',$sAlias); 
-        $oRule->iSystemEP           = $this->getField($data,'system_ep',$sAlias); 
-        $oRule->iSystemZoneEP       = $this->getField($data,'zone_ep',$sAlias); 
-        $oRule->iEventTypeEP        = $this->getField($data,'event_type_ep',$sAlias); 
-        $oRule->oCreatedDate        = $this->getField($data,'created_date',$sAlias); 
-        $oRule->oProcessingDate     = $this->getField($data,'processing_date',$sAlias); 
-        $oRule->oOccuredDate        = $this->getField($data,'occured_date',$sAlias); 
+        $oCalculation->iScoringEventID     = $this->getField($data,'event_id',$sAlias); 
+        $oCalculation->iSystemEP           = $this->getField($data,'system_ep',$sAlias); 
+        $oCalculation->iSystemZoneEP       = $this->getField($data,'zone_ep',$sAlias); 
+        $oCalculation->iEventTypeEP        = $this->getField($data,'event_type_ep',$sAlias); 
+        $oCalculation->oCreatedDate        = $this->getField($data,'created_date',$sAlias); 
+        $oCalculation->oProcessingDate     = $this->getField($data,'processing_date',$sAlias); 
+        $oCalculation->oOccuredDate        = $this->getField($data,'occured_date',$sAlias); 
          
-        return $oRule;
+        return $oCalculation;
     }
     
     /**
@@ -47,13 +47,13 @@ class CalculationEventBuilder extends CommonBuilder
     public function demolish($oCalculation)
     {
         return array(
-            'event_id'      => $oRule->iScoringEventID
-            ,'system_ep'    => $oRule->iSystemEP
-            ,'zone_ep'      => $oRule->iSystemZoneEP
-            ,'event_type_ep' => $oRule->iEventTypeEP
-            ,'created_date' => $oRule->oCreatedDate
-            ,'processing_date' => $oRule->oProcessingDate
-            ,'occured_date' => $oRule->oCreatedDate
+            'event_id'      => $oCalculation->iScoringEventID
+            ,'system_ep'    => $oCalculation->iSystemEP
+            ,'zone_ep'      => $oCalculation->iSystemZoneEP
+            ,'event_type_ep' => $oCalculation->iEventTypeEP
+            ,'created_date' => $oCalculation->oCreatedDate
+            ,'processing_date' => $oCalculation->oProcessingDate
+            ,'occured_date' => $oCalculation->oOccuredDate
             
         );
         

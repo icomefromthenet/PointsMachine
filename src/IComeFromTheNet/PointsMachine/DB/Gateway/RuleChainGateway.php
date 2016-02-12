@@ -71,13 +71,13 @@ class RuleChainGateway extends CommonTable
      * @param string    $sRuleChainId  The Entity ID
      * @param DateTime  $oNow       The Now data form the database
      */ 
-    public function checkRuleChainIsCurrent($sRuleChainId, DateTime $oNow)
+    public function checkRuleChainIsCurrent($sRuleChainId)
     {
         
         return (boolean) $this->newQueryBuilder()
                     ->select(1)
                     ->from($this->getMetaData()->getName(),$this->getTableQueryAlias())
-                    ->filterByCurrent($oNow)
+                    ->filterByCurrent(new DateTime('3000-01-01'))
                     ->filterByRuleChain($sRuleChainId)
                     ->end()
                 ->fetchColumn(0);

@@ -36,13 +36,13 @@ class PointSystemGateway extends CommonTable
      * @param string    $sSystemId  The Entity ID
      * @param DateTime  $oNow       The Now data form the database
      */ 
-    public function checkSystemIsCurrent($sSystemId, DateTime $oNow)
+    public function checkSystemIsCurrent($sSystemId)
     {
         
         return (boolean) $this->newQueryBuilder()
                     ->select(1)
                     ->from($this->getMetaData()->getName(),$this->getTableQueryAlias())
-                    ->filterByCurrent($oNow)
+                    ->filterByCurrent(new DateTime('3000-01-01'))
                     ->filterBySystem($sSystemId)
                     ->end()
                 ->fetchColumn(0);

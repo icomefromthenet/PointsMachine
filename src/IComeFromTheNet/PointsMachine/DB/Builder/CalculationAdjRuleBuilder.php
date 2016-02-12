@@ -51,6 +51,7 @@ class CalculationAdjRuleBuilder extends CommonBuilder
             ,'score_ep'      => $oCalculation->iScoreEP
             ,'score_modifier'=> $oCalculation->fScoreModifier
             ,'score_multiplier' => $oCalculation->fScoreMultiplier
+            ,'order_seq'    => $oCalculation->iOrderSeq
            
         );
         

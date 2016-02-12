@@ -47,5 +47,10 @@ class ScoreGroupGateway extends CommonTable
         
     }
     
+    public function checkScoreGroupIsCurrent($sScoreGroupId)
+    {
+        return $this->checkScoreGroupCurrent($sScoreGroupId);
+    }
+    
 }
 /* End of Class */

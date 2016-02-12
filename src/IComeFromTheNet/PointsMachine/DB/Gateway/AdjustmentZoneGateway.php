@@ -47,6 +47,23 @@ class AdjustmentZoneGateway extends CommonTable
         
     }
     
+    /**
+     * Check if a AdjRule has a 'current' relation to a AdjZone.
+     * 
+     * @param string    $sAdjRuleId  The Entity ID
+     * @return boolean true if a record found
+     */ 
+    public function checkParentAdjRuleRequired($sAdjRuleId)
+    {
+         return (boolean) $this->newQueryBuilder()
+                ->select(1)
+                ->from($this->getMetaData()->getName(),$this->getTableQueryAlias())
+                ->filterByCurrent(new DateTime('3000-01-01'))
+                ->filterByAdjustmentRule($sAdjRuleId)
+                ->end()
+            ->fetchColumn(0);
+    }
+    
     
 }
 /* End of Class */

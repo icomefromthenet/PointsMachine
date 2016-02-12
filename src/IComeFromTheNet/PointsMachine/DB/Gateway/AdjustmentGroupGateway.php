@@ -32,15 +32,14 @@ class AdjustmentGroupGateway extends CommonTable
      * 
      * 
      * @param string    $sAdjGroupId  The Entity ID
-     * @param DateTime  $oNow       The Now data form the database
      */ 
-    public function checkAdjGroupIsCurrent($sAdjGroupId, DateTime $oNow)
+    public function checkAdjGroupIsCurrent($sAdjGroupId)
     {
         
         return (boolean) $this->newQueryBuilder()
                     ->select(1)
                     ->from($this->getMetaData()->getName(),$this->getTableQueryAlias())
-                    ->filterByCurrent($oNow)
+                    ->filterByCurrent(new DateTime('3000-01-01'))
                     ->filterByAdjustmentGroup($sAdjGroupId)
                     ->end()
                 ->fetchColumn(0);
