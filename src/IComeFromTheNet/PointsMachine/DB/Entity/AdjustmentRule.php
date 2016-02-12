@@ -75,7 +75,7 @@ class AdjustmentRule extends TemporalEntity
     protected function checkRemoveTemportalFK($aDatabaseData)
     {
         $oGateway               = $this->getTableGateway();
-        $oAdjZoneGateway        = $this->getGatewayCollection()->getGateway('pt_rule_sys_zone');
+        $oAdjZoneGateway        = $oGateway->getGatewayCollection()->getGateway('pt_rule_sys_zone');
         
         $bResult           = array();
         $sAdjRuleId        = $aDatabaseData['rule_id'];
@@ -91,7 +91,9 @@ class AdjustmentRule extends TemporalEntity
     protected function checkCreateTemportalFK($aDatabaseData) 
     {
         $bResult          = array();
-        $oAdjGroupGateway = $this->getGatewayCollection()->getGateway('pt_rule_group');
+        $oGateway         = $this->getTableGateway();
+        $oAdjGroupGateway = $oGateway->getGatewayCollection()->getGateway('pt_rule_group');
+        
         $sAdjGroupId      = $aDatabaseData['rule_group_id'];
 
         if(false === $oAdjGroupGateway->checkAdjGroupIsCurrent($sAdjGroupId)) {
