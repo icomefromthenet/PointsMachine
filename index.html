@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Pointsmachine : Library to build Points Systems.">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Pointsmachine</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/icomefromthenet/PointsMachine">View on GitHub</a>
+
+          <h1 id="project_title">Pointsmachine</h1>
+          <h2 id="project_tagline">Library to build Points Systems.</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/icomefromthenet/PointsMachine/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/icomefromthenet/PointsMachine/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a id="pointsmachine" class="anchor" href="#pointsmachine" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>PointsMachine</h1>
+
+<p>Library to build Points Systems for MySql.</p>
+
+<h1>
+<a id="overview" class="anchor" href="#overview" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Overview</h1>
+
+<p>PointsMachine allows user defined rule systems that can be configured though values stored in database. </p>
+
+<p>PointsMachine does not provide the GUI but is a set of classes that will manage the processing and storage of rules and scores.</p>
+
+<p>A points run starts with a selection of scores that are then applied to a formula defined as a series of rule groups chain together with each group containg one to many adjustment rules that either modify or multiply the base score. These scorce can then be rounded and capped.  </p>
+
+<h1>
+<a id="concepts-overview" class="anchor" href="#concepts-overview" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Concepts Overview:</h1>
+
+<h2>
+<a id="period-of-validity" class="anchor" href="#period-of-validity" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Period of Validity.</h2>
+
+<p>Many of the entities (Rules,Scores,Chains) all have a period of applicability. This library does not allow for future data only current. For example a delete operation will cause an existing entity to be closed meaning the databse record is not removed only its valid date range changed. If new entity is added it is active from that date. </p>
+
+<h2>
+<a id="systems-and-zones" class="anchor" href="#systems-and-zones" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Systems and Zones</h2>
+
+<p>All Formulas and Rules are linked to a System if you are running multiple reward schemes they would each belong to a different system. </p>
+
+<p>A System has Zones these zones should be mutually exclusive to each other for example sales territories. These zones are used to further filter which rules should apply to a score. </p>
+
+<h2>
+<a id="score-and-score-groups" class="anchor" href="#score-and-score-groups" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Score and Score Groups</h2>
+
+<p>A Score is a starting point each score has a value. This value will be modified by the processor.</p>
+
+<p>You may have many scores in calculation run each score is modified independently. </p>
+
+<p>Each Score may belong to a single Score Group. </p>
+
+<p>Each product in your catelog could be assigned its own score with product categories making up the score groups.</p>
+
+<h2>
+<a id="adjustment-rules-and-adjustment-groups" class="anchor" href="#adjustment-rules-and-adjustment-groups" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Adjustment Rules and Adjustment Groups</h2>
+
+<p>An adjustment rule contains a modifier and a multipler they can be:
+1. Linked to specific system zones.
+2. Linked to only a single Adjustment Group.</p>
+
+<p>A rule multipler is a multiplication operation.
+A rule modifier is a addition operation.</p>
+
+<p>An Adjustment Group is a container for one or more Adjustment Rules.</p>
+
+<p>A group has the following functions.
+1. Be linked to only apply on specific Score Groups (different groups for each product category)
+2. Be linked to one more Points Systems. (reuse one group across multiple point systems)
+3. Have a maximum and minimum multipler and modifier (based on combined value of adjustment rules applied in the run)
+4. Group can me made to be mandatory (always apply its rules)
+5. Limit on number of adjustment rules that are applied to score (limit to a single rule).
+6. Change how the linked rules are ordered (max or min).</p>
+
+<p>For example you can have an adjustment group apply only a single largest rule from those included in a calculation run.</p>
+
+<blockquote>
+<p>If you developing a system and do not need the end user to configure the values through a GUI I would recommend that avoid using a library like mine.</p>
+</blockquote>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Pointsmachine maintained by <a href="https://github.com/icomefromthenet">icomefromthenet</a></p>
+        <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
