@@ -66,9 +66,10 @@ abstract class CommonTable extends SchemaAwareTable implements TableInterface
      */ 
     public function getNow()
     {
+        
         $sNow = $this->newQueryBuilder()
                 ->select($this->getAdapter()->getDatabasePlatform()->getCurrentDateSQL())
-                ->from($this->getMetaData()->getName())
+                ->from('(SELECT 1)','t')
                 ->end()
                 ->fetchColumn(0);
         

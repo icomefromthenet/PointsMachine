@@ -43,7 +43,7 @@ abstract class CommonEntity implements ActiveRecordInterface
     * @return string a guid
     * @access protected
     */    
-    protected function guid($opt = true )
+    public function guid($opt = true )
     {       
         
         //  Set to true/false as your default way to do this.
