@@ -9,6 +9,146 @@ PointsMachine does not provide the GUI but is a set of classes that will manage 
 A points run starts with a selection of scores that are then applied to a formula defined as a series of rule groups chain together with each group containg one to many adjustment rules that either modify or multiply the base score. These scorce can then be rounded and capped.  
 
 
+# Getting Started.
+To show you how this library is to be used I will implement a DKP or (Dragon Kill Points) system that are used in Gaming Guids. (I used to play alot of World of Warcraft).
+
+## Boostrap the Library
+
+First step is to create the system but before we can do that we need to bootstrap the Library Service Container.
+
+```php
+
+// Start the Database
+
+$connectionParams = array(
+    'dbname' => $DEMO_DATABASE_SCHEMA,
+    'user' => $DEMO_DATABASE_USER,
+    'password' => $DEMO_DATABASE_PASSWORD,
+    'host' => $DEMO_DATABASE_HOST,
+    'driver' => $DEMO_DATABASE_TYPE,
+);
+
+$oConn = \Doctrine\DBAL\DriverManager::getConnection($connectionParams, $config);
+
+
+// Start the Logger
+
+$oLog = new BufferedQueryLogger();
+$oLog->setMaxBuffer(100);
+$oConn->getConfiguration()->setSQLLogger($oLog);
+
+// create a log channel
+$ologger = new Logger('runner');
+$ologger->pushHandler(new StreamHandler(__DIR__.'/out.log', Logger::DEBUG));
+
+
+// Start Event Dispatcher
+
+$oEvent = new EventDispatcher();
+
+// Create the Container
+
+$oPointsContainer = new PointsMachineContainer($oEvent,$oConn,$ologger);
+ 
+// Bootstrap the container
+
+$oPointsContainer->boot(new \DateTime('now'));
+
+
+```
+
+## System and SystemZones
+
+After the container is started we will be able to start configuring this system.
+
+I use an Active Record pattern to build this libraries data model each entity has both
+a entity::save() and entity::remove() with each entity having 2 constructor arguments.
+
+1. Table Gateway for the database table this entity represents
+2. The Application Logger
+
+
+```php
+
+   
+  $oSystemGateway = $oPointsContainer->getGatewayCollection()->getGateway('pt_system');
+  $oLogger        = $oPointsContainer->getAppLogger();
+ 
+  
+  $oPointSystem = new PointSystem($oSystemGateway,$oLogger);
+    
+  $oPointSystem->sSystemID       = $oPointSystem->guid();
+  $oPointSystem->sSystemName     = 'Raid Calculator';
+  $oPointSystem->sSystemNameSlug = 'raid_calculator';
+  
+  $bResult = $oPointSystem->save();
+  $aLastResult = $oPointSystem->getLastQueryResult();
+  
+  if(false === $bResult) {
+    throw new \RuntimeException($aLastResult['msg']);
+  }  
+
+```
+
+After we have defind a name for our points system we should consider if we need any SystemZones.  
+
+A System has Zones these zones should be mutually exclusive to each other for example sales territories. These zones are used to further filter which rules should apply to a score. 
+
+For our Raid Calcualtor I'm going to use character classes.
+
+
+```php
+
+ // Create some SystemZones
+  
+  $oSystemZoneGateway = $oPointsContainer->getGatewayCollection()->getGateway('pt_system_zone');
+  
+  
+  $oPriestZone  = new PointSystemZone($oSystemZoneGateway,$oLogger);
+  $oWarriorZone = new PointSystemZone($oSystemZoneGateway,$oLogger);
+  $oMageZone    = new PointSystemZone($oSystemZoneGateway,$oLogger);
+  
+  $oPriestZone->sZoneID       = $oPriestZone->guid();
+  $oPriestZone->sSystemID     = $oPointSystem->sSystemID;
+  $oPriestZone->sZoneName     = 'Priest Class';
+  $oPriestZone->sZoneNameSlug = 'priest_class';
+  
+  $oWarriorZone->sZoneID       = $oPriestZone->guid();
+  $oWarriorZone->sSystemID     = $oPointSystem->sSystemID;
+  $oWarriorZone->sZoneName     = 'Warrior Class';
+  $oWarriorZone->sZoneNameSlug = 'warrior_class';
+  
+  $oMageZone->sZoneID       = $oPriestZone->guid();
+  $oMageZone->sSystemID     = $oPointSystem->sSystemID;
+  $oMageZone->sZoneName     = 'Mage Class';
+  $oMageZone->sZoneNameSlug = 'mage_class';
+  
+  foreach(array($oPriestZone,$oWarriorZone,$oMageZone) as $oZone) {
+    
+    $bResult = $oZone->save();
+    $aLastResult = $oZone->getLastQueryResult();
+  
+    if(false === $bResult) {
+      throw new \RuntimeException($oZone->sZoneName .' '.$aLastResult['msg']);
+    }
+    
+  }
+
+
+```
+
+## Events Types
+
+This abstraction is used to group occurances that would cause a calcualtion run to be made in this raid calcualtor a event could a dungeon raid, a outdoor raid, a PVP raid.  
+Each event will have a formula that map which rules and the order they are applied for each unique formula you need a event type.
+
+```php
+
+
+```
+
+
+
 #Concepts Overview:
 
 ##Period of Validity.
@@ -17,7 +157,7 @@ Many of the entities (Rules,Scores,Chains) all have a period of applicability. T
 ##Systems and Zones
 All Formulas and Rules are linked to a System if you are running multiple reward schemes they would each belong to a different system. 
 
-A System has Zones these zones should be mutually exclusive to each other for example sales territories. These zones are used to further filter which rules should apply to a score. 
+
 
 
 ## Score and Score Groups
