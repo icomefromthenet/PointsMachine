@@ -64,8 +64,8 @@ After the container is started we will be able to start configuring this system.
 I use an Active Record pattern to build this libraries data model each entity has both
 a entity::save() and entity::remove() with each entity having 2 constructor arguments.
 
-1. Table Gateway for the database table this entity represents
-2. The Application Logger
+1. Table Gateway for the database table this entity represents,
+2. The Application Logger,
 
 
 ```php
@@ -139,15 +139,65 @@ For our Raid Calcualtor I'm going to use character classes.
 
 ## Events Types
 
-This abstraction is used to group occurances that would cause a calcualtion run to be made in this raid calcualtor a event could a dungeon raid, a outdoor raid, a PVP raid.  
-Each event will have a formula that map which rules and the order they are applied for each unique formula you need a event type.
+This abstraction is used to group occurances that would cause a calcualtion run in this raid calcualtor an event could a dungeon raid, an outdoor raid, ro a PVP raid.
+
 
 ```php
+
+  $oEventTypeGateway =  $oPointsContainer->getGatewayCollection()->getGateway('pt_event_type');
+    
+  $oDungeonRaidEventType  = new EventType($oEventTypeGateway,$oLogger);  
+  $oOutdoorRaidEventType = new EventType($oEventTypeGateway,$oLogger);  
+  $oPVPRaidEventType     = new EventType($oEventTypeGateway,$oLogger);  
+  
+   
+  $oDungeonRaidEventType->sEventTypeID  = $oDungeonRaidEventType->guid();
+  $oDungeonRaidEventType->sEventName    = 'Dungeon Raid';
+  $oDungeonRaidEventType->sEventNameSlug = 'dungeon_raid';
+  
+  $oOutdoorRaidEventType->sEventTypeID  = $oOutdoorRaidEventType->guid();
+  $oOutdoorRaidEventType->sEventName    = 'Outdoor Raid';
+  $oOutdoorRaidEventType->sEventNameSlug = 'outdoor_raid';
+  
+  $oPVPRaidEventType->sEventTypeID  = $oPVPRaidEventType->guid();
+  $oPVPRaidEventType->sEventName    = 'PVP Raid';
+  $oPVPRaidEventType->sEventNameSlug = 'pvp_raid';
+  
+  foreach(array($oDungeonRaidEventType,$oOutdoorRaidEventType,$oPVPRaidEventType) as $oEventType) {
+    
+    $bResult = $oEventType->save();
+    $aLastResult = $oEventType->getLastQueryResult();
+  
+    if(false === $bResult) {
+      throw new \RuntimeException($oZone->sEventName .' '.$aLastResult['msg']);
+    }
+    
+  }
+
 
 
 ```
 
+## Score and Score Groups
 
+Scores are the starting values. If this library was used as a discount calculator you could have one score per product but with dungeon raid each score will instead represent
+a minium allowance for attendence. 
+
+Score Groups are used to categories multiple score values together with the groups used as filters during a caluclation run.
+
+We start of with 3 Score Groups.
+
+1. PVP Scores
+2. PVP Scores
+3. Donations.
+
+
+```php
+
+
+
+
+```
 
 #Concepts Overview:
 
