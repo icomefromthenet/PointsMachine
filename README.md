@@ -187,17 +187,141 @@ Score Groups are used to categories multiple score values together with the grou
 
 We start of with 3 Score Groups.
 
-1. PVP Scores
-2. PVP Scores
+1. PVE Scores.
+2. PVP Scores.
 3. Donations.
 
 
 ```php
 
 
+  $oScoreGroupGateway =  $oPointsContainer->getGatewayCollection()->getGateway('pt_score_group');
+  
+    
+  $oPVEScoreGroup      = new ScoreGroup($oScoreGroupGateway,$oLogger); 
+  $oPVPScoreGroup      = new ScoreGroup($oScoreGroupGateway,$oLogger);
+  $oDonationScoreGroup = new ScoreGroup($oScoreGroupGateway,$oLogger);
+  
+  $oPVEScoreGroup->sScoreGroupID = $oPVEScoreGroup->guid();
+  $oPVEScoreGroup->sGroupName    = 'PVE Score Group';
+  $oPVEScoreGroup->sGroupNameSlug = 'pve_score_group';
+  
+  $oPVPScoreGroup->sScoreGroupID = $oPVPScoreGroup->guid();
+  $oPVPScoreGroup->sGroupName    = 'PVP Score Group';
+  $oPVPScoreGroup->sGroupNameSlug = 'pvp_score_group';
+  
+  $oDonationScoreGroup->sScoreGroupID = $oDonationScoreGroup->guid();
+  $oDonationScoreGroup->sGroupName    = 'Donations Score Group';
+  $oDonationScoreGroup->sGroupNameSlug = 'donations_score_group';
+  
+  foreach(array($oPVEScoreGroup,$oPVPScoreGroup,$oDonationScoreGroup) as $oScoreGroup) {
+    
+    $bResult = $oScoreGroup->save();
+    $aLastResult = $oScoreGroup->getLastQueryResult();
+  
+    if(false === $bResult) {
+      throw new \RuntimeException($oScoreGroup->sEventName .' '.$aLastResult['msg']);
+    }
+    
+  }
+  
+
 
 
 ```
+
+Create some scores that use these groups.
+
+Need to create
+
+1. Large donation.
+2. Small donation.
+3. Average donation.
+4. 5 man Dungeon
+5. 10 man Dungeon
+6. 20 man Dungeon
+7. PVP Participation
+
+```php
+
+$oScoreGateway = $oPointsContainer->getGatewayCollection()->getGateway('pt_score');
+  
+
+  
+  $oLargeDonationScore   = new Score($oScoreGateway,$oLogger);
+  $oSmallDonationScore   = new Score($oScoreGateway,$oLogger);
+  $oAverageDonationScore = new Score($oScoreGateway,$oLogger);
+  $oDungeon5ManScore      = new Score($oScoreGateway,$oLogger);
+  $oDungeon10ManScore     = new Score($oScoreGateway,$oLogger);
+  $oDungeon20ManScore     = new Score($oScoreGateway,$oLogger);
+  $oPVPParticipationScore = new Score($oScoreGateway,$oLogger);
+  
+  $oLargeDonationScore->sScoreID        = $oLargeDonationScore->guid();
+  $oLargeDonationScore->sScoreGroupID   = $oDonationScoreGroup->sScoreGroupID;
+  $oLargeDonationScore->sScoreName      = 'Large Donations';
+  $oLargeDonationScore->sScoreNameSlug  = 'large_donations';
+  $oLargeDonationScore->fScoreValue     = 20;
+  
+  $oSmallDonationScore->sScoreID        = $oSmallDonationScore->guid();
+  $oSmallDonationScore->sScoreGroupID   = $oDonationScoreGroup->sScoreGroupID;
+  $oSmallDonationScore->sScoreName      = 'Small Donations';
+  $oSmallDonationScore->sScoreNameSlug  = 'small_donations';
+  $oSmallDonationScore->fScoreValue     = 5;
+  
+  $oAverageDonationScore->sScoreID        = $oAverageDonationScore->guid();
+  $oAverageDonationScore->sScoreGroupID   = $oDonationScoreGroup->sScoreGroupID;
+  $oAverageDonationScore->sScoreName      = 'Average Donations';
+  $oAverageDonationScore->sScoreNameSlug  = 'average_donations';
+  $oAverageDonationScore->fScoreValue     = 10;
+  
+  $oDungeon5ManScore->sScoreID        = $oDungeon5ManScore->guid();
+  $oDungeon5ManScore->sScoreGroupID   = $oPVEScoreGroup->sScoreGroupID;
+  $oDungeon5ManScore->sScoreName      = '5 Man Dungeon';
+  $oDungeon5ManScore->sScoreNameSlug  = '5_man_dungeon';
+  $oDungeon5ManScore->fScoreValue     = 5;
+  
+  $oDungeon10ManScore->sScoreID        = $oDungeon10ManScore->guid();
+  $oDungeon10ManScore->sScoreGroupID   = $oPVEScoreGroup->sScoreGroupID;
+  $oDungeon10ManScore->sScoreName      = '10 Man Dungeon';
+  $oDungeon10ManScore->sScoreNameSlug  = '10_man_dungeon';
+  $oDungeon10ManScore->fScoreValue     = 20;
+  
+  
+  $oDungeon20ManScore->sScoreID       = $oDungeon20ManScore->guid();
+  $oDungeon20ManScore->sScoreGroupID   = $oPVEScoreGroup->sScoreGroupID;
+  $oDungeon20ManScore->sScoreName      = '20 Man Dungeon';
+  $oDungeon20ManScore->sScoreNameSlug  = '20_man_dungeon';
+  $oDungeon20ManScore->fScoreValue     = 20;
+  
+  $oPVPParticipationScore->sScoreID       = $oPVPParticipationScore->guid();
+  $oPVPParticipationScore->sScoreGroupID   = $oPVPScoreGroup->sScoreGroupID;
+  $oPVPParticipationScore->sScoreName      = 'PVP Participation';
+  $oPVPParticipationScore->sScoreNameSlug  = 'pvp_participation';
+  $oPVPParticipationScore->fScoreValue     = 15;
+    
+    
+  foreach(array($oLargeDonationScore,   
+                $oSmallDonationScore,   
+                $oAverageDonationScore, 
+                $oDungeon5ManScore,     
+                $oDungeon10ManScore,    
+                $oDungeon20ManScore,    
+                $oPVPParticipationScore ) as $oScore) {
+                  
+    $bResult = $oScore->save();
+    $aLastResult = $oScore->getLastQueryResult();
+  
+    if(false === $bResult) {
+      throw new \RuntimeException($oScore->sScoreName .' '.$aLastResult['msg']);
+    }
+    
+  } 
+  
+
+```
+
+# Adjustment Rules and Adjustment Groups
+
 
 #Concepts Overview:
 
