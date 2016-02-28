@@ -58,13 +58,15 @@ class ScoreProcessor implements CompilerInterface
      * @param ComplileResult    $oResult
      * @param DateTime          $oProcessingDate
      */ 
-    public function execute(DateTime $oProcessingDate, ComplileResult $oResult)
+    public function execute(DateTime $oProcessingDate, CompileResult $oResult)
     {
 
         try {
             
             // Execute Each Pass
             $this->getLogger()->info('Starting Execute PointsMachine Score Compiler for Processing Date ::'.$oProcessingDate->format('d-m-Y'));
+            
+            ksort($this->aPasses);
             
             foreach($this->aPasses as $oPass) {
                 
@@ -139,7 +141,7 @@ class ScoreProcessor implements CompilerInterface
      */ 
     public function getResult($iEventId)
     {
-        $oScoreTransactionGateway = $this->oGatewayCollection->getGateway('pt_transaction_score');
+        $oScoreTransactionGateway = $this->oGatewayCollecetion->getGateway('pt_transaction_score');
                         
         
         return $oScoreTransactionGateway

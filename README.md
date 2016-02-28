@@ -322,6 +322,76 @@ $oScoreGateway = $oPointsContainer->getGatewayCollection()->getGateway('pt_score
 
 # Adjustment Rules and Adjustment Groups
 
+## Event : Donation 
+
+Start with a formula that will convert the score, elements of that formula will become your Rule Groups and the values 
+that this group can take will be your adjustment rules. 
+
+For our Donation Event the following conversion formula should be used.
+
+Sum All Donations for the week (Base Score each * Class Difficulty Modifer + Demand Bonus ) <= 500 
+
+For a single week Sunday - Monday following week earn no more than 500 points. 
+Each score will have a class modifer and a deman bonus applied.
+
+```php
+
+  $oAdjGroupGateway       = $oPointsContainer->getGatewayCollection()->getGateway('pt_rule_group');
+  $oAdjRuleGateway        = $oPointsContainer->getGatewayCollection()->getGateway('pt_rule');
+  $oRuleChainGateway      = $oPointsContainer->getGatewayCollection()->getGateway('pt_rule_chain');
+  $oChainMemberGateway    = $oPointsContainer->getGatewayCollection()->getGateway('pt_chain_member');
+  $oAdjRuleZones          = $oPointsContainer->getGatewayCollection()->getGateway('pt_rule_sys_zone');
+  $oAdjGroupLimitsGateway = $oPointsContainer->getGatewayCollection()->getGateway('pt_rule_group_limits');
+  
+
+```
+
+The first group will be the 'Class Difficulty' this group will contain adjustment rules that will affect a score based on the character class.
+We have a number of qualifications that we need to configure as where building this adjustment group.
+
+1. Only want to apply 1 modifier 
+2. Use the system zones to stop control which modifers are applicable .
+3. This group should always be applied. 
+
+The Second Group the 'Demand Bonus' will contain a number of rules of which one should be applied. Only if they are attached to the calculation run.
+
+
+```php
+  
+  // Define the group
+  
+  $oClassDifficultyAdjGroup = new AdjustmentGroup($oAdjGroupGateway,$oLogger);
+  
+  
+  
+  $oClassDifficultyAdjGroup->sAdjustmentGroupID = $oClassDifficultyAdjGroup->guid();
+  $oClassDifficultyAdjGroup->sGroupName         = 'Class Difficulty Group';
+  $oClassDifficultyAdjGroup->sGroupNameSlug     = 'class_difficulty_group';
+  
+  // These settings ensure only 1 modifer is used from this group and will be the largest
+  $oClassDifficultyAdjGroup->iMaxCount          = 1; 
+  $oClassDifficultyAdjGroup->iOrderMethod       = AdjustmentGroup::ORDER_HIGHT;
+  
+  // This will ensure that all modifers are included in the calculation run (filtered out by system zones)
+  $oClassDifficultyAdjGroup->bIsMandatory       = 1;
+  
+  
+  
+  
+  
+  
+  // Link rules to their System Zones
+  
+  
+
+```
+
+
+## Event: Dungon Run
+
+
+
+
 
 #Concepts Overview:
 

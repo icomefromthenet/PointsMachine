@@ -26,6 +26,8 @@ use IComeFromTheNet\PointsMachine\PointsMachineException;
 class LimitPass extends AbstractPass 
 {
     
+     const PASS_PRIORITY = 65;
+  
 
     /**
      * Executes this pass.

@@ -51,11 +51,9 @@ class RoundPass extends AbstractPass
         
             $sSql  =" UPDATE $sScoreTmpTableName sc ";
             $sSql .= " SET sc.score_cal_raw = ( ";
-                 $sSql .=" SELECT agg.cumval ";
+                 $sSql .=" SELECT sum(agg.cumval) ";
                  $sSql .=" FROM $sAggTmpTableName agg  ";
                  $sSql .=" WHERE sc.slot_id = agg.score_slot_id ";
-                 $sSql .=" ORDER BY agg.cumval DESC ";
-                 $sSql .=" LIMIT 1 ";
             $sSql .= ");";
             
             $this->getDatabaseAdapter()->executeUpdate($sSql);
@@ -86,7 +84,7 @@ class RoundPass extends AbstractPass
             
             $this->getDatabaseAdapter()->executeUpdate($sSql);
             
-            
+             
             $oResult->addResult(__CLASS__,'Executed Sucessfuly');
         
         }

@@ -47,12 +47,14 @@ class AdjRuleFilterPass extends AbstractPass
         $sSql .= ' SELECT  rule_id FROM '.$sRuleTmpTable.' ;'.PHP_EOL;
       
         $oDatabase->executeUpdate($sSql);
+        
+        
    
         # find current groups that part of the a current chain that are mandatory and fetch all their current rules
         # key word here is current.
         
         $sSql  = ' INSERT INTO '.$sRuleTmpTable .' (rule_id) '.PHP_EOL;
-        $sSql .= ' SELECT  rule_id '.PHP_EOL;
+        $sSql .= ' SELECT  r.rule_id '.PHP_EOL;
         $sSql .= ' FROM '.$sRuleCMemberTable.' j '.PHP_EOL;
         $sSql .= ' CROSS JOIN  '.$sCommonTmpTable .' c '.PHP_EOL;
         $sSql .= ' JOIN '.$sRuleGroupTable.'  rg ON rg.rule_group_id = j.rule_group_id '.PHP_EOL;
@@ -65,7 +67,23 @@ class AdjRuleFilterPass extends AbstractPass
         $sSql .= ' AND NOT EXISTS (SELECT 1 FROM '.$sRuleDupTable.' rd WHERE rd.rule_id = r.rule_id); '.PHP_EOL;
         $sSql .=  PHP_EOL;
         
-        $oDatabase->exec($sSql);
+        $oDatabase->executeUpdate($sSql);
+   
+   
+        $sSql  = ' SELECT r.rule_id, r.rule_name '.PHP_EOL;
+        $sSql .= ' FROM '.$sRuleCMemberTable.' j '.PHP_EOL;
+        $sSql .= ' CROSS JOIN  '.$sCommonTmpTable .' c '.PHP_EOL;
+        $sSql .= ' JOIN '.$sRuleGroupTable.'  rg ON rg.rule_group_id = j.rule_group_id '.PHP_EOL;
+        $sSql .= ' JOIN '.$sRuleTable.'       r  ON r.rule_group_id  = rg.rule_group_id '.PHP_EOL;
+        $sSql .= ' WHERE rg.is_mandatory = 1 '.PHP_EOL;
+        $sSql .= ' AND j.rule_chain_id = c.rule_chain_id '.PHP_EOL;
+       
+
+        $sSql .=  PHP_EOL;
+   
+   
+        $aResult = $oDatabase->fetchAll('select * from '.$sCommonTmpTable);
+        
         
         
         return $sSql;
@@ -270,9 +288,19 @@ class AdjRuleFilterPass extends AbstractPass
             $oDatabase = $this->getDatabaseAdapter();
             
             $this->includeMandatoryAdjustmentRuleGroups($oProcessingDate);
+      
+            $aResult = $oDatabase->fetchAll('SELECT * FROM pt_result_rule');
+      
+      
             $this->matchRule($oProcessingDate);
+      
+      
+      
             $this->matchRuleGroup($oProcessingDate);
             $this->matchRuleChainMember($oProcessingDate);
+            
+        
+     
             
             $oResult->addResult(__CLASS__,'Executed Successfully');
         }

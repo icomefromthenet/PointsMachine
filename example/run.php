@@ -69,12 +69,26 @@ $oEvent = new EventDispatcher();
      exit(1);
  }
  
-  $oExample = include($argv[1].'.php');
+ $oConn->beginTransaction();
  
- 
- if(false === is_object($oExample) || false === ($oExample instanceof Closure)) {
+ try{
+    
+    $oExample = include($argv[1].'.php');
+  
+  
+    if(false === is_object($oExample) || false === ($oExample instanceof Closure)) {
      echo 'Example not return as expected' . PHP_EOL;
      exit(1);
+    }
+   
+   echo $oExample($oPointsContainer);
+
+    $oConn->commit();
+ } catch(Exception $e) {
+    $oConn->rollBack();
+    throw $e;
  }
  
- echo $oExample($oPointsContainer);
+ 
+ 
+  

@@ -1,5 +1,5 @@
 <?php
-namespace IComeFromTheNet\PointsMachine\Compiler\Pass;
+namespace IComeFromTheNet\PointsMachine\Compiler;
 
 use \DateTime;
 
@@ -20,7 +20,7 @@ interface CompilerInterface
      * @param ComplileResult    $oResult
      * @param DateTime          $oProcessingDate
      */ 
-    public function execute(DateTime $oProcessingDate, ComplileResult $oResult);
+    public function execute(DateTime $oProcessingDate, CompileResult $oResult);
     
     
     /**
@@ -42,13 +42,13 @@ interface CompilerInterface
     public function addPass(CompilerPassInterface $oPass);
     
     /**
-     * Return the results saved in the transaction tables
+     * Return the result stored in the transaction tables.
      * 
      * @access public
      * @return array
+     * @param integer The Event Instance To find
      */ 
-    public function getResult();
-    
+    public function getResult($iEventId);
     
     /**
      * Fetch the assigned logger

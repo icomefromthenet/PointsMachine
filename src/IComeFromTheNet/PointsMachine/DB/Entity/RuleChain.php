@@ -14,6 +14,11 @@ use IComeFromTheNet\PointsMachine\PointsMachineException;
  */
 class RuleChain extends TemporalEntity
 {
+    const ROUND_NONE   = 0;
+    const ROUND_NORMAL = 1;
+    const ROUND_FLOOR  = 3;
+    const ROUND_CEIL   = 2;
+    
     
     protected $aValidation = [
        'integer' => [

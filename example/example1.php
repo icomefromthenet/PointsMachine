@@ -4,13 +4,27 @@ use IComeFromTheNet\PointsMachine\DB\Entity\PointSystemZone;
 use IComeFromTheNet\PointsMachine\DB\Entity\EventType;
 use IComeFromTheNet\PointsMachine\DB\Entity\ScoreGroup;
 use IComeFromTheNet\PointsMachine\DB\Entity\Score;
+use IComeFromTheNet\PointsMachine\DB\Entity\AdjustmentRule;
+use IComeFromTheNet\PointsMachine\DB\Entity\AdjustmentGroup;
+use IComeFromTheNet\PointsMachine\DB\Entity\AdjustmentGroupLimit;
+use IComeFromTheNet\PointsMachine\DB\Entity\AdjustmentZone;
+use IComeFromTheNet\PointsMachine\DB\Entity\RuleChain;
+use IComeFromTheNet\PointsMachine\DB\Entity\RuleChainMember;
+use IComeFromTheNet\PointsMachine\PointsMachine;
 
 
 
 return function($oPointsContainer) {
-    
+  
+  $oDatabase = $oPointsContainer->getDatabaseAdaper();  
   $oSystemGateway = $oPointsContainer->getGatewayCollection()->getGateway('pt_system');
   $oLogger        = $oPointsContainer->getAppLogger();
+  
+  
+  
+  
+  $oDatabase->beginTransaction();
+  
   
   // Create the System 
   
@@ -69,7 +83,7 @@ return function($oPointsContainer) {
   $oDungeonRaidEventType  = new EventType($oEventTypeGateway,$oLogger);  
   $oOutdoorRaidEventType = new EventType($oEventTypeGateway,$oLogger);  
   $oPVPRaidEventType     = new EventType($oEventTypeGateway,$oLogger);  
-  
+  $oDonationEventType    = new EventType($oEventTypeGateway,$oLogger);
    
   $oDungeonRaidEventType->sEventTypeID  = $oDungeonRaidEventType->guid();
   $oDungeonRaidEventType->sEventName    = 'Dungeon Raid';
@@ -83,7 +97,12 @@ return function($oPointsContainer) {
   $oPVPRaidEventType->sEventName    = 'PVP Raid';
   $oPVPRaidEventType->sEventNameSlug = 'pvp_raid';
   
-  foreach(array($oDungeonRaidEventType,$oOutdoorRaidEventType,$oPVPRaidEventType) as $oEventType) {
+  $oDonationEventType->sEventTypeID  = $oDonationEventType->guid();
+  $oDonationEventType->sEventName    = 'Bank Donation';
+  $oDonationEventType->sEventNameSlug = 'bank_donation';
+  
+  
+  foreach(array($oDungeonRaidEventType,$oOutdoorRaidEventType,$oPVPRaidEventType,$oDonationEventType) as $oEventType) {
     
     $bResult = $oEventType->save();
     $aLastResult = $oEventType->getLastQueryResult();
@@ -126,7 +145,7 @@ return function($oPointsContainer) {
     
   }
   
-  // Define some scores
+  // Define some scores and score groups
   $oScoreGateway = $oPointsContainer->getGatewayCollection()->getGateway('pt_score');
   
 
@@ -199,6 +218,238 @@ return function($oPointsContainer) {
     }
     
   } 
+  
+  // Define the donation forumla 
+  
+  $oAdjGroupGateway       = $oPointsContainer->getGatewayCollection()->getGateway('pt_rule_group');
+  $oAdjRuleGateway        = $oPointsContainer->getGatewayCollection()->getGateway('pt_rule');
+  $oRuleChainGateway      = $oPointsContainer->getGatewayCollection()->getGateway('pt_rule_chain');
+  $oChainMemberGateway    = $oPointsContainer->getGatewayCollection()->getGateway('pt_chain_member');
+  $oAdjRuleZones          = $oPointsContainer->getGatewayCollection()->getGateway('pt_rule_sys_zone');
+  $oAdjGroupLimitsGateway = $oPointsContainer->getGatewayCollection()->getGateway('pt_rule_group_limits');
+  
+  
+  // The Class Difficulty Modifer Group
+  $oClassDifficultyAdjGroup                     = new AdjustmentGroup($oAdjGroupGateway,$oLogger);
+   
+  $oClassDifficultyAdjGroup->sAdjustmentGroupID = $oClassDifficultyAdjGroup->guid();
+  $oClassDifficultyAdjGroup->sGroupName         = 'Class Difficulty Group';
+  $oClassDifficultyAdjGroup->sGroupNameSlug     = 'class_difficulty_group';
+  
+  // These settings ensure only 1 modifer is used from this group and will be the largest
+  $oClassDifficultyAdjGroup->iMaxCount          = 1; 
+  $oClassDifficultyAdjGroup->iOrderMethod       = AdjustmentGroup::ORDER_HIGHT;
+  
+  // This will ensure that all modifers are included in the calculation run (filtered out by system zones)
+  $oClassDifficultyAdjGroup->bIsMandatory       = true;
+  
+  
+  // Donation Demand Modifier Group
+  $oDonationDemandAdjGroup                     = new AdjustmentGroup($oAdjGroupGateway,$oLogger);
+  
+  $oDonationDemandAdjGroup->sAdjustmentGroupID = $oDonationDemandAdjGroup->guid();
+  $oDonationDemandAdjGroup->sGroupName         = 'Donation Demand Group';
+  $oDonationDemandAdjGroup->sGroupNameSlug     = 'donation_demand_group';
+  
+  // Only those adjustment rules applied will be used.
+  $oDonationDemandAdjGroup->bIsMandatory       = false;
+  
+  
+  // Save the groups
+  
+  foreach(array($oClassDifficultyAdjGroup,$oDonationDemandAdjGroup   
+                ) as $oAdjGroup) {
+                  
+    $bResult = $oAdjGroup->save();
+    $aLastResult = $oAdjGroup->getLastQueryResult();
+  
+    if(false === $bResult) {
+      throw new \RuntimeException($oAdjGroup->sGroupName .' '.$aLastResult['msg']);
+    }
     
+  } 
+  
+  
+  // Create the Rules
+  
+  $oHealerAdjRule       = new AdjustmentRule($oAdjRuleGateway,$oLogger);
+  $oMeeleeAdjRule       = new AdjustmentRule($oAdjRuleGateway,$oLogger);
+  $oCasterAdjRule       = new AdjustmentRule($oAdjRuleGateway,$oLogger);
+  
+  $oHeavyDemandAdjRule  = new AdjustmentRule($oAdjRuleGateway,$oLogger);
+  $oLowDemandAdjRule    = new AdjustmentRule($oAdjRuleGateway,$oLogger);
+  $oAverageDemandAdjRule = new AdjustmentRule($oAdjRuleGateway,$oLogger);
+  
+  
+  
+  $oHealerAdjRule->sAdjustmentRuleID   = $oHealerAdjRule->guid();
+  $oHealerAdjRule->sAdjustmentGroupID  = $oClassDifficultyAdjGroup->sAdjustmentGroupID;
+  $oHealerAdjRule->sRuleName           = 'Healer Difficulty Rule';
+  $oHealerAdjRule->sRuleNameSlug       = 'header_difficulty_rule';
+  $oHealerAdjRule->fMultiplier         =  1.3; 
+  
+  $oMeeleeAdjRule->sAdjustmentRuleID   = $oMeeleeAdjRule->guid();
+  $oMeeleeAdjRule->sAdjustmentGroupID  = $oClassDifficultyAdjGroup->sAdjustmentGroupID;
+  $oMeeleeAdjRule->sRuleName           = 'Meelee Difficulty Rule';
+  $oMeeleeAdjRule->sRuleNameSlug       = 'meelee_difficulty_rule';
+  $oMeeleeAdjRule->fMultiplier         =  1.1; 
+  
+  
+  $oCasterAdjRule->sAdjustmentRuleID   = $oCasterAdjRule->guid();
+  $oCasterAdjRule->sAdjustmentGroupID  = $oClassDifficultyAdjGroup->sAdjustmentGroupID;
+  $oCasterAdjRule->sRuleName           = 'Caster Difficulty Rule';
+  $oCasterAdjRule->sRuleNameSlug       = 'caster_difficulty_rule';
+  $oCasterAdjRule->fMultiplier         =  0.8; 
+  
+  
+  $oHeavyDemandAdjRule->sAdjustmentRuleID   = $oHeavyDemandAdjRule->guid();
+  $oHeavyDemandAdjRule->sAdjustmentGroupID  = $oDonationDemandAdjGroup->sAdjustmentGroupID;
+  $oHeavyDemandAdjRule->sRuleName           = 'Heavy Demand Rule';
+  $oHeavyDemandAdjRule->sRuleNameSlug       = 'heavy_demand_rule';
+  $oHeavyDemandAdjRule->fMultiplier         =  1.5; 
+  
+  
+  
+  $oLowDemandAdjRule->sAdjustmentRuleID   = $oLowDemandAdjRule->guid();
+  $oLowDemandAdjRule->sAdjustmentGroupID  = $oDonationDemandAdjGroup->sAdjustmentGroupID;
+  $oLowDemandAdjRule->sRuleName           = 'Low Demand Rule';
+  $oLowDemandAdjRule->sRuleNameSlug       = 'low_demand_rule';
+  $oLowDemandAdjRule->fMultiplier         =  0.8; 
+  
+  
+  $oAverageDemandAdjRule->sAdjustmentRuleID   = $oAverageDemandAdjRule->guid();
+  $oAverageDemandAdjRule->sAdjustmentGroupID  = $oDonationDemandAdjGroup->sAdjustmentGroupID;
+  $oAverageDemandAdjRule->sRuleName           = 'Average Demand Rule';
+  $oAverageDemandAdjRule->sRuleNameSlug       = 'average_demand_rule';
+  $oAverageDemandAdjRule->fMultiplier         =  1.15; 
+  
+  
+   
+  foreach(array($oHealerAdjRule,$oMeeleeAdjRule,$oCasterAdjRule,$oHeavyDemandAdjRule,$oLowDemandAdjRule,$oAverageDemandAdjRule) as $oAdjRule) {
+                  
+    $bResult = $oAdjRule->save();
+    $aLastResult = $oAdjRule->getLastQueryResult();
+  
+    if(false === $bResult) {
+      throw new \RuntimeException($oAdjRule->sRuleName .' '.$aLastResult['msg']);
+    }
+    
+  } 
+  
+  // Link rules to their System Zones
+  $oPriestAdjRuleZone   = new AdjustmentZone($oAdjRuleZones,$oLogger);
+  $oWarriorAdjRuleZone  = new AdjustmentZone($oAdjRuleZones,$oLogger);
+  $oMageAdjRuleZone     = new AdjustmentZone($oAdjRuleZones,$oLogger);
+
+
+  
+  $oPriestAdjRuleZone->sAdjustmentRuleID = $oHealerAdjRule->sAdjustmentRuleID;
+  $oPriestAdjRuleZone->sSystemZoneID     = $oPriestZone->sZoneID;
+    
+  $oWarriorAdjRuleZone->sAdjustmentRuleID = $oMeeleeAdjRule->sAdjustmentRuleID;
+  $oWarriorAdjRuleZone->sSystemZoneID     = $oWarriorZone->sZoneID;
+  
+  $oMageAdjRuleZone->sAdjustmentRuleID    = $oCasterAdjRule->sAdjustmentRuleID;
+  $oMageAdjRuleZone->sSystemZoneID        = $oMageZone->sZoneID;
+    
+  
+  foreach(array($oPriestAdjRuleZone) as $oAdjRuleZone) {
+                  
+    $bResult = $oAdjRuleZone->save();
+    $aLastResult = $oAdjRuleZone->getLastQueryResult();
+  
+    if(false === $bResult) {
+      throw new \RuntimeException($oAdjRuleZone->sAdjustmentRuleID .' '.$oAdjRuleZone->sZoneID.' '. $aLastResult['msg']);
+    }
+    
+  } 
+  
+  // Create Rule Chain
+  
+  $oDonationRuleChain = new RuleChain($oRuleChainGateway,$oLogger);
+  
+  $oDonationRuleChain->sRuleChainID = $oDonationRuleChain->guid();
+  $oDonationRuleChain->sEventTypeID = $oDonationEventType->sEventTypeID;
+  $oDonationRuleChain->sSystemID    = $oPointSystem->sSystemID;    
+  $oDonationRuleChain->sChainName   = 'Donations Chain';
+  $oDonationRuleChain->sChainNameSlug = 'donations_chain';
+  $oDonationRuleChain->iRoundingOption = RuleChain::ROUND_CEIL;
+  $oDonationRuleChain->fCapValue    = 500;
+    
+    
+    
+  foreach(array($oDonationRuleChain) as $oRuleChain) {
+                  
+    $bResult = $oRuleChain->save();
+    $aLastResult = $oRuleChain->getLastQueryResult();
+  
+    if(false === $bResult) {
+      throw new \RuntimeException($oRuleChain->sChainName .' '. $aLastResult['msg']);
+    }
+    
+  } 
+  
+  // Create Some Chain Members
+  $oClassDifficultyMember = new RuleChainMember($oChainMemberGateway,$oLogger);
+  $oDemandBonusMember     = new RuleChainMember($oChainMemberGateway,$oLogger);
+  
+  
+  $oClassDifficultyMember->sRuleChainMemberID = $oClassDifficultyMember->guid();
+  $oClassDifficultyMember->sRuleChainID       = $oDonationRuleChain->sRuleChainID;
+  $oClassDifficultyMember->sAdjustmentGroupID = $oClassDifficultyAdjGroup->sAdjustmentGroupID;
+  $oClassDifficultyMember->iOrderSeq          = 1;
+  
+  $oDemandBonusMember->sRuleChainMemberID = $oDemandBonusMember->guid();
+  $oDemandBonusMember->sRuleChainID       = $oDonationRuleChain->sRuleChainID;
+  $oDemandBonusMember->sAdjustmentGroupID = $oDonationDemandAdjGroup->sAdjustmentGroupID;
+  $oDemandBonusMember->iOrderSeq          = 2;
+  
+  
+  foreach(array($oClassDifficultyMember,$oDemandBonusMember) as $oRuleChainMember) {
+                  
+    $bResult = $oRuleChainMember->save();
+    $aLastResult = $oRuleChainMember->getLastQueryResult();
+  
+    if(false === $bResult) {
+      throw new \RuntimeException($oRuleChainMember->sRuleChainMemberID .' '. $aLastResult['msg']);
+    }
+    
+    
+  } 
+  
+  // Save the results
+  
+  $oDatabase->commit();
+  
+  $oDatabase->beginTransaction();
+  
+  
+  // Do a Donation Calculation Run
+  $oPointsMachineCal = new PointsMachine($oPointsContainer);
+  
+  $oPointsMachineCal->newRound();
+  
+  
+  // Set Run Details
+  
+  $oPointsMachineCal->setProcessingDate(new \DateTime('now'));
+  $oPointsMachineCal->setPointSystem($oPointSystem->sSystemID);
+  $oPointsMachineCal->setPointSystemZone($oPriestZone->sZoneID);
+  $oPointsMachineCal->setOccuredDate(new \DateTime('now'));
+  $oPointsMachineCal->setEventType($oDonationEventType->sEventTypeID);
+  
+  // Set Rule and Score Details
+  
+  $oPointsMachineCal->addScore($oLargeDonationScore->sScoreID);
+  
+  
+  $oPointsMachineCal->addAdjustmentRule($oHeavyDemandAdjRule->sAdjustmentRuleID);
+  
+  $aResult = $oPointsMachineCal->executeRound();
+  
+  
+  $oDatabase->commit();
+  
+  
 };
 

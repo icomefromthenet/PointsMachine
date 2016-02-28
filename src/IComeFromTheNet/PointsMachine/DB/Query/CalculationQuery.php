@@ -2,6 +2,7 @@
 namespace IComeFromTheNet\PointsMachine\DB\Query;
 
 use DateTime;
+use IComeFromTheNet\PointsMachine\DB\CommonQuery;
 
 
 /**
@@ -10,7 +11,7 @@ use DateTime;
  * @author Lewis Dyer <getintouch@icomefromthenet.com>
  * @since 1.0
  */
-class CalculationQuery
+class CalculationQuery extends CommonQuery
 {
 
    /**

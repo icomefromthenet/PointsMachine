@@ -51,13 +51,16 @@ class CrossJoinPass extends AbstractPass
             $sSql .= ' SELECT a.slot_id, b.slot_id';
             $sSql .="  FROM $sScoreTmpTableName a , $sRuleTmpTableName b, $sCommonTmpTableName k; ".PHP_EOL;
         
+        
+            $this->getDatabaseAdaper()->executeUpdate($sSql);
+        
             
             
             # remove rule groups that dont apply current score group
             # check if rule group has a requirement of the current score group 
             # or voids the none means all and requirement.
         
-            $sSql .= " DELETE a FROM $sJoinTmpTableName a ";
+            $sSql  = " DELETE a FROM $sJoinTmpTableName a ";
             $sSql .= " JOIN $sRuleTmpTableName r ON r.slot_id = a.rule_slot_id ";
             $sSql .= " JOIN $sScoreTmpTableName s ON s.slot_id = a.score_slot_id ";
             $sSql .= " WHERE NOT EXISTS (SELECT 1 FROM $sRuleLimitsTableName  j , $sCommonTmpTableName l ";

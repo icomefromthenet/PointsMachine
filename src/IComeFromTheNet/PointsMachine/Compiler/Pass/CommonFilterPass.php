@@ -27,8 +27,6 @@ use IComeFromTheNet\PointsMachine\PointsMachineException;
 class CommonFilterPass extends AbstractPass 
 {
     
-    
-    
     const PASS_PRIORITY = 10;
     
     
@@ -37,6 +35,7 @@ class CommonFilterPass extends AbstractPass
         
         $sCommonTmpTable = $this->getCommonTmpTableName();
         $sSql            = '';  
+        $oDatabase       = $this->getDatabaseAdaper();
         $sSystemTable    = $this->getSystemTableName();
         
                             
@@ -50,7 +49,9 @@ class CommonFilterPass extends AbstractPass
             $sSql .= 'AND j.system_id = k.system_id ';
         $sSql .= '); '.PHP_EOL;
         
-       return $sSql;                         
+       $oDatabase->executeUpdate($sSql);  
+       
+        return;
         
     }
     
@@ -60,6 +61,7 @@ class CommonFilterPass extends AbstractPass
     {
         $sCommonTmpTable = $this->getCommonTmpTableName();
         $sSql            = '';  
+        $oDatabase       = $this->getDatabaseAdaper();
         $sZoneTable      = $this->getSystemZoneTableName();
         
         # find score group episode
@@ -72,12 +74,15 @@ class CommonFilterPass extends AbstractPass
             $sSql .= 'AND j.zone_id = system_zone_id ';
         $sSql .= '); '.PHP_EOL;
     
-        return $sSql;
+        $oDatabase->executeUpdate($sSql);
+        
+        return;
     }
     
     protected function matchEventTypesEpisodes(DateTime $oProcessingDate)
     {
         $sSql            = '';  
+        $oDatabase       = $this->getDatabaseAdaper();
         $sCommonTmpTable = $this->getCommonTmpTableName();
         $sEtypeTable     = $this->getEventTypeTableName();
         
@@ -91,13 +96,16 @@ class CommonFilterPass extends AbstractPass
             $sSql .= 'AND j.event_type_id = k.event_type_id ';
         $sSql .= '); '.PHP_EOL;
     
-        return $sSql;
+        $oDatabase->executeUpdate($sSql);
+        
+        return;
     }
     
     protected function matchRuleChainEpisodes(DateTime $oProcessingDate)
     {
         $sCommonTmpTable = $this->getCommonTmpTableName();
         $sSql            = '';  
+        $oDatabase       = $this->getDatabaseAdaper();
         $sChainTable     = $this->getChainTableName();
         
         
@@ -112,9 +120,11 @@ class CommonFilterPass extends AbstractPass
             
         $sSql .= '); '.PHP_EOL;
         
+        $oDatabase->executeUpdate($sSql);
+        
         # find the chain episode
         
-        $sSql .=  'UPDATE '.$sCommonTmpTable.' k ';
+        $sSql  =  'UPDATE '.$sCommonTmpTable.' k ';
         $sSql .= 'SET  k.rule_chain_ep = (';
             $sSql .= 'SELECT j.episode_id ';
             $sSql .= 'FROM  '.$sChainTable.' j ';
@@ -122,14 +132,19 @@ class CommonFilterPass extends AbstractPass
             $sSql .= 'AND j.rule_chain_id = k.rule_chain_id ';
         $sSql .= '); '.PHP_EOL;
      
-        return $sSql;
+        $oDatabase->executeUpdate($sSql);
+        
+        
+        return;
+        
     }
     
     
     
     protected function removeExpiredEntities(DateTime $oProcessingDate)
     {
-        $sSql      = '';  
+        $sSql            = '';  
+        $oDatabase       = $this->getDatabaseAdaper();
         $sCommonTmpTable = $this->getCommonTmpTableName();
     
         # remove systems that did not exist
@@ -139,7 +154,9 @@ class CommonFilterPass extends AbstractPass
         $sSql  .='OR event_type_ep IS NULL ';
         $sSql  .='OR rule_chain_ep IS NULL; ';
        
-        return $sSql;
+        $oDatabase->executeUpdate($sSql);
+        
+        return;
     }
     
     
@@ -154,21 +171,17 @@ class CommonFilterPass extends AbstractPass
         try {
         
             $oDatabase = $this->getDatabaseAdaper();
-            $sSql      = '';    
-        
-            $sSql .= $this->matchSystemsEpisodes($oProcessingDate);
             
-            $sSql .= $this->matchSystemZonesEpisodes($oProcessingDate);
+            $this->matchSystemsEpisodes($oProcessingDate);
             
-            $sSql .= $this->matchEventTypesEpisodes($oProcessingDate);
+            $this->matchSystemZonesEpisodes($oProcessingDate);
             
-            $sSql .= $this->matchRuleChainEpisodes($oProcessingDate);
+            $this->matchEventTypesEpisodes($oProcessingDate);
             
-            $sSql .= $this->removeExpiredEntities($oProcessingDate);
+            $this->matchRuleChainEpisodes($oProcessingDate);
             
+            $this->removeExpiredEntities($oProcessingDate);
             
-            
-            $oDatabase->executeUpdate($sSql);
             
             
             $oResult->addResult(__CLASS__,'Executed Successfully');

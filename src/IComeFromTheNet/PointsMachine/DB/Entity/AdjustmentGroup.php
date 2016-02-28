@@ -14,6 +14,10 @@ use IComeFromTheNet\PointsMachine\PointsMachineException;
 class AdjustmentGroup extends TemporalEntity 
 {
     
+    const ORDER_HIGHT = 1;
+    const ORDER_LOW   = 0;
+    
+    
       
     protected $aValidation = [
        'integer' => [

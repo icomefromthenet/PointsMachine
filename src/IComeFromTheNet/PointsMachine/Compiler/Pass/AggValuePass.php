@@ -107,7 +107,6 @@ class AggValuePass extends AbstractPass
             
             while ($aData = $oStmt->fetch()) {
 
-          
                 $sSql  = " UPDATE $sAggTmpTableName ";
                 $sSql .= " SET cumval = :fCumVal ";
                 $sSql .= " WHERE score_slot_id = :iScoreSlotId ";
@@ -122,6 +121,8 @@ class AggValuePass extends AbstractPass
                 
             }
             
+            
+            //var_dump($this->getDatabaseAdapter()->fetchAll('SELECT * from '.$sAggTmpTableName));
             
             $oResult->addResult(__CLASS__,'Executed Sucessfuly');
         

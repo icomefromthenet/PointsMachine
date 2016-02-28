@@ -5,6 +5,7 @@ use DateTime;
 use Doctrine\DBAL\Connection;
 use DBALGateway\Table\GatewayProxyCollection;
 use IComeFromTheNet\PointsMachine\Compiler\CompileResult;
+use IComeFromTheNet\PointsMachine\Compiler\CompilerPassInterface;
 
 /**
  * A common compiler pass, provides handlers for the properties
@@ -12,7 +13,7 @@ use IComeFromTheNet\PointsMachine\Compiler\CompileResult;
  * @author Lewis Dyer <getintouch@icomefromthenet.com>
  * @since 1.0
  */ 
-abstract class AbstractPass
+abstract class AbstractPass implements CompilerPassInterface
 {
    
     protected $oDatabase;
