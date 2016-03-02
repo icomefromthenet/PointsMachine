@@ -4,11 +4,12 @@
     "require-dev": {
         "phpunit/phpunit": "4.8.*",
         "phpunit/dbunit": ">=1.4",
-        "mrkrstphr/dbunit-fixture-arrays" : "@stable"
+        "mrkrstphr/dbunit-fixture-arrays" : "@stable",
+        "slim/slim": "^3.0"
     },
     "require" : {
         "doctrine/dbal" : "2.5.*",  
-        "pimple/pimple" : "1.1.*",
+        "pimple/pimple" : "^3.0",
         "psr/log"       : "1.0.0",
         "icomefromthenet/dbal-gateway" : "dev-master",
         "vlucas/valitron"              : "1.2.*"

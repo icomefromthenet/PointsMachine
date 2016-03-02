@@ -185,6 +185,9 @@ class init_schema implements EntityInterface
         $table->addColumn('created_date'    ,'date',array());
         $table->addColumn('processing_date' ,'date',array());
         $table->addColumn('occured_date'    ,'date' ,array());
+        $table->addColumn('calrunvalue'    ,'float' ,array("unsigned" => false,'default'=>0));
+        $table->addColumn('calrunvalue_round'    ,'float' ,array("unsigned" => false,'default'=>0));
+            
         
         $table->setPrimaryKey(array('event_id'));
 
@@ -201,8 +204,8 @@ class init_schema implements EntityInterface
         $table->addColumn('score_group_ep'    ,'integer',array("unsigned" => true,'default'=>null));
         $table->addColumn('score_base'        ,'float'  ,array("unsigned" => false,'default'=>0));
         $table->addColumn('score_cal_raw'     ,'float'  ,array("unsigned" => false,'default'=>0));
-        $table->addColumn('score_cal_rounded' ,'float'  ,array("unsigned" => false,'default'=>0));
         $table->addColumn('score_cal_capped'  ,'float'  ,array("unsigned" => false,'default'=>0));
+        $table->addColumn('score_quantity'   ,'integer' ,array("unsigned" => true,'default'=>1));
         
         
         $table->setPrimaryKey(array('event_id','score_ep'));

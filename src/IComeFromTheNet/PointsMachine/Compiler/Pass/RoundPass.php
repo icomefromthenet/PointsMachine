@@ -10,8 +10,9 @@ use IComeFromTheNet\PointsMachine\Compiler\CompileResult;
 use IComeFromTheNet\PointsMachine\PointsMachineException;
 
 /**
- * Round the scores but first copy the cumulaitve value for each score into the 
- * scores tmp table.
+ * Round the cumulative values of all scores in the round.
+ * 
+ * Expect the capping to be applied first.
  * 
  * CURRENT is the processing date.
  *  
@@ -28,8 +29,8 @@ use IComeFromTheNet\PointsMachine\PointsMachineException;
 class RoundPass extends AbstractPass 
 {
   
-    const PASS_PRIORITY = 90;
-
+    const PASS_PRIORITY = 200;
+    
 
     /**
      * Executes this pass.
@@ -46,43 +47,33 @@ class RoundPass extends AbstractPass
             $sCommonTableName   = $this->getCommonTmpTableName();
             $sChainTableName    = $this->getChainTableName();
             $sAggTmpTableName   = $this->getAggValueTmpTableName();
-            
-            # copy last agg value for each score into scores table
-        
-            $sSql  =" UPDATE $sScoreTmpTableName sc ";
-            $sSql .= " SET sc.score_cal_raw = ( ";
-                 $sSql .=" SELECT sum(agg.cumval) ";
-                 $sSql .=" FROM $sAggTmpTableName agg  ";
-                 $sSql .=" WHERE sc.slot_id = agg.score_slot_id ";
-            $sSql .= ");";
-            
-            $this->getDatabaseAdapter()->executeUpdate($sSql);
-            
-            # if no rules for the score then use the score base
-            
-            $sSql  =" UPDATE $sScoreTmpTableName sc ";
-            $sSql .=" SET sc.score_cal_raw = sc.score_base";
-            $sSql .=" WHERE sc.score_cal_raw IS NULL; ";
-        
-            $this->getDatabaseAdapter()->executeUpdate($sSql);
+            $sTranEventTableName = $this->getTransactionEventTableName();
             
             
+            # fetch the event id from the common table
+            $sSql  = "SELECT `c`.`event_id` as event_id  FROM $sCommonTableName c";
+            
+            $iEventId = $this->getDatabaseAdapter()->fetchColumn($sSql,array(),0);
+            
+            if(true === empty($iEventId)) {
+                throw new PointsMachineException('Unable to load event id from the common result table');
+            }
             
             # apply rounding rules defined in the rule chain
-            $sSql  =" UPDATE $sScoreTmpTableName sc ";
-            $sSql .=" SET sc.score_cal_rounded = ( ";
-                        $sSql .=" CASE (SELECT ct.rounding_option
+            $sSql  =" UPDATE $sTranEventTableName sc ";
+            $sSql .=" SET `sc`.`calrunvalue_round` = ( ";
+                        $sSql .=" CASE (SELECT `ct`.`rounding_option`
                                         FROM $sChainTableName ct 
-                                        JOIN $sCommonTableName c ON ct.episode_id = c.rule_chain_ep  
+                                        JOIN $sCommonTableName c ON `ct`.`episode_id` = `c`.`rule_chain_ep`  
                                         LIMIT 1) ";
-                        $sSql .=" WHEN " .self::ROUND_NORMAL .' THEN ROUND(sc.score_cal_raw) ';
-                        $sSql .=" WHEN " .self::ROUND_FLOOR  .' THEN FLOOR(sc.score_cal_raw) ';
-                        $sSql .=" WHEN " .self::ROUND_CEIL   .' THEN CEIL(sc.score_cal_raw) ';
-                        $sSql .=" ELSE sc.score_cal_raw ";
+                        $sSql .=" WHEN " .self::ROUND_NORMAL .' THEN ROUND(`sc`.`calrunvalue`) ';
+                        $sSql .=" WHEN " .self::ROUND_FLOOR  .' THEN FLOOR(`sc`.`calrunvalue`) ';
+                        $sSql .=" WHEN " .self::ROUND_CEIL   .' THEN  CEIL(`sc`.`calrunvalue`) ';
+                        $sSql .=" ELSE `sc`.`calrunvalue` ";
                         $sSql .=" END ";
-            $sSql .=" ); ";
+            $sSql .=" ) WHERE `sc`.`event_id` = :iEventId;";
             
-            $this->getDatabaseAdapter()->executeUpdate($sSql);
+            $this->getDatabaseAdapter()->executeUpdate($sSql,array(':iEventId'=>$iEventId));
             
              
             $oResult->addResult(__CLASS__,'Executed Sucessfuly');

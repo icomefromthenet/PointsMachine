@@ -14,7 +14,7 @@ use IComeFromTheNet\PointsMachine\PointsMachineException;
  * 
  * CURRENT is the processing date.
  *
- * 1. Rank the scores inside a group by Desc and Asc order
+ * 1. Rank the rules inside a group by Desc and Asc order
  * 2. Rank the chain by pulling seq number from the chain member
  * 
  * We use the combined value of normalize mods so we have

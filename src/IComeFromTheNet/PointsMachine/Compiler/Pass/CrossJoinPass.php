@@ -46,6 +46,10 @@ class CrossJoinPass extends AbstractPass
            $sJoinTmpTableName   = $this->getCJoinTmpTableName();
            $sCommonTmpTableName = $this->getCommonTmpTableName();
            
+            # Because we may have the same score 1..n times where using a surrogate key `score_slot_id` not the database id from the pt_score table.
+            # This cross join will have a row for each score/rule combination, if we have 100 scores and 10 rules we have 100*10 rows returned.
+            # assume common table only have one row so won't affect the number of rows in this cross join.
+            
             $sSql  = 'INSERT INTO ' . $sJoinTmpTableName .' ';
             $sSql .= ' (score_slot_id,rule_slot_id) ';
             $sSql .= ' SELECT a.slot_id, b.slot_id';

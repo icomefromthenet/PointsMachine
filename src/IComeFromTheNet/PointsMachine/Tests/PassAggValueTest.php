@@ -33,6 +33,11 @@ class PassAggValueTest extends CompilerTest
         
         $this->assertTablesEqual($oExpectedDataset,$oActualDataset);
         
+        $oExpectedDataset = $this->getDataSet(['example-system.php','pass-agg-after.php'])->getTable('pt_result_score');
+        $oActualDataset = $this->getConnection()->createDataSet(array('pt_result_score'))->getTable('pt_result_score');
+        
+        $this->assertTablesEqual($oExpectedDataset,$oActualDataset);
+        
     }
     
 }

@@ -96,7 +96,7 @@ class MYSQLDriver implements DriverInterface
         $sTableName    = $this->getTableMeta()->getName();
     
     
-        $sSql = "DROP TEMPORARY TABLE $sTableName";
+        $sSql = "DROP TEMPORARY TABLE IF EXISTS $sTableName";
         
         try {
             

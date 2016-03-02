@@ -12,6 +12,8 @@ use IComeFromTheNet\PointsMachine\PointsMachineException;
 /**
  * Applies the cap to each score. The Cap is optional 
  * 
+ * Expect to apply the cap to raw scores.
+ * 
  * CURRENT is the processing date.
  *  
  * @author Lewis Dyer <getintouch@icomefromthenet.com>
@@ -20,7 +22,7 @@ use IComeFromTheNet\PointsMachine\PointsMachineException;
 class CapPass extends AbstractPass 
 {
   
-    const PASS_PRIORITY = 100;
+    const PASS_PRIORITY = 90;
 
     /**
      * Executes this pass.
@@ -49,22 +51,22 @@ class CapPass extends AbstractPass
                         $sSql .=" WHEN k.cap_value IS NOT NULL AND k.cap_value  > 0 THEN  ";
                             $sSql .=" CASE @pt_total > k.cap_value";
                                 $sSql .=" WHEN false THEN ";
-                                    $sSql .=" CASE (@pt_total := @pt_total +sc.score_cal_rounded) > k.cap_value ";
-                                        $sSql .=" WHEN TRUE THEN sc.score_cal_rounded - (@pt_total - k.cap_value)";
-                                        $sSql .=" WHEN FALSE THEN sc.score_cal_rounded  ";
+                                    $sSql .=" CASE (@pt_total := @pt_total +sc.score_cal_raw) > k.cap_value ";
+                                        $sSql .=" WHEN TRUE THEN sc.score_cal_raw - (@pt_total - k.cap_value)";
+                                        $sSql .=" WHEN FALSE THEN sc.score_cal_raw  ";
                                     $sSql .=" END ";
                                 $sSql .=" WHEN true THEN 0";
                             $sSql .=" END ";
                         $sSql .=" WHEN k.cap_value IS NOT NULL AND k.cap_value  < 0  THEN ";
                             $sSql .=" CASE @pt_total < k.cap_value ";
                                 $sSql .=" WHEN false THEN ";
-                                    $sSql .=" CASE (@pt_total := @pt_total + sc.score_cal_rounded) < k.cap_value ";
-                                        $sSql .=" WHEN TRUE THEN sc.score_cal_rounded - (( ABS(@pt_total) - ABS(k.cap_value) ) * -1)";
-                                        $sSql .=" WHEN FALSE THEN sc.score_cal_rounded  ";
+                                    $sSql .=" CASE (@pt_total := @pt_total + sc.score_cal_raw) < k.cap_value ";
+                                        $sSql .=" WHEN TRUE THEN sc.score_cal_raw - (( ABS(@pt_total) - ABS(k.cap_value) ) * -1)";
+                                        $sSql .=" WHEN FALSE THEN sc.score_cal_raw  ";
                                     $sSql .=" END ";
                                 $sSql .=" WHEN true THEN 0";
                             $sSql .=" END ";
-                    $sSql .=" ELSE sc.score_cal_rounded ";
+                    $sSql .=" ELSE sc.score_cal_raw ";
                 $sSql .=" END ";
             $sSql .=" ); ";
             

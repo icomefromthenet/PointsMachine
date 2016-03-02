@@ -28,8 +28,8 @@ class PassRoundTest extends CompilerTest
         
         $oPass->execute(new DateTime('now'), $oResult);
         
-        $oExpectedDataset = $this->getDataSet(['example-system.php','pass-round-after.php'])->getTable('pt_result_score');
-        $oActualDataset = $this->getConnection()->createDataSet(array('pt_result_score'))->getTable('pt_result_score');
+        $oExpectedDataset = $this->getDataSet(['example-system.php','pass-round-after.php'])->getTable('pt_transaction_header');
+        $oActualDataset = $this->getConnection()->createDataSet(array('pt_transaction_header'))->getTable('pt_transaction_header');
         
         $this->assertTablesEqual($oExpectedDataset,$oActualDataset);
         

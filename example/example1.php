@@ -440,7 +440,10 @@ return function($oPointsContainer) {
   
   // Set Rule and Score Details
   
-  $oPointsMachineCal->addScore($oLargeDonationScore->sScoreID);
+  for($i=0; $i<10; $i++) {
+    $oPointsMachineCal->addScore($oLargeDonationScore->sScoreID);
+  }
+  
   
   
   $oPointsMachineCal->addAdjustmentRule($oHeavyDemandAdjRule->sAdjustmentRuleID);

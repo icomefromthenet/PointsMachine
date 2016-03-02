@@ -2,7 +2,7 @@
 namespace IComeFromTheNet\PointsMachine;
 
 use DateTime;
-use Pimple;
+use Pimple\Container;
 use Doctrine\DBAL\Connection;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -75,7 +75,7 @@ use IComeFromTheNet\PointsMachine\Compiler\ScoreProcessor;
 use IComeFromTheNet\PointsMachine\Compiler\Pass;
 
 
-class PointsMachineContainer extends Pimple
+class PointsMachineContainer extends Container
 {
     
     /**
@@ -582,6 +582,11 @@ class PointsMachineContainer extends Pimple
             $table->addColumn('created_date'    ,'date',array());
             $table->addColumn('processing_date' ,'date',array());
             $table->addColumn('occured_date'    ,'date' ,array());
+            $table->addColumn('calrunvalue'    ,'float' ,array("unsigned" => false,'default'=>0));
+            $table->addColumn('calrunvalue_round'    ,'float' ,array("unsigned" => false,'default'=>0));
+        
+            
+            
             
             $table->setPrimaryKey(array('event_id'));
             
@@ -616,9 +621,8 @@ class PointsMachineContainer extends Pimple
             $table->addColumn('score_group_ep'    ,'integer',array("unsigned" => true,'default'=>null));
             $table->addColumn('score_base'        ,'float'  ,array("unsigned" => false,'default'=>0));
             $table->addColumn('score_cal_raw'     ,'float'  ,array("unsigned" => false,'default'=>0));
-            $table->addColumn('score_cal_rounded' ,'float'  ,array("unsigned" => false,'default'=>0));
             $table->addColumn('score_cal_capped'  ,'float'  ,array("unsigned" => false,'default'=>0));
-            
+            $table->addColumn('score_quantity'   ,'integer' ,array("unsigned" => true,'default'=>1));
             
             $table->setPrimaryKey(array('event_id','score_ep'));
             $table->addForeignKeyConstraint($aTableMap['pt_score']      ,array('score_ep')      ,array('episode_id') ,array(), 'pt_tran_sc_score_fk1');
@@ -1045,13 +1049,13 @@ class PointsMachineContainer extends Pimple
         
         
       
-        $this['table_factory'] = $this->share(function($c){
+        $this['table_factory'] = function($c){
             return new DriverFactory();
-        });
+        };
         
         
         
-        $this['compiler_passes'] = $this->share(function($c){
+        $this['compiler_passes'] = function($c){
             $oDatabase          = $c->getDatabaseAdaper(); 
             $oGatewayCollection = $c->getGatewayCollection();
             
@@ -1071,10 +1075,10 @@ class PointsMachineContainer extends Pimple
               ,new Pass\ScoreFilterPass($oDatabase,$oGatewayCollection)
             ); 
             
-        });
+        };
 
         
-        $this['score_processor'] = $this->share(function($c){
+        $this['score_processor'] = function($c){
            $oGatewayCollection = $c->getGatewayCollection();
            $oDatabase          = $c->getDatabaseAdaper();    
            $oLogger            = $c->getAppLogger();
@@ -1089,7 +1093,7 @@ class PointsMachineContainer extends Pimple
            
            
            return $oProcessor;
-        });
+        };
 
        
         
