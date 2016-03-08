@@ -41,7 +41,7 @@ $oConn->getConfiguration()->setSQLLogger($oLog);
 
 // create a log channel
 $ologger = new Logger('runner');
-$ologger->pushHandler(new StreamHandler(__DIR__.'/out.log', Logger::DEBUG));
+$ologger->pushHandler(new StreamHandler('/var/tmp/pointsmachine.log', Logger::DEBUG));
 
 /**
  * Start Event Dispatcher

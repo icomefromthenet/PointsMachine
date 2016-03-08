@@ -175,9 +175,146 @@ class CalculationQuery extends CommonQuery
         
     }
     
+    /**
+     * Join this query onto the Points System databsae table
+     * 
+     * @return this
+     * @param string    $sAlias     The Alias to use in the query
+     * @access public
+     */ 
+    public function withSystem($sAlias)
+    {
+        $sCurrentAlias   = $this->getDefaultAlias();
+        
+        $sTableName = $this->getGateway()
+                           ->getGatewayCollection()
+                           ->getGateway('pt_system')
+                           ->getMetaData()
+                           ->getName();
+        
+        return $this->innerJoin($sCurrentAlias,$sTableName,$sAlias, "$sAlias.episode_id = $sCurrentAlias.system_ep");
+    }
+    
+    /**
+     * Join this query onto the Points System Zone databsae table
+     * 
+     * @return this
+     * @param string    $sAlias     The Alias to use in the query
+     * @access public
+     */ 
+    public function withSystemZone($sAlias)
+    {
+        $sCurrentAlias   = $this->getDefaultAlias();
+        
+        $sTableName = $this->getGateway()
+                           ->getGatewayCollection()
+                           ->getGateway('pt_system_zone')
+                           ->getMetaData()
+                           ->getName();
+        
+        return $this->innerJoin($sCurrentAlias,$sTableName,$sAlias, "$sAlias.episode_id = $sCurrentAlias.zone_ep");
+    }
 
+
+    /**
+     * Join this query onto the Event Type databsae table
+     * 
+     * @return this
+     * @param string    $sAlias     The Alias to use in the query
+     * @access public
+     */ 
+    public function withEventType($sAlias)
+    {
+        $sCurrentAlias   = $this->getDefaultAlias();
+        
+        $sTableName = $this->getGateway()
+                           ->getGatewayCollection()
+                           ->getGateway('pt_event_type')
+                           ->getMetaData()
+                           ->getName();
+        
+        return $this->innerJoin($sCurrentAlias,$sTableName,$sAlias, "$sAlias.episode_id = $sCurrentAlias.event_type_ep");
+    }
+    
+     /**
+     * Join this query onto the Adjustment Group databsae table
+     * 
+     * @return this
+     * @param string    $sAlias     The Alias to use in the query
+     * @access public
+     */ 
+    public function withAdjustmentGroup($sAlias)
+    {   
+        $sCurrentAlias   = $this->getDefaultAlias();
+        
+        $sTableName = $this->getGateway()
+                           ->getGatewayCollection()
+                           ->getGateway('pt_rule_group')
+                           ->getMetaData()
+                           ->getName();
+        
+        return $this->innerJoin($sCurrentAlias,$sTableName,$sAlias, "$sAlias.episode_id = $sCurrentAlias.rule_group_ep");
+    }
+    
+     /**
+     * Join this query onto the Adjustment Rule database table
+     * @return this
+     * @param string    $sAlias     The Alias to use in the query
+     * @access public
+     */ 
+    public function withAdjustmentRule($sAlias)
+    {   
+        $sCurrentAlias   = $this->getDefaultAlias();
+        
+        $sTableName = $this->getGateway()
+                           ->getGatewayCollection()
+                           ->getGateway('pt_rule')
+                           ->getMetaData()
+                           ->getName();
+        
+        return $this->innerJoin($sCurrentAlias,$sTableName,$sAlias, "$sAlias.episode_id = $sCurrentAlias.rule_ep");
+    }
     
 
+    /**
+     * Join this query onto the Score database table
+     * @return this
+     * @param string    $sAlias     The Alias to use in the query
+     * @access public
+     */ 
+    public function withScore($sAlias)
+    { 
+        $sCurrentAlias   = $this->getDefaultAlias();
+        
+        $sTableName = $this->getGateway()
+                           ->getGatewayCollection()
+                           ->getGateway('pt_score')
+                           ->getMetaData()
+                           ->getName();
+        
+        return $this->innerJoin($sCurrentAlias,$sTableName,$sAlias, "$sAlias.episode_id = $sCurrentAlias.score_ep");
+    }
+    
+    
+    /**
+     * Join this query onto the Score Group database table
+     * @return this
+     * @param string    $sAlias     The Alias to use in the query
+     * @access public
+     */ 
+    public function withScoreGroup($sAlias)
+    {
+        
+        $sCurrentAlias   = $this->getDefaultAlias();
+        
+        $sTableName = $this->getGateway()
+                           ->getGatewayCollection()
+                           ->getGateway('pt_score_group')
+                           ->getMetaData()
+                           ->getName();
+        
+        return $this->innerJoin($sCurrentAlias,$sTableName,$sAlias, "$sAlias.episode_id = $sCurrentAlias.score_group_ep");
+    }
 
 }
 /* End of Class */

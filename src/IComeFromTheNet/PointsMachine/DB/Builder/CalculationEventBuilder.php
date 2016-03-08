@@ -33,9 +33,20 @@ class CalculationEventBuilder extends CommonBuilder
         $oCalculation->oCreatedDate        = $this->getField($data,'created_date',$sAlias); 
         $oCalculation->oProcessingDate     = $this->getField($data,'processing_date',$sAlias); 
         $oCalculation->oOccuredDate        = $this->getField($data,'occured_date',$sAlias); 
+        $oCalculation->fCalRunValue        = $this->getField($data,'calrunvalue',$sAlias); 
+        $oCalculation->fCalRunValueRound   = $this->getField($data,'calrunvalue_round',$sAlias); 
+        
+         
+        // these come from join tables and will not be prefixes with alias 
+        $oCalculation->sSystemName     = $data['system_name'];
+        $oCalculation->sSystemZoneName = $data['zone_name'];
+        $oCalculation->sEventName      = $data['event_name'];
+             
          
         return $oCalculation;
+    
     }
+    
     
     /**
       *  Convert and entity into a data array
@@ -54,6 +65,11 @@ class CalculationEventBuilder extends CommonBuilder
             ,'created_date' => $oCalculation->oCreatedDate
             ,'processing_date' => $oCalculation->oProcessingDate
             ,'occured_date' => $oCalculation->oOccuredDate
+            ,'system_name'   => $oCalculation->sSystemName
+            ,'zone_name'     => $oCalculation->sSystemZoneName
+            ,'event_name'    => $oCalculation->sEventName
+            ,'calrunvalue'   => $oCalculation->fCalRunValue
+            ,'calrunvalue_round'  => $oCalculation->fCalRunValueRound
             
         );
         

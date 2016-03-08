@@ -30,6 +30,15 @@ class CalculationEvent
     
     public $oOccuredDate;
     
+    public $fCalRunValue;
+    
+    public $fCalRunValueRound;
+    
+    public $sSystemName;
+    
+    public $sSystemZoneName;
+    
+    public $sEventName;
     
     
 }

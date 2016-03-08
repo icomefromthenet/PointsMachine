@@ -25,10 +25,9 @@ class CalculationScore {
     
     public $fScoreCalRaw;
     
-    public $fScoreCalRounded;
-    
     public $fScoreCalCapped;
     
+    public $iScoreQuantity;
     
     
     

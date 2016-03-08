@@ -31,8 +31,8 @@ class CalculationScoreBuilder extends CommonBuilder
         $oRule->iScoreGroupEP       = $this->getField($data,'score_group_ep',$sAlias); 
         $oRule->fScoreBase          = $this->getField($data,'score_base',$sAlias); 
         $oRule->fScoreCalRaw        = $this->getField($data,'score_cal_raw',$sAlias); 
-        $oRule->fScoreCalRounded    = $this->getField($data,'score_cal_rounded',$sAlias); 
         $oRule->fScoreCalCapped     = $this->getField($data,'score_cal_capped',$sAlias); 
+        $oRule->iScoreQuantity      = $this->getField($data,'score_quantity',$sAlias);
          
         return $oRule;
     }
@@ -52,8 +52,8 @@ class CalculationScoreBuilder extends CommonBuilder
             'score_group_ep'=> $oCalculation->iScoreGroupEP,
             'score_base'    => $oCalculation->fScoreBase,
             'score_cal_raw' => $oCalculation->fScoreCalRaw,
-            'score_cal_rounded' => $oCalculation->fScoreCalRounded,
             'score_cal_capped' => $oCalculation->fScoreCalCapped,
+            'score_quantity' => $oCalculation->iScoreQuantity,
             
         );
         

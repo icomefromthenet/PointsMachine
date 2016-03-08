@@ -21,27 +21,27 @@ class BuilderTest extends TestWithContainer
                          ->getGateway('pt_system')
                          ->getEntityBuilder();
         
-        $sAlais   = $oBuilder->getTableQueryAlias().'_';
+        $sAlias   = $oBuilder->getTableQueryAlias().'_';
         
         # test build
         
         $aRawEntity = array(
-            $sAlais.'episode_id' => 1,
-            $sAlais.'system_id' =>  '12FF4301-C20D-A9BB-6BFE-1FEFC41BEF41',
-            $sAlais.'system_name' => 'Demo A',
-            $sAlais.'system_name_slug' => 'demo_a',
-            $sAlais.'enabled_from' => new DateTime(),
-            $sAlais.'enabled_to' => new DateTime('3000-01-01'),
+            $sAlias.'episode_id' => 1,
+            $sAlias.'system_id' =>  '12FF4301-C20D-A9BB-6BFE-1FEFC41BEF41',
+            $sAlias.'system_name' => 'Demo A',
+            $sAlias.'system_name_slug' => 'demo_a',
+            $sAlias.'enabled_from' => new DateTime(),
+            $sAlias.'enabled_to' => new DateTime('3000-01-01'),
         );
         
         $oPointsSystem = $oBuilder->build($aRawEntity);
         
-        $this->assertEquals($aRawEntity[$sAlais.'episode_id'],$oPointsSystem->iEpisodeID);
-        $this->assertEquals($aRawEntity[$sAlais.'system_id'],$oPointsSystem->sSystemID);
-        $this->assertEquals($aRawEntity[$sAlais.'system_name'],$oPointsSystem->sSystemName);
-        $this->assertEquals($aRawEntity[$sAlais.'system_name_slug'],$oPointsSystem->sSystemNameSlug);
-        $this->assertEquals($aRawEntity[$sAlais.'enabled_from'],$oPointsSystem->oEnabledFrom);
-        $this->assertEquals($aRawEntity[$sAlais.'enabled_to'],$oPointsSystem->oEnabledTo);
+        $this->assertEquals($aRawEntity[$sAlias.'episode_id'],$oPointsSystem->iEpisodeID);
+        $this->assertEquals($aRawEntity[$sAlias.'system_id'],$oPointsSystem->sSystemID);
+        $this->assertEquals($aRawEntity[$sAlias.'system_name'],$oPointsSystem->sSystemName);
+        $this->assertEquals($aRawEntity[$sAlias.'system_name_slug'],$oPointsSystem->sSystemNameSlug);
+        $this->assertEquals($aRawEntity[$sAlias.'enabled_from'],$oPointsSystem->oEnabledFrom);
+        $this->assertEquals($aRawEntity[$sAlias.'enabled_to'],$oPointsSystem->oEnabledTo);
         
         
         # test demolish
@@ -65,29 +65,29 @@ class BuilderTest extends TestWithContainer
                          ->getGateway('pt_system_zone')
                          ->getEntityBuilder();
         
-        $sAlais   = $oBuilder->getTableQueryAlias().'_';
+        $sAlias   = $oBuilder->getTableQueryAlias().'_';
         
         # test build
         
         $aRawEntity = array(
-            $sAlais.'episode_id' => 1,
-            $sAlais.'system_id' =>  '12FF4301-C20D-A9BB-6BFE-1FEFC41BEF41',
-            $sAlais.'zone_id' =>  'ACAAF45C-FE62-909B-5CCD-3D967F3F8531',
-            $sAlais.'zone_name' => 'Demo Zone A',
-            $sAlais.'zone_name_slug' => 'demo_zone_a',
-            $sAlais.'enabled_from' => new DateTime(),
-            $sAlais.'enabled_to' => new DateTime('3000-01-01'),
+            $sAlias.'episode_id' => 1,
+            $sAlias.'system_id' =>  '12FF4301-C20D-A9BB-6BFE-1FEFC41BEF41',
+            $sAlias.'zone_id' =>  'ACAAF45C-FE62-909B-5CCD-3D967F3F8531',
+            $sAlias.'zone_name' => 'Demo Zone A',
+            $sAlias.'zone_name_slug' => 'demo_zone_a',
+            $sAlias.'enabled_from' => new DateTime(),
+            $sAlias.'enabled_to' => new DateTime('3000-01-01'),
         );
         
         $oPointsSystemZone = $oBuilder->build($aRawEntity);
         
-        $this->assertEquals($aRawEntity[$sAlais.'episode_id'],$oPointsSystemZone->iEpisodeID);
-        $this->assertEquals($aRawEntity[$sAlais.'system_id'],$oPointsSystemZone->sSystemID);
-        $this->assertEquals($aRawEntity[$sAlais.'zone_id'],$oPointsSystemZone->sZoneID);
-        $this->assertEquals($aRawEntity[$sAlais.'zone_name'],$oPointsSystemZone->sZoneName);
-        $this->assertEquals($aRawEntity[$sAlais.'zone_name_slug'],$oPointsSystemZone->sZoneNameSlug);
-        $this->assertEquals($aRawEntity[$sAlais.'enabled_from'],$oPointsSystemZone->oEnabledFrom);
-        $this->assertEquals($aRawEntity[$sAlais.'enabled_to'],$oPointsSystemZone->oEnabledTo);
+        $this->assertEquals($aRawEntity[$sAlias.'episode_id'],$oPointsSystemZone->iEpisodeID);
+        $this->assertEquals($aRawEntity[$sAlias.'system_id'],$oPointsSystemZone->sSystemID);
+        $this->assertEquals($aRawEntity[$sAlias.'zone_id'],$oPointsSystemZone->sZoneID);
+        $this->assertEquals($aRawEntity[$sAlias.'zone_name'],$oPointsSystemZone->sZoneName);
+        $this->assertEquals($aRawEntity[$sAlias.'zone_name_slug'],$oPointsSystemZone->sZoneNameSlug);
+        $this->assertEquals($aRawEntity[$sAlias.'enabled_from'],$oPointsSystemZone->oEnabledFrom);
+        $this->assertEquals($aRawEntity[$sAlias.'enabled_to'],$oPointsSystemZone->oEnabledTo);
         
         
         # test demolish
@@ -113,27 +113,27 @@ class BuilderTest extends TestWithContainer
                          ->getGateway('pt_score_group')
                          ->getEntityBuilder();
       
-        $sAlais   = $oBuilder->getTableQueryAlias().'_';
+        $sAlias   = $oBuilder->getTableQueryAlias().'_';
         
         # test build
         
         $aRawEntity = array(
-            $sAlais.'episode_id'    => 1,
-            $sAlais.'score_group_id' =>  '12FF4301-C20D-A9BB-6BFE-1FEFC41BEF41',
-            $sAlais.'group_name' => 'Demo Event A',
-            $sAlais.'group_name_slug' => 'demo_event_a',
-            $sAlais.'enabled_from' => new DateTime(),
-            $sAlais.'enabled_to' => new DateTime('3000-01-01'),
+            $sAlias.'episode_id'    => 1,
+            $sAlias.'score_group_id' =>  '12FF4301-C20D-A9BB-6BFE-1FEFC41BEF41',
+            $sAlias.'group_name' => 'Demo Event A',
+            $sAlias.'group_name_slug' => 'demo_event_a',
+            $sAlias.'enabled_from' => new DateTime(),
+            $sAlias.'enabled_to' => new DateTime('3000-01-01'),
         );
         
         $oEntity = $oBuilder->build($aRawEntity);
         
-        $this->assertEquals($aRawEntity[$sAlais.'episode_id'],$oEntity->iEpisodeID);
-        $this->assertEquals($aRawEntity[$sAlais.'score_group_id'],$oEntity->sScoreGroupID);
-        $this->assertEquals($aRawEntity[$sAlais.'group_name'],$oEntity->sGroupName);
-        $this->assertEquals($aRawEntity[$sAlais.'group_name_slug'],$oEntity->sGroupNameSlug);
-        $this->assertEquals($aRawEntity[$sAlais.'enabled_from'],$oEntity->oEnabledFrom);
-        $this->assertEquals($aRawEntity[$sAlais.'enabled_to'],$oEntity->oEnabledTo);
+        $this->assertEquals($aRawEntity[$sAlias.'episode_id'],$oEntity->iEpisodeID);
+        $this->assertEquals($aRawEntity[$sAlias.'score_group_id'],$oEntity->sScoreGroupID);
+        $this->assertEquals($aRawEntity[$sAlias.'group_name'],$oEntity->sGroupName);
+        $this->assertEquals($aRawEntity[$sAlias.'group_name_slug'],$oEntity->sGroupNameSlug);
+        $this->assertEquals($aRawEntity[$sAlias.'enabled_from'],$oEntity->oEnabledFrom);
+        $this->assertEquals($aRawEntity[$sAlias.'enabled_to'],$oEntity->oEnabledTo);
     
         $aRawEntity = $oBuilder->demolish($oEntity);
         
@@ -155,31 +155,31 @@ class BuilderTest extends TestWithContainer
                          ->getGateway('pt_score')
                          ->getEntityBuilder();
       
-        $sAlais   = $oBuilder->getTableQueryAlias().'_';
+        $sAlias   = $oBuilder->getTableQueryAlias().'_';
         
         # test build
         
         $aRawEntity = array(
-            $sAlais.'episode_id'      => 1,
-            $sAlais.'score_id'        => 'B5D37F95-525F-9E4F-A5B7-F6EA3A269A34',
-            $sAlais.'score_group_id'  => '12FF4301-C20D-A9BB-6BFE-1FEFC41BEF41',
-            $sAlais.'score_name'      => 'Demo Score A',
-            $sAlais.'score_name_slug' => 'demo_score_a',
-            $sAlais.'score_value'     => 100,
-            $sAlais.'enabled_from'    => new DateTime(),
-            $sAlais.'enabled_to'      => new DateTime('3000-01-01'),
+            $sAlias.'episode_id'      => 1,
+            $sAlias.'score_id'        => 'B5D37F95-525F-9E4F-A5B7-F6EA3A269A34',
+            $sAlias.'score_group_id'  => '12FF4301-C20D-A9BB-6BFE-1FEFC41BEF41',
+            $sAlias.'score_name'      => 'Demo Score A',
+            $sAlias.'score_name_slug' => 'demo_score_a',
+            $sAlias.'score_value'     => 100,
+            $sAlias.'enabled_from'    => new DateTime(),
+            $sAlias.'enabled_to'      => new DateTime('3000-01-01'),
         );
         
         $oEntity = $oBuilder->build($aRawEntity);
         
-        $this->assertEquals($aRawEntity[$sAlais.'episode_id'],$oEntity->iEpisodeID);
-        $this->assertEquals($aRawEntity[$sAlais.'score_id'],$oEntity->sScoreID);
-        $this->assertEquals($aRawEntity[$sAlais.'score_group_id'],$oEntity->sScoreGroupID);
-        $this->assertEquals($aRawEntity[$sAlais.'score_name'],$oEntity->sScoreName);
-        $this->assertEquals($aRawEntity[$sAlais.'score_name_slug'],$oEntity->sScoreNameSlug);
-        $this->assertEquals($aRawEntity[$sAlais.'enabled_from'],$oEntity->oEnabledFrom);
-        $this->assertEquals($aRawEntity[$sAlais.'enabled_to'],$oEntity->oEnabledTo);
-        $this->assertEquals($aRawEntity[$sAlais.'score_value'],$oEntity->fScoreValue);
+        $this->assertEquals($aRawEntity[$sAlias.'episode_id'],$oEntity->iEpisodeID);
+        $this->assertEquals($aRawEntity[$sAlias.'score_id'],$oEntity->sScoreID);
+        $this->assertEquals($aRawEntity[$sAlias.'score_group_id'],$oEntity->sScoreGroupID);
+        $this->assertEquals($aRawEntity[$sAlias.'score_name'],$oEntity->sScoreName);
+        $this->assertEquals($aRawEntity[$sAlias.'score_name_slug'],$oEntity->sScoreNameSlug);
+        $this->assertEquals($aRawEntity[$sAlias.'enabled_from'],$oEntity->oEnabledFrom);
+        $this->assertEquals($aRawEntity[$sAlias.'enabled_to'],$oEntity->oEnabledTo);
+        $this->assertEquals($aRawEntity[$sAlias.'score_value'],$oEntity->fScoreValue);
     
         $aRawEntity = $oBuilder->demolish($oEntity);
         
@@ -203,35 +203,35 @@ class BuilderTest extends TestWithContainer
                           ->getGateway('pt_rule_chain')
                           ->getEntityBuilder();
       
-         $sAlais   = $oBuilder->getTableQueryAlias().'_';
+         $sAlias   = $oBuilder->getTableQueryAlias().'_';
         
          # test build
         
          $aRawEntity = array(
-             $sAlais.'episode_id'      => 1,
-             $sAlais.'rule_chain_id'   =>  'B5D37F95-525F-9E4F-A5B7-F6EA3A269A34',
-             $sAlais.'event_type_id'   =>  'H5D37F95-525F-9E4F-A5B7-F6EA3A269A34',
-             $sAlais.'system_id'       =>  'I5D37F95-525F-9E4F-A5B7-F6EA3A269A34',
-             $sAlais.'chain_name'      => 'Chain A',
-             $sAlais.'chain_name_slug' => 'chain_a',
-             $sAlais.'rounding_option' => 2,
-             $sAlais.'cap_value'       => 100,
-             $sAlais.'enabled_from'    => new DateTime(),
-             $sAlais.'enabled_to'      => new DateTime('3000-01-01'),
+             $sAlias.'episode_id'      => 1,
+             $sAlias.'rule_chain_id'   =>  'B5D37F95-525F-9E4F-A5B7-F6EA3A269A34',
+             $sAlias.'event_type_id'   =>  'H5D37F95-525F-9E4F-A5B7-F6EA3A269A34',
+             $sAlias.'system_id'       =>  'I5D37F95-525F-9E4F-A5B7-F6EA3A269A34',
+             $sAlias.'chain_name'      => 'Chain A',
+             $sAlias.'chain_name_slug' => 'chain_a',
+             $sAlias.'rounding_option' => 2,
+             $sAlias.'cap_value'       => 100,
+             $sAlias.'enabled_from'    => new DateTime(),
+             $sAlias.'enabled_to'      => new DateTime('3000-01-01'),
          );
         
          $oEntity = $oBuilder->build($aRawEntity);
         
-         $this->assertEquals($aRawEntity[$sAlais.'episode_id'],$oEntity->iEpisodeID);
-         $this->assertEquals($aRawEntity[$sAlais.'rule_chain_id'],$oEntity->sRuleChainID);
-         $this->assertEquals($aRawEntity[$sAlais.'event_type_id'],$oEntity->sEventTypeID);
-         $this->assertEquals($aRawEntity[$sAlais.'system_id'],$oEntity->sSystemID);
-         $this->assertEquals($aRawEntity[$sAlais.'chain_name'],$oEntity->sChainName);
-         $this->assertEquals($aRawEntity[$sAlais.'chain_name_slug'],$oEntity->sChainNameSlug);
-         $this->assertEquals($aRawEntity[$sAlais.'rounding_option'],$oEntity->iRoundingOption);
-         $this->assertEquals($aRawEntity[$sAlais.'cap_value'],$oEntity->fCapValue);
-         $this->assertEquals($aRawEntity[$sAlais.'enabled_from'],$oEntity->oEnabledFrom);
-         $this->assertEquals($aRawEntity[$sAlais.'enabled_to'],$oEntity->oEnabledTo);
+         $this->assertEquals($aRawEntity[$sAlias.'episode_id'],$oEntity->iEpisodeID);
+         $this->assertEquals($aRawEntity[$sAlias.'rule_chain_id'],$oEntity->sRuleChainID);
+         $this->assertEquals($aRawEntity[$sAlias.'event_type_id'],$oEntity->sEventTypeID);
+         $this->assertEquals($aRawEntity[$sAlias.'system_id'],$oEntity->sSystemID);
+         $this->assertEquals($aRawEntity[$sAlias.'chain_name'],$oEntity->sChainName);
+         $this->assertEquals($aRawEntity[$sAlias.'chain_name_slug'],$oEntity->sChainNameSlug);
+         $this->assertEquals($aRawEntity[$sAlias.'rounding_option'],$oEntity->iRoundingOption);
+         $this->assertEquals($aRawEntity[$sAlias.'cap_value'],$oEntity->fCapValue);
+         $this->assertEquals($aRawEntity[$sAlias.'enabled_from'],$oEntity->oEnabledFrom);
+         $this->assertEquals($aRawEntity[$sAlias.'enabled_to'],$oEntity->oEnabledTo);
         
         
          $aRawEntity = $oBuilder->demolish($oEntity);
@@ -257,29 +257,29 @@ class BuilderTest extends TestWithContainer
                           ->getGateway('pt_chain_member')
                           ->getEntityBuilder();
       
-         $sAlais   = $oBuilder->getTableQueryAlias().'_';
+         $sAlias   = $oBuilder->getTableQueryAlias().'_';
         
          # test build
         
          $aRawEntity = array(
-             $sAlais.'episode_id'      => 1,
-             $sAlais.'chain_member_id' =>  'B5D37F95-525F-9E4F-A5B7-F6EA3A269A34',
-             $sAlais.'rule_chain_id'   =>  'H5D37F95-525F-9E4F-A5B7-F6EA3A269A34',
-             $sAlais.'rule_group_id'   =>  'I5D37F95-525F-9E4F-A5B7-F6EA3A269A34',
-             $sAlais.'order_seq'       => 2,
-             $sAlais.'enabled_from'    => new DateTime(),
-             $sAlais.'enabled_to'      => new DateTime('3000-01-01'),
+             $sAlias.'episode_id'      => 1,
+             $sAlias.'chain_member_id' =>  'B5D37F95-525F-9E4F-A5B7-F6EA3A269A34',
+             $sAlias.'rule_chain_id'   =>  'H5D37F95-525F-9E4F-A5B7-F6EA3A269A34',
+             $sAlias.'rule_group_id'   =>  'I5D37F95-525F-9E4F-A5B7-F6EA3A269A34',
+             $sAlias.'order_seq'       => 2,
+             $sAlias.'enabled_from'    => new DateTime(),
+             $sAlias.'enabled_to'      => new DateTime('3000-01-01'),
          );
         
          $oEntity = $oBuilder->build($aRawEntity);
         
-         $this->assertEquals($aRawEntity[$sAlais.'episode_id'],$oEntity->iEpisodeID);
-         $this->assertEquals($aRawEntity[$sAlais.'rule_chain_id'],$oEntity->sRuleChainID);
-         $this->assertEquals($aRawEntity[$sAlais.'chain_member_id'],$oEntity->sRuleChainMemberID);
-         $this->assertEquals($aRawEntity[$sAlais.'rule_group_id'],$oEntity->sAdjustmentGroupID);
-         $this->assertEquals($aRawEntity[$sAlais.'order_seq'],$oEntity->iOrderSeq);
-         $this->assertEquals($aRawEntity[$sAlais.'enabled_from'],$oEntity->oEnabledFrom);
-         $this->assertEquals($aRawEntity[$sAlais.'enabled_to'],$oEntity->oEnabledTo);
+         $this->assertEquals($aRawEntity[$sAlias.'episode_id'],$oEntity->iEpisodeID);
+         $this->assertEquals($aRawEntity[$sAlias.'rule_chain_id'],$oEntity->sRuleChainID);
+         $this->assertEquals($aRawEntity[$sAlias.'chain_member_id'],$oEntity->sRuleChainMemberID);
+         $this->assertEquals($aRawEntity[$sAlias.'rule_group_id'],$oEntity->sAdjustmentGroupID);
+         $this->assertEquals($aRawEntity[$sAlias.'order_seq'],$oEntity->iOrderSeq);
+         $this->assertEquals($aRawEntity[$sAlias.'enabled_from'],$oEntity->oEnabledFrom);
+         $this->assertEquals($aRawEntity[$sAlias.'enabled_to'],$oEntity->oEnabledTo);
         
         
          $aRawEntity = $oBuilder->demolish($oEntity);
@@ -303,27 +303,27 @@ class BuilderTest extends TestWithContainer
                           ->getGateway('pt_event_type')
                           ->getEntityBuilder();
       
-         $sAlais   = $oBuilder->getTableQueryAlias().'_';
+         $sAlias   = $oBuilder->getTableQueryAlias().'_';
         
          # test build
         
          $aRawEntity = array(
-             $sAlais.'episode_id' => 1,
-             $sAlais.'event_type_id' =>  '12FF4301-C20D-A9BB-6BFE-1FEFC41BEF41',
-             $sAlais.'event_name' => 'Demo Event A',
-             $sAlais.'event_name_slug' => 'demo_event_a',
-             $sAlais.'enabled_from' => new DateTime(),
-             $sAlais.'enabled_to' => new DateTime('3000-01-01'),
+             $sAlias.'episode_id' => 1,
+             $sAlias.'event_type_id' =>  '12FF4301-C20D-A9BB-6BFE-1FEFC41BEF41',
+             $sAlias.'event_name' => 'Demo Event A',
+             $sAlias.'event_name_slug' => 'demo_event_a',
+             $sAlias.'enabled_from' => new DateTime(),
+             $sAlias.'enabled_to' => new DateTime('3000-01-01'),
          );
         
          $oEntity = $oBuilder->build($aRawEntity);
         
-         $this->assertEquals($aRawEntity[$sAlais.'episode_id'],$oEntity->iEpisodeID);
-         $this->assertEquals($aRawEntity[$sAlais.'event_type_id'],$oEntity->sEventTypeID);
-         $this->assertEquals($aRawEntity[$sAlais.'event_name'],$oEntity->sEventName);
-         $this->assertEquals($aRawEntity[$sAlais.'event_name_slug'],$oEntity->sEventNameSlug);
-         $this->assertEquals($aRawEntity[$sAlais.'enabled_from'],$oEntity->oEnabledFrom);
-         $this->assertEquals($aRawEntity[$sAlais.'enabled_to'],$oEntity->oEnabledTo);
+         $this->assertEquals($aRawEntity[$sAlias.'episode_id'],$oEntity->iEpisodeID);
+         $this->assertEquals($aRawEntity[$sAlias.'event_type_id'],$oEntity->sEventTypeID);
+         $this->assertEquals($aRawEntity[$sAlias.'event_name'],$oEntity->sEventName);
+         $this->assertEquals($aRawEntity[$sAlias.'event_name_slug'],$oEntity->sEventNameSlug);
+         $this->assertEquals($aRawEntity[$sAlias.'enabled_from'],$oEntity->oEnabledFrom);
+         $this->assertEquals($aRawEntity[$sAlias.'enabled_to'],$oEntity->oEnabledTo);
     
          $aRawEntity = $oBuilder->demolish($oEntity);
         
@@ -344,24 +344,24 @@ class BuilderTest extends TestWithContainer
                          ->getGateway('pt_event')
                          ->getEntityBuilder();
       
-        $sAlais   = $oBuilder->getTableQueryAlias().'_';
+        $sAlias   = $oBuilder->getTableQueryAlias().'_';
         
         # test build
         
         $aRawEntity = array(
-            $sAlais.'event_id'      => 1,
-            $sAlais.'event_type_id' => '12FF4301-C20D-A9BB-6BFE-1FEFC41BEF41',
-            $sAlais.'process_date'  => new DateTime('now +5 day'),
-            $sAlais.'occured_date'  => new DateTime('now -10 day'),
+            $sAlias.'event_id'      => 1,
+            $sAlias.'event_type_id' => '12FF4301-C20D-A9BB-6BFE-1FEFC41BEF41',
+            $sAlias.'process_date'  => new DateTime('now +5 day'),
+            $sAlias.'occured_date'  => new DateTime('now -10 day'),
     
         );
         
         $oEntity = $oBuilder->build($aRawEntity);
         
-        $this->assertEquals($aRawEntity[$sAlais.'event_id'],$oEntity->iScoringEventID);
-        $this->assertEquals($aRawEntity[$sAlais.'event_type_id'],$oEntity->sEventTypeID);
-        $this->assertEquals($aRawEntity[$sAlais.'process_date'],$oEntity->oProcessDate);
-        $this->assertEquals($aRawEntity[$sAlais.'occured_date'],$oEntity->oOccuredDate);
+        $this->assertEquals($aRawEntity[$sAlias.'event_id'],$oEntity->iScoringEventID);
+        $this->assertEquals($aRawEntity[$sAlias.'event_type_id'],$oEntity->sEventTypeID);
+        $this->assertEquals($aRawEntity[$sAlias.'process_date'],$oEntity->oProcessDate);
+        $this->assertEquals($aRawEntity[$sAlias.'occured_date'],$oEntity->oOccuredDate);
     
         $aRawEntity = $oBuilder->demolish($oEntity);
         
@@ -384,41 +384,41 @@ class BuilderTest extends TestWithContainer
                          ->getGateway('pt_rule_group')
                          ->getEntityBuilder();
       
-        $sAlais   = $oBuilder->getTableQueryAlias().'_';
+        $sAlias   = $oBuilder->getTableQueryAlias().'_';
         
         # test build
         
         $aRawEntity = array(
-            $sAlais.'episode_id'           => 1,
-            $sAlais.'rule_group_id'        => 'B5D37F95-525F-9E4F-A5B7-F6EA3A269A34',
-            $sAlais.'rule_group_name'      => 'Scoring Group A',
-            $sAlais.'rule_group_name_slug' => 'scoring_group_a',
-            $sAlais.'max_multiplier'       => 100,
-            $sAlais.'min_multiplier'       => 1,
-            $sAlais.'max_modifier'         => 200,
-            $sAlais.'min_modifier'         => 2,
-            $sAlais.'max_count'            => 5,
-            $sAlais.'order_method'         => 1,
-            $sAlais.'is_mandatory'         => 1,
-            $sAlais.'enabled_from'         => new DateTime(),
-            $sAlais.'enabled_to'           => new DateTime('3000-01-01'),
+            $sAlias.'episode_id'           => 1,
+            $sAlias.'rule_group_id'        => 'B5D37F95-525F-9E4F-A5B7-F6EA3A269A34',
+            $sAlias.'rule_group_name'      => 'Scoring Group A',
+            $sAlias.'rule_group_name_slug' => 'scoring_group_a',
+            $sAlias.'max_multiplier'       => 100,
+            $sAlias.'min_multiplier'       => 1,
+            $sAlias.'max_modifier'         => 200,
+            $sAlias.'min_modifier'         => 2,
+            $sAlias.'max_count'            => 5,
+            $sAlias.'order_method'         => 1,
+            $sAlias.'is_mandatory'         => 1,
+            $sAlias.'enabled_from'         => new DateTime(),
+            $sAlias.'enabled_to'           => new DateTime('3000-01-01'),
         );
         
         $oEntity = $oBuilder->build($aRawEntity);
         
-        $this->assertEquals($aRawEntity[$sAlais.'episode_id'],$oEntity->iEpisodeID);
-        $this->assertEquals($aRawEntity[$sAlais.'rule_group_id'],$oEntity->sAdjustmentGroupID);
-        $this->assertEquals($aRawEntity[$sAlais.'rule_group_name'],$oEntity->sGroupName);
-        $this->assertEquals($aRawEntity[$sAlais.'rule_group_name_slug'],$oEntity->sGroupNameSlug);
-        $this->assertEquals($aRawEntity[$sAlais.'max_multiplier'],$oEntity->fMaxMultiplier);
-        $this->assertEquals($aRawEntity[$sAlais.'min_multiplier'],$oEntity->fMinMultiplier);
-        $this->assertEquals($aRawEntity[$sAlais.'max_modifier'],$oEntity->fMaxModifier);
-        $this->assertEquals($aRawEntity[$sAlais.'min_modifier'],$oEntity->fMinModifier);
-        $this->assertEquals($aRawEntity[$sAlais.'max_count'],$oEntity->iMaxCount);
-        $this->assertEquals($aRawEntity[$sAlais.'order_method'],$oEntity->iOrderMethod);
+        $this->assertEquals($aRawEntity[$sAlias.'episode_id'],$oEntity->iEpisodeID);
+        $this->assertEquals($aRawEntity[$sAlias.'rule_group_id'],$oEntity->sAdjustmentGroupID);
+        $this->assertEquals($aRawEntity[$sAlias.'rule_group_name'],$oEntity->sGroupName);
+        $this->assertEquals($aRawEntity[$sAlias.'rule_group_name_slug'],$oEntity->sGroupNameSlug);
+        $this->assertEquals($aRawEntity[$sAlias.'max_multiplier'],$oEntity->fMaxMultiplier);
+        $this->assertEquals($aRawEntity[$sAlias.'min_multiplier'],$oEntity->fMinMultiplier);
+        $this->assertEquals($aRawEntity[$sAlias.'max_modifier'],$oEntity->fMaxModifier);
+        $this->assertEquals($aRawEntity[$sAlias.'min_modifier'],$oEntity->fMinModifier);
+        $this->assertEquals($aRawEntity[$sAlias.'max_count'],$oEntity->iMaxCount);
+        $this->assertEquals($aRawEntity[$sAlias.'order_method'],$oEntity->iOrderMethod);
         $this->assertTrue($oEntity->bIsMandatory);
-        $this->assertEquals($aRawEntity[$sAlais.'enabled_from'],$oEntity->oEnabledFrom);
-        $this->assertEquals($aRawEntity[$sAlais.'enabled_to'],$oEntity->oEnabledTo);
+        $this->assertEquals($aRawEntity[$sAlias.'enabled_from'],$oEntity->oEnabledFrom);
+        $this->assertEquals($aRawEntity[$sAlias.'enabled_to'],$oEntity->oEnabledTo);
         
         
         $aRawEntity = $oBuilder->demolish($oEntity);
@@ -449,27 +449,27 @@ class BuilderTest extends TestWithContainer
                           ->getGateway('pt_rule_group_limits')
                           ->getEntityBuilder();
       
-         $sAlais   = $oBuilder->getTableQueryAlias().'_';
+         $sAlias   = $oBuilder->getTableQueryAlias().'_';
         
          # test build
         
          $aRawEntity = array(
-            $sAlais.'episode_id'           => 1,
-            $sAlais.'rule_group_id'        => 'B5D37F95-525F-9E4F-A5B7-F6EA3A269A34',
-            $sAlais.'score_group_id'       => 'K5D37F95-525F-9E4F-A5B7-F6EA3A269A34',
-            $sAlais.'system_id'            => 'L5D37F95-525F-9E4F-A5B7-F6EA3A269A34',
-            $sAlais.'enabled_from'         => new DateTime(),
-            $sAlais.'enabled_to'           => new DateTime('3000-01-01'),
+            $sAlias.'episode_id'           => 1,
+            $sAlias.'rule_group_id'        => 'B5D37F95-525F-9E4F-A5B7-F6EA3A269A34',
+            $sAlias.'score_group_id'       => 'K5D37F95-525F-9E4F-A5B7-F6EA3A269A34',
+            $sAlias.'system_id'            => 'L5D37F95-525F-9E4F-A5B7-F6EA3A269A34',
+            $sAlias.'enabled_from'         => new DateTime(),
+            $sAlias.'enabled_to'           => new DateTime('3000-01-01'),
          );
         
          $oEntity = $oBuilder->build($aRawEntity);
         
-         $this->assertEquals($aRawEntity[$sAlais.'episode_id'],$oEntity->iEpisodeID);
-         $this->assertEquals($aRawEntity[$sAlais.'rule_group_id'],$oEntity->sAdjustmentGroupID);
-         $this->assertEquals($aRawEntity[$sAlais.'score_group_id'],$oEntity->sScoreGroupID);
-         $this->assertEquals($aRawEntity[$sAlais.'system_id'],$oEntity->sSystemID);
-         $this->assertEquals($aRawEntity[$sAlais.'enabled_from'],$oEntity->oEnabledFrom);
-         $this->assertEquals($aRawEntity[$sAlais.'enabled_to'],$oEntity->oEnabledTo);
+         $this->assertEquals($aRawEntity[$sAlias.'episode_id'],$oEntity->iEpisodeID);
+         $this->assertEquals($aRawEntity[$sAlias.'rule_group_id'],$oEntity->sAdjustmentGroupID);
+         $this->assertEquals($aRawEntity[$sAlias.'score_group_id'],$oEntity->sScoreGroupID);
+         $this->assertEquals($aRawEntity[$sAlias.'system_id'],$oEntity->sSystemID);
+         $this->assertEquals($aRawEntity[$sAlias.'enabled_from'],$oEntity->oEnabledFrom);
+         $this->assertEquals($aRawEntity[$sAlias.'enabled_to'],$oEntity->oEnabledTo);
         
         
          $aRawEntity = $oBuilder->demolish($oEntity);
@@ -491,35 +491,35 @@ class BuilderTest extends TestWithContainer
                          ->getGateway('pt_rule')
                          ->getEntityBuilder();
       
-        $sAlais   = $oBuilder->getTableQueryAlias().'_';
+        $sAlias   = $oBuilder->getTableQueryAlias().'_';
         
         # test build
         
         $aRawEntity = array(
-            $sAlais.'episode_id'      => 1,
-            $sAlais.'rule_id'         => 'B5D37F95-525F-9E4F-A5B7-F6EA3A269A34',
-            $sAlais.'rule_group_id'   => 'C5D37F95-525F-9E4F-A5B7-F6EA3A269A34',
-            $sAlais.'rule_name'       => 'Demo Adj Rule',
-            $sAlais.'rule_name_slug'  => 'demo_adj_rule',
-            $sAlais.'multiplier'      => 1.5,
-            $sAlais.'modifier'        => 10.00,
-            $sAlais.'invert_flag'     => 1,
-            $sAlais.'enabled_from'    => new DateTime(),
-            $sAlais.'enabled_to'      => new DateTime('3000-01-01'),
+            $sAlias.'episode_id'      => 1,
+            $sAlias.'rule_id'         => 'B5D37F95-525F-9E4F-A5B7-F6EA3A269A34',
+            $sAlias.'rule_group_id'   => 'C5D37F95-525F-9E4F-A5B7-F6EA3A269A34',
+            $sAlias.'rule_name'       => 'Demo Adj Rule',
+            $sAlias.'rule_name_slug'  => 'demo_adj_rule',
+            $sAlias.'multiplier'      => 1.5,
+            $sAlias.'modifier'        => 10.00,
+            $sAlias.'invert_flag'     => 1,
+            $sAlias.'enabled_from'    => new DateTime(),
+            $sAlias.'enabled_to'      => new DateTime('3000-01-01'),
         );
         
         $oEntity = $oBuilder->build($aRawEntity);
         
-        $this->assertEquals($aRawEntity[$sAlais.'episode_id'],$oEntity->iEpisodeID);
-        $this->assertEquals($aRawEntity[$sAlais.'rule_id'],$oEntity->sAdjustmentRuleID);
-        $this->assertEquals($aRawEntity[$sAlais.'rule_group_id'],$oEntity->sAdjustmentGroupID);
-        $this->assertEquals($aRawEntity[$sAlais.'rule_name'],$oEntity->sRuleName);
-        $this->assertEquals($aRawEntity[$sAlais.'rule_name_slug'],$oEntity->sRuleNameSlug);
-        $this->assertEquals($aRawEntity[$sAlais.'multiplier'],$oEntity->fMultiplier);
-        $this->assertEquals($aRawEntity[$sAlais.'modifier'],$oEntity->fModifier);
-        $this->assertEquals($aRawEntity[$sAlais.'invert_flag'],(int)$oEntity->bInvertFlag);
-        $this->assertEquals($aRawEntity[$sAlais.'enabled_from'],$oEntity->oEnabledFrom);
-        $this->assertEquals($aRawEntity[$sAlais.'enabled_to'],$oEntity->oEnabledTo);
+        $this->assertEquals($aRawEntity[$sAlias.'episode_id'],$oEntity->iEpisodeID);
+        $this->assertEquals($aRawEntity[$sAlias.'rule_id'],$oEntity->sAdjustmentRuleID);
+        $this->assertEquals($aRawEntity[$sAlias.'rule_group_id'],$oEntity->sAdjustmentGroupID);
+        $this->assertEquals($aRawEntity[$sAlias.'rule_name'],$oEntity->sRuleName);
+        $this->assertEquals($aRawEntity[$sAlias.'rule_name_slug'],$oEntity->sRuleNameSlug);
+        $this->assertEquals($aRawEntity[$sAlias.'multiplier'],$oEntity->fMultiplier);
+        $this->assertEquals($aRawEntity[$sAlias.'modifier'],$oEntity->fModifier);
+        $this->assertEquals($aRawEntity[$sAlias.'invert_flag'],(int)$oEntity->bInvertFlag);
+        $this->assertEquals($aRawEntity[$sAlias.'enabled_from'],$oEntity->oEnabledFrom);
+        $this->assertEquals($aRawEntity[$sAlias.'enabled_to'],$oEntity->oEnabledTo);
         
         $aRawEntity = $oBuilder->demolish($oEntity);
         
@@ -543,25 +543,25 @@ class BuilderTest extends TestWithContainer
                          ->getGateway('pt_rule_sys_zone')
                          ->getEntityBuilder();
       
-        $sAlais   = $oBuilder->getTableQueryAlias().'_';
+        $sAlias   = $oBuilder->getTableQueryAlias().'_';
         
         # test build
         
         $aRawEntity = array(
-            $sAlais.'episode_id'      => 1,
-            $sAlais.'rule_id'         => 'B5D37F95-525F-9E4F-A5B7-F6EA3A269A34',
-            $sAlais.'zone_id'         => 'C5D37F95-525F-9E4F-A5B7-F6EA3A269A34',
-            $sAlais.'enabled_from'    => new DateTime(),
-            $sAlais.'enabled_to'      => new DateTime('3000-01-01'),
+            $sAlias.'episode_id'      => 1,
+            $sAlias.'rule_id'         => 'B5D37F95-525F-9E4F-A5B7-F6EA3A269A34',
+            $sAlias.'zone_id'         => 'C5D37F95-525F-9E4F-A5B7-F6EA3A269A34',
+            $sAlias.'enabled_from'    => new DateTime(),
+            $sAlias.'enabled_to'      => new DateTime('3000-01-01'),
         );
         
         $oEntity = $oBuilder->build($aRawEntity);
         
-        $this->assertEquals($aRawEntity[$sAlais.'episode_id'],$oEntity->iEpisodeID);
-        $this->assertEquals($aRawEntity[$sAlais.'rule_id'],$oEntity->sAdjustmentRuleID);
-        $this->assertEquals($aRawEntity[$sAlais.'zone_id'],$oEntity->sSystemZoneID);
-        $this->assertEquals($aRawEntity[$sAlais.'enabled_from'],$oEntity->oEnabledFrom);
-        $this->assertEquals($aRawEntity[$sAlais.'enabled_to'],$oEntity->oEnabledTo);
+        $this->assertEquals($aRawEntity[$sAlias.'episode_id'],$oEntity->iEpisodeID);
+        $this->assertEquals($aRawEntity[$sAlias.'rule_id'],$oEntity->sAdjustmentRuleID);
+        $this->assertEquals($aRawEntity[$sAlias.'zone_id'],$oEntity->sSystemZoneID);
+        $this->assertEquals($aRawEntity[$sAlias.'enabled_from'],$oEntity->oEnabledFrom);
+        $this->assertEquals($aRawEntity[$sAlias.'enabled_to'],$oEntity->oEnabledTo);
         
         $aRawEntity = $oBuilder->demolish($oEntity);
         
@@ -580,28 +580,41 @@ class BuilderTest extends TestWithContainer
                          ->getGateway('pt_transaction_header')
                          ->getEntityBuilder();
       
-        $sAlais   = $oBuilder->getTableQueryAlias().'_';
+        $sAlias   = $oBuilder->getTableQueryAlias().'_';
         
           $aRawEntity = array(
-            $sAlais.'event_id'          => 9,
-            $sAlais.'system_ep'         => 6,
-            $sAlais.'zone_ep'           => 7,
-            $sAlais.'event_type_ep'     => 8,
-            $sAlais.'created_date'      => new DateTime(),
-            $sAlais.'processing_date'   => new DateTime('now + 1 day'),
-            $sAlais.'occured_date'      => new DateTime('now - 5 day'),
+            $sAlias.'event_id'          => 9,
+            $sAlias.'system_ep'         => 6,
+            $sAlias.'zone_ep'           => 7,
+            $sAlias.'event_type_ep'     => 8,
+            $sAlias.'created_date'      => new DateTime(),
+            $sAlias.'processing_date'   => new DateTime('now + 1 day'),
+            $sAlias.'occured_date'      => new DateTime('now - 5 day'),
+            $sAlias.'calrunvalue'       => 100.00,
+            $sAlias.'calrunvalue_round' => 100,
+            
+            'system_name'               => 'system1',
+            'zone_name'                 => 'zone1',
+            'event_name'                => 'event1',
+        
            
         );
         
         $oEntity = $oBuilder->build($aRawEntity);
          
-        $this->assertEquals($aRawEntity[$sAlais.'event_id'],$oEntity->iScoringEventID);       
-        $this->assertEquals($aRawEntity[$sAlais.'system_ep'],$oEntity->iSystemEP);
-        $this->assertEquals($aRawEntity[$sAlais.'zone_ep'],$oEntity->iSystemZoneEP);
-        $this->assertEquals($aRawEntity[$sAlais.'event_type_ep'],$oEntity->iEventTypeEP);
-        $this->assertEquals($aRawEntity[$sAlais.'created_date'],$oEntity->oCreatedDate);
-        $this->assertEquals($aRawEntity[$sAlais.'processing_date'],$oEntity->oProcessingDate);
-        $this->assertEquals($aRawEntity[$sAlais.'occured_date'],$oEntity->oOccuredDate);
+        $this->assertEquals($aRawEntity[$sAlias.'event_id'],$oEntity->iScoringEventID);       
+        $this->assertEquals($aRawEntity[$sAlias.'system_ep'],$oEntity->iSystemEP);
+        $this->assertEquals($aRawEntity[$sAlias.'zone_ep'],$oEntity->iSystemZoneEP);
+        $this->assertEquals($aRawEntity[$sAlias.'event_type_ep'],$oEntity->iEventTypeEP);
+        $this->assertEquals($aRawEntity[$sAlias.'created_date'],$oEntity->oCreatedDate);
+        $this->assertEquals($aRawEntity[$sAlias.'processing_date'],$oEntity->oProcessingDate);
+        $this->assertEquals($aRawEntity[$sAlias.'occured_date'],$oEntity->oOccuredDate);
+        $this->assertEquals($aRawEntity[$sAlias.'calrunvalue'],$oEntity->fCalRunValue);
+        $this->assertEquals($aRawEntity[$sAlias.'calrunvalue_round'],$oEntity->fCalRunValueRound);
+        $this->assertEquals($aRawEntity['system_name'],$oEntity->sSystemName);
+        $this->assertEquals($aRawEntity['zone_name'],$oEntity->sSystemZoneName);
+        $this->assertEquals($aRawEntity['event_name'],$oEntity->sEventName);
+        
          
         $aRawEntity = $oBuilder->demolish($oEntity);
         
@@ -612,6 +625,13 @@ class BuilderTest extends TestWithContainer
         $this->assertEquals($oEntity->oCreatedDate,$aRawEntity['created_date']);
         $this->assertEquals($oEntity->oProcessingDate,$aRawEntity['processing_date']);
         $this->assertEquals($oEntity->oOccuredDate,$aRawEntity['occured_date']);
+        $this->assertEquals($oEntity->fCalRunValue, $aRawEntity['calrunvalue']);
+        $this->assertEquals($oEntity->fCalRunValueRound, $aRawEntity['calrunvalue_round']);
+        $this->assertEquals($oEntity->sSystemName,$aRawEntity['system_name']);
+        $this->assertEquals($oEntity->sSystemZoneName,$aRawEntity['zone_name']);
+        $this->assertEquals($oEntity->sEventName,$aRawEntity['event_name']);
+       
+        
          
     }
     
@@ -622,29 +642,29 @@ class BuilderTest extends TestWithContainer
                          ->getGateway('pt_transaction_score')
                          ->getEntityBuilder();
       
-        $sAlais   = $oBuilder->getTableQueryAlias().'_';
+        $sAlias   = $oBuilder->getTableQueryAlias().'_';
         
           $aRawEntity = array(
-            $sAlais.'event_id'          => 9,
-            $sAlais.'score_ep'          => 4,
-            $sAlais.'score_group_ep'    => 5,
-            $sAlais.'score_base'        => 10,
-            $sAlais.'score_cal_raw'         => 11,
-            $sAlais.'score_cal_rounded'     => 12,
-            $sAlais.'score_cal_capped'      => 13,
+            $sAlias.'event_id'          => 9,
+            $sAlias.'score_ep'          => 4,
+            $sAlias.'score_group_ep'    => 5,
+            $sAlias.'score_base'        => 10,
+            $sAlias.'score_cal_raw'     => 11,
+            $sAlias.'score_cal_capped'  => 13,
+            $sAlias.'score_quantity'    => 1,
             
         );
         
         $oEntity = $oBuilder->build($aRawEntity);
          
-        $this->assertEquals($aRawEntity[$sAlais.'event_id'],$oEntity->iScoringEventID);   
-        $this->assertEquals($aRawEntity[$sAlais.'score_ep'],$oEntity->iScoreEP);
-        $this->assertEquals($aRawEntity[$sAlais.'score_group_ep'],$oEntity->iScoreGroupEP);
+        $this->assertEquals($aRawEntity[$sAlias.'event_id'],$oEntity->iScoringEventID);   
+        $this->assertEquals($aRawEntity[$sAlias.'score_ep'],$oEntity->iScoreEP);
+        $this->assertEquals($aRawEntity[$sAlias.'score_group_ep'],$oEntity->iScoreGroupEP);
         
-        $this->assertEquals($aRawEntity[$sAlais.'score_base'],$oEntity->fScoreBase);
-        $this->assertEquals($aRawEntity[$sAlais.'score_cal_raw'],$oEntity->fScoreCalRaw);
-        $this->assertEquals($aRawEntity[$sAlais.'score_cal_rounded'],$oEntity->fScoreCalRounded);
-        $this->assertEquals($aRawEntity[$sAlais.'score_cal_capped'],$oEntity->fScoreCalCapped);
+        $this->assertEquals($aRawEntity[$sAlias.'score_base'],$oEntity->fScoreBase);
+        $this->assertEquals($aRawEntity[$sAlias.'score_cal_raw'],$oEntity->fScoreCalRaw);
+        $this->assertEquals($aRawEntity[$sAlias.'score_cal_capped'],$oEntity->fScoreCalCapped);
+        $this->assertEquals($aRawEntity[$sAlias.'score_quantity'], $oEntity->iScoreQuantity);
         
         $aRawEntity = $oBuilder->demolish($oEntity);
         
@@ -653,9 +673,8 @@ class BuilderTest extends TestWithContainer
         $this->assertEquals($oEntity->iScoreGroupEP,$aRawEntity['score_group_ep']);
         $this->assertEquals($oEntity->fScoreBase,$aRawEntity['score_base']);
         $this->assertEquals($oEntity->fScoreCalRaw,$aRawEntity['score_cal_raw']);
-        $this->assertEquals($oEntity->fScoreCalRounded,$aRawEntity['score_cal_rounded']);
         $this->assertEquals($oEntity->fScoreCalCapped,$aRawEntity['score_cal_capped']);
-         
+        $this->assertEquals($oEntity->iScoreQuantity, $aRawEntity['score_quantity']); 
          
     }
     
@@ -666,27 +685,27 @@ class BuilderTest extends TestWithContainer
                          ->getGateway('pt_transaction_rule')
                          ->getEntityBuilder();
       
-        $sAlais   = $oBuilder->getTableQueryAlias().'_';
+        $sAlias   = $oBuilder->getTableQueryAlias().'_';
         
          $aRawEntity = array(
-            $sAlais.'event_id'          => 9,
-            $sAlais.'score_ep'          => 4,
-            $sAlais.'rule_ep'           => 2,
-            $sAlais.'score_modifier'    => 8,
-            $sAlais.'score_multiplier'  => 1.5,
-            $sAlais.'order_seq'         => 1,
+            $sAlias.'event_id'          => 9,
+            $sAlias.'score_ep'          => 4,
+            $sAlias.'rule_ep'           => 2,
+            $sAlias.'score_modifier'    => 8,
+            $sAlias.'score_multiplier'  => 1.5,
+            $sAlias.'order_seq'         => 1,
            
         );
         
          $oEntity = $oBuilder->build($aRawEntity);
          
            
-        $this->assertEquals($aRawEntity[$sAlais.'event_id'],$oEntity->iScoringEventID);
-        $this->assertEquals($aRawEntity[$sAlais.'score_ep'],$oEntity->iScoreEP);
-        $this->assertEquals($aRawEntity[$sAlais.'rule_ep'],$oEntity->iAdjustmentRuleEP);
-        $this->assertEquals($aRawEntity[$sAlais.'score_modifier'],$oEntity->fScoreModifier);
-        $this->assertEquals($aRawEntity[$sAlais.'score_multiplier'],$oEntity->fScoreMultiplier);
-        $this->assertEquals($aRawEntity[$sAlais.'order_seq'],$oEntity->iOrderSeq);
+        $this->assertEquals($aRawEntity[$sAlias.'event_id'],$oEntity->iScoringEventID);
+        $this->assertEquals($aRawEntity[$sAlias.'score_ep'],$oEntity->iScoreEP);
+        $this->assertEquals($aRawEntity[$sAlias.'rule_ep'],$oEntity->iAdjustmentRuleEP);
+        $this->assertEquals($aRawEntity[$sAlias.'score_modifier'],$oEntity->fScoreModifier);
+        $this->assertEquals($aRawEntity[$sAlias.'score_multiplier'],$oEntity->fScoreMultiplier);
+        $this->assertEquals($aRawEntity[$sAlias.'order_seq'],$oEntity->iOrderSeq);
         
          $aRawEntity = $oBuilder->demolish($oEntity);
         
@@ -706,15 +725,15 @@ class BuilderTest extends TestWithContainer
                          ->getGateway('pt_transaction_group')
                          ->getEntityBuilder();
       
-        $sAlais   = $oBuilder->getTableQueryAlias().'_';
+        $sAlias   = $oBuilder->getTableQueryAlias().'_';
         
           $aRawEntity = array(
-            $sAlais.'event_id'          => 9,
-            $sAlais.'score_ep'          => 4,
-            $sAlais.'rule_group_ep'     => 3,
-            $sAlais.'score_modifier'    => 8,
-            $sAlais.'score_multiplier'  => 1.5,
-            $sAlais.'order_seq'         => 1
+            $sAlias.'event_id'          => 9,
+            $sAlias.'score_ep'          => 4,
+            $sAlias.'rule_group_ep'     => 3,
+            $sAlias.'score_modifier'    => 8,
+            $sAlias.'score_multiplier'  => 1.5,
+            $sAlias.'order_seq'         => 1
             
            
         );
@@ -722,12 +741,12 @@ class BuilderTest extends TestWithContainer
         $oEntity = $oBuilder->build($aRawEntity);
          
            
-        $this->assertEquals($aRawEntity[$sAlais.'event_id'],$oEntity->iScoringEventID);
-        $this->assertEquals($aRawEntity[$sAlais.'score_ep'],$oEntity->iScoreEP);
-        $this->assertEquals($aRawEntity[$sAlais.'rule_group_ep'],$oEntity->iAdjustmentGroupEP);
-        $this->assertEquals($aRawEntity[$sAlais.'score_modifier'],$oEntity->fScoreModifier);
-        $this->assertEquals($aRawEntity[$sAlais.'score_multiplier'],$oEntity->fScoreMultiplier);
-        $this->assertEquals($oEntity->iOrderSeq,$aRawEntity[$sAlais.'order_seq']);
+        $this->assertEquals($aRawEntity[$sAlias.'event_id'],$oEntity->iScoringEventID);
+        $this->assertEquals($aRawEntity[$sAlias.'score_ep'],$oEntity->iScoreEP);
+        $this->assertEquals($aRawEntity[$sAlias.'rule_group_ep'],$oEntity->iAdjustmentGroupEP);
+        $this->assertEquals($aRawEntity[$sAlias.'score_modifier'],$oEntity->fScoreModifier);
+        $this->assertEquals($aRawEntity[$sAlias.'score_multiplier'],$oEntity->fScoreMultiplier);
+        $this->assertEquals($oEntity->iOrderSeq,$aRawEntity[$sAlias.'order_seq']);
         
          $aRawEntity = $oBuilder->demolish($oEntity);
         
