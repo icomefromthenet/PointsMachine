@@ -29,6 +29,9 @@ class CalculationScore {
     
     public $iScoreQuantity;
     
+    public $sScoreName;
+    
+    public $sScoreGroupName;
     
     
 }

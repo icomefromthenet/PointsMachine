@@ -47,10 +47,11 @@ class DetailSavePass extends AbstractPass
             # A (rule/score) combination can be repeated but values will be the same we only looking to store one instance of these values
       
             $sSql  =" INSERT INTO $sTranRuleTableName ";
-            $sSql .=" (`event_id`, `score_ep`, `rule_ep`, `score_modifier`, `score_multiplier`, `order_seq`) ";
+            $sSql .=" (`event_id`, `score_ep`, `rule_ep`, `rule_group_ep`, `score_modifier`, `score_multiplier`, `order_seq`) ";
             $sSql .=" SELECT `c`.`event_id`
                         , `s`.`score_ep`
                         , `r`.`rule_ep`
+                        , `r`.`rule_group_ep`
                         , `ru`.`override_modifier`   as score_modifier
                         , `ru`.`override_multiplier` as score_multiplier
                         , IF(`ag`.`order_method` = 1, `r`.`rank_high`,`r`.`rank_low`) as order_seq";
@@ -59,7 +60,7 @@ class DetailSavePass extends AbstractPass
             $sSql .=" JOIN $sScoreTmpTableName s ON `s`.`slot_id` = `r`.`score_slot_id` ";
             $sSql .=" JOIN $sRuleTmpTableName ru ON `ru`.`rule_ep` = `r`.`rule_ep` ";
             $sSql .= "JOIN $sAdjGroupTableName ag ON `ag`.`episode_id` = `ru`.`rule_group_ep` ";
-            $sSql .= "GROUP BY `c`.`event_id`, `s`.`score_ep`, `r`.`rule_ep`, `ru`.`override_modifier`, `ru`.`override_multiplier`, `ag`.`order_method`, `r`.`rank_high`, `r`.`rank_low` ";
+            $sSql .= "GROUP BY `c`.`event_id`, `s`.`score_ep`, `r`.`rule_ep`, `r`.`rule_group_ep` , `ru`.`override_modifier`, `ru`.`override_multiplier`, `ag`.`order_method`, `r`.`rank_high`, `r`.`rank_low` ";
             
             
             $this->getDatabaseAdaper()->executeUpdate($sSql);

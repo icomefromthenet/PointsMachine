@@ -27,11 +27,20 @@ class CalculationAdjRuleBuilder extends CommonBuilder
         $sAlias = $this->getTableQueryAlias();
         
         $oRule->iScoringEventID     = $this->getField($data,'event_id',$sAlias); 
-        $oRule->iAdjustmentRuleEP   = $this->getField($data,'rule_ep',$sAlias); 
-        $oRule->iScoreEP            = $this->getField($data,'score_ep',$sAlias); 
+        $oRule->iAdjustmentRuleEP   = $this->getField($data,'rule_ep',$sAlias);
+        $oRule->iAdjustmentGroupEP  = $this->getField($data,'rule_group_ep',$sAlias); 
+        $oRule->iScoreEP            = $this->getField($data,'score_ep',$sAlias);
+        
         $oRule->fScoreModifier      = $this->getField($data,'score_modifier',$sAlias); 
         $oRule->fScoreMultiplier    = $this->getField($data,'score_multiplier',$sAlias); 
         $oRule->iOrderSeq           = $this->getField($data,'order_seq',$sAlias); 
+        
+        // fields from join table
+        
+        $oRule->sScoreName           = $data['score_name'];
+        $oRule->sAdjustmentRuleName  = $data['rule_name'];
+        $oRule->sAdjustmentGroupName = $data['rule_group_name'];
+        
          
         return $oRule;
     }
@@ -46,12 +55,16 @@ class CalculationAdjRuleBuilder extends CommonBuilder
     public function demolish($oCalculation)
     {
         return array(
-             'event_id'      => $oCalculation->iScoringEventID
-            ,'rule_ep'       => $oCalculation->iAdjustmentRuleEP 
-            ,'score_ep'      => $oCalculation->iScoreEP
-            ,'score_modifier'=> $oCalculation->fScoreModifier
-            ,'score_multiplier' => $oCalculation->fScoreMultiplier
-            ,'order_seq'    => $oCalculation->iOrderSeq
+             'event_id'               => $oCalculation->iScoringEventID
+            ,'rule_ep'                => $oCalculation->iAdjustmentRuleEP
+            ,'rule_group_ep'          => $oCalculation->iAdjustmentGroupEP 
+            ,'score_ep'               => $oCalculation->iScoreEP
+            ,'score_modifier'         => $oCalculation->fScoreModifier
+            ,'score_multiplier'       => $oCalculation->fScoreMultiplier
+            ,'order_seq'              => $oCalculation->iOrderSeq
+            ,'score_name'             => $oCalculation->sScoreName
+            ,'rule_name'              => $oCalculation->sAdjustmentRuleName 
+            ,'rule_group_name'        => $oCalculation->sAdjustmentGroupName
            
         );
         

@@ -33,6 +33,10 @@ class CalculationScoreBuilder extends CommonBuilder
         $oRule->fScoreCalRaw        = $this->getField($data,'score_cal_raw',$sAlias); 
         $oRule->fScoreCalCapped     = $this->getField($data,'score_cal_capped',$sAlias); 
         $oRule->iScoreQuantity      = $this->getField($data,'score_quantity',$sAlias);
+        
+        // fields from join table won't have alias
+        $oRule->sScoreName          = $data['score_name'];
+        $oRule->sScoreGroupName     = $data['score_group_name'];
          
         return $oRule;
     }
@@ -54,6 +58,8 @@ class CalculationScoreBuilder extends CommonBuilder
             'score_cal_raw' => $oCalculation->fScoreCalRaw,
             'score_cal_capped' => $oCalculation->fScoreCalCapped,
             'score_quantity' => $oCalculation->iScoreQuantity,
+            'score_name'       => $oCalculation->sScoreName,
+            'score_group_name' => $oCalculation->sScoreGroupName,
             
         );
         

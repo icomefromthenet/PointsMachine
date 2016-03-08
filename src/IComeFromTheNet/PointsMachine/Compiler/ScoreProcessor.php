@@ -146,11 +146,14 @@ class ScoreProcessor implements CompilerInterface
         
         return $oScoreTransactionGateway
             ->selectQuery()
-             ->start()
-                ->andWhere('event_id',$iEventId)
-             ->end()
-           ->find();
-        
+                ->start()
+                    ->addSelect('s.score_name','sg.group_name as score_group_name')
+                    ->withScore('s')
+                    ->withScoreGroup('sg')
+                    ->filterByScoringEvent($iEventId)
+                ->end()         
+            ->find();
+    
 
     }
     

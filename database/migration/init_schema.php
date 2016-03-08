@@ -230,17 +230,19 @@ class init_schema implements EntityInterface
         
         # Adj Rule Transactions'
         $table = $sc->createTable("pt_transaction_rule");
-        $table->addColumn('event_id','integer',array("unsigned" => true));
-        $table->addColumn('score_ep'      ,'integer',array("unsigned" => true));       
-        $table->addColumn('rule_ep'       ,'integer',array("unsigned" => true));
+        $table->addColumn('event_id'        ,'integer',array("unsigned" => true));
+        $table->addColumn('score_ep'        ,'integer',array("unsigned" => true));       
+        $table->addColumn('rule_group_ep'   ,'integer',array("unsigned" => true));
+        $table->addColumn('rule_ep'         ,'integer',array("unsigned" => true));
         $table->addColumn('score_modifier'  ,'float',array());
         $table->addColumn('score_multiplier','float',array());
         $table->addColumn('order_seq','integer',array("unsigned" => true));
         
-        $table->setPrimaryKey(array('event_id','score_ep','rule_ep'));
+        $table->setPrimaryKey(array('event_id','score_ep','rule_ep','rule_group_ep'));
         $table->addForeignKeyConstraint('pt_event'      ,array('event_id')      ,array('event_id')    ,array(), 'pt_tran_rule_event_fk1');
         $table->addForeignKeyConstraint('pt_score'      ,array('score_ep')      ,array('episode_id') ,array(), 'pt_tran_rule_score_fk2');
         $table->addForeignKeyConstraint('pt_rule'       ,array('rule_ep')       ,array('episode_id') ,array(), 'pt_tran_rule_rule_fk3');
+        $table->addForeignKeyConstraint('pt_rule_group' ,array('rule_group_ep')       ,array('episode_id') ,array(), 'pt_tran_rule_rule_fk4');
     }
    
    

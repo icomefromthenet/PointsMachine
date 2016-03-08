@@ -54,7 +54,7 @@ $app->get('/transactions/score/{eventId}', function ($request, $response, $args)
     
     $aResult = $oEventGateway->selectQuery()
         ->start()
-            ->addSelect('s.score_name','ss.group_name')
+            ->addSelect('s.score_name','ss.group_name as score_group_name')
             ->withScore('s')
             ->withScoreGroup('sg')
             ->filterByScoringEvent($args['eventId'])
@@ -102,9 +102,10 @@ $app->get('/transactions/adjrule/{eventId}', function ($request, $response, $arg
 
     $aResult = $oEventGateway->selectQuery()
         ->start()
-            ->addSelect('ae.rule_name','ag.rule_group_name')
+            ->addSelect('ae.rule_name','ag.rule_group_name','s.score_name')
             ->withAdjustmentRule('ar')
             ->withAdjustmentGroup('ag')
+            ->withScore('s')
             ->filterByScoringEvent($args['eventId'])
         ->end()         
     ->find();

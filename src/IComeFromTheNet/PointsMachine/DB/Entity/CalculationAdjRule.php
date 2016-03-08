@@ -22,12 +22,19 @@ class CalculationAdjRule
     
     public $iAdjustmentRuleEP;
     
+    public $iAdjustmentGroupEP;
+    
     public $fScoreModifier;
     
     public $fScoreMultiplier;
     
     public $iOrderSeq;
    
+    public $sScoreName;
+    
+    public $sAdjustmentRuleName;
+    
+    public $sAdjustmentGroupName;
     
 }
 /* End of File */
