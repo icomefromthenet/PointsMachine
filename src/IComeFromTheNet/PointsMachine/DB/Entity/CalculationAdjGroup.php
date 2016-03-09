@@ -28,6 +28,9 @@ class CalculationAdjGroup
     
     public $iOrderSeq;
     
+    public $sScoreName;
+    
+    public $sAdjustmentGroupName;
     
     
 }

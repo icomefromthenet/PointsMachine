@@ -756,8 +756,9 @@ class BuilderTest extends TestWithContainer
             $sAlias.'rule_group_ep'     => 3,
             $sAlias.'score_modifier'    => 8,
             $sAlias.'score_multiplier'  => 1.5,
-            $sAlias.'order_seq'         => 1
-            
+            $sAlias.'order_seq'         => 1,
+            'score_name'                => 'score1',
+            'rule_group_name'           => 'group1',
            
         );
         
@@ -769,7 +770,12 @@ class BuilderTest extends TestWithContainer
         $this->assertEquals($aRawEntity[$sAlias.'rule_group_ep'],$oEntity->iAdjustmentGroupEP);
         $this->assertEquals($aRawEntity[$sAlias.'score_modifier'],$oEntity->fScoreModifier);
         $this->assertEquals($aRawEntity[$sAlias.'score_multiplier'],$oEntity->fScoreMultiplier);
-        $this->assertEquals($oEntity->iOrderSeq,$aRawEntity[$sAlias.'order_seq']);
+        $this->assertEquals($aRawEntity[$sAlias.'order_seq'],$oEntity->iOrderSeq);
+        
+        $this->assertEquals($aRawEntity['score_name'],$oEntity->sScoreName);
+        $this->assertEquals($aRawEntity['rule_group_name'],$oEntity->sAdjustmentGroupName);
+        
+        
         
          $aRawEntity = $oBuilder->demolish($oEntity);
         
@@ -779,6 +785,9 @@ class BuilderTest extends TestWithContainer
         $this->assertEquals($oEntity->fScoreModifier,$aRawEntity['score_modifier']);
         $this->assertEquals($oEntity->fScoreMultiplier,$aRawEntity['score_multiplier']);
         $this->assertEquals($oEntity->iOrderSeq,$aRawEntity['order_seq']);
+        $this->assertEquals($oEntity->sAdjustmentGroupName,$aRawEntity['rule_group_name']);
+        $this->assertEquals($oEntity->sScoreName,$aRawEntity['score_name']);
+         
          
     }
     

@@ -13,7 +13,67 @@ $app = new App();
 // Get container
 $container = $app->getContainer();
 
+
+// Register component on container
+
+
 $container['PointsMachine'] = $oPointsContainer;
+
+
+
+$container['view'] = function ($container) {
+    
+    $view = new \Slim\Views\Twig(__DIR__, [
+        'cache' => false
+    ]);
+    
+    $view->addExtension(new \Slim\Views\TwigExtension(
+        $container['router'],
+        $container['request']->getUri()
+    ));
+
+    return $view;
+};
+
+
+
+
+
+// Home Routes
+
+$app->get('/',function($request, $response, $args){
+    
+    
+    return $this->view->render($response, 'index.html.twig', [
+        'sName' => 'Home',
+        'sDescription' => 'Test Center for Points Machine'
+    ]);
+    
+    
+})->setName('home');
+
+
+
+// Routes - Form Pages
+
+$app->get('/setup/pointsystem',function($request, $response, $args){
+    
+    
+    return $this->view->render($response, 'setup_system.html.twig', [
+        'sName' => 'Home',
+        'sDescription' => 'Mange Points Systems'
+    ]);
+    
+    
+})->setName('setup_system');
+
+
+
+
+
+
+// Routes - Results JSON API
+
 
 $app->get('/transactions/event', function ($request, $response, $args) {
 

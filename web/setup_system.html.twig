@@ -1,0 +1,52 @@
+{% extends "layout.html.twig" %}
+
+
+{% block scriptExtras %}
+<script>
+    
+    var PAGE = function(document,YUI) {
+        
+        
+        // Private Members
+        
+        var oWidgetOptions = {
+          'el' : ''  
+            
+            
+        };
+        
+        
+        // Event Handlers    
+            
+        var onInit = function() {
+            
+            //oWidgetOptions.el = YUI.find
+            
+            
+        }
+        
+        // Public API
+        
+        return {
+            init: onInit
+            
+        }
+        
+    }(document,YUI) 
+    
+</script>
+{% endblock %}
+
+
+{% block bodyContent %}
+
+ <div id="main" class="pure-u-1">
+     
+     
+     
+ 
+      
+ </div>
+
+
+{% endblock %}

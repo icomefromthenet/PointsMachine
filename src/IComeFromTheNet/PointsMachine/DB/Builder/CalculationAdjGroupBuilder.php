@@ -33,6 +33,11 @@ class CalculationAdjGroupBuilder extends CommonBuilder
         $oRule->fScoreMultiplier    = $this->getField($data,'score_multiplier',$sAlias); 
         $oRule->iOrderSeq           = $this->getField($data,'order_seq',$sAlias); 
          
+        // fields from join tables have no alias 
+         
+        $oRule->sScoreName           = $data['score_name'];
+        $oRule->sAdjustmentGroupName = $data['rule_group_name'];
+         
         return $oRule;
     }
     
@@ -51,7 +56,9 @@ class CalculationAdjGroupBuilder extends CommonBuilder
             'rule_group_ep'     => $oCalculation->iAdjustmentGroupEP,
             'score_modifier'    => $oCalculation->fScoreModifier,
             'score_multiplier'  => $oCalculation->fScoreMultiplier,
-            'order_seq'         => $oCalculation->iOrderSeq
+            'order_seq'         => $oCalculation->iOrderSeq,
+            'score_name'        => $oCalculation->sScoreName,
+            'rule_group_name'   => $oCalculation->sAdjustmentGroupName,
         );
         
     }

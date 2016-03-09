@@ -12,7 +12,8 @@
         "pimple/pimple" : "^3.0",
         "psr/log"       : "1.0.0",
         "icomefromthenet/dbal-gateway" : "dev-master",
-        "vlucas/valitron"              : "1.2.*"
+        "vlucas/valitron"              : "1.2.*",
+        "slim/twig-view": "^2.1"
            
     },
     "authors": [
