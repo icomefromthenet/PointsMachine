@@ -72,6 +72,39 @@ class PointSystemZoneQuery extends CommonQuery
         return $this->andWhere($sAlias."zone_name_slug LIKE ".$this->createNamedParameter($sGUID,$paramType));
         
     }
+    
+    
+    /**
+     * Join this query onto the Points System databsae table
+     * 
+     * Where looking for the system that is valid for the entire
+     * validity period of this zone. ie fills
+     * 
+     * @return this
+     * @param string    $sAlias     The Alias to use in the query
+     * @access public
+     */ 
+    public function withSystem($sSystemAlias)
+    {
+        $sAlias   = $this->getDefaultAlias();
+        
+        $sTableName = $this->getGateway()
+                           ->getGatewayCollection()
+                           ->getGateway('pt_system')
+                           ->getMetaData()
+                           ->getName();
+        
+        $sSql  =" $sSystemAlias.system_id = $sAlias.system_id ";
+        
+        // System is valid on or before this zone 
+        $sSql .="AND $sSystemAlias.enabled_from <= $sAlias.enabled_from ";
+        
+        // System is valid on or after this zone
+        $sSql .="AND $sSystemAlias.enabled_to >= $sAlias.enabled_to ";
+        
+        
+        return $this->innerJoin($sAlias,$sTableName,$sSystemAlias, $sSql);
+    }
 
 }
 /* End of Class */

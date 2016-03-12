@@ -11,16 +11,10 @@
 
 
 <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
-
-
-    <!--[if lte IE 8]>
-        <link rel="stylesheet" href="css/layouts/email-old-ie.css">
-    <![endif]-->
-    <!--[if gt IE 8]><!-->
-        <link rel="stylesheet" href="http://points.icomefromthenet.com/css/layouts/email.css">
-    <!--<![endif]-->
-  
-    
+<link rel="stylesheet" href="http://points.icomefromthenet.com/css/layouts/email.css">
+<link rel="stylesheet" href="http://points.icomefromthenet.com/jquery-ui/jquery-ui.min.css">
+<link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.4.1/jsgrid.min.css" />
+<link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.4.1/jsgrid-theme.min.css" />
 
 </head>
 <body>
@@ -67,22 +61,63 @@
   
 </div>
 
-<script src="http://yui.yahooapis.com/3.17.2/build/yui/yui-min.js"></script>
+<script type="text/javascript" src="http://points.icomefromthenet.com/js/jquery-2.2.1.min.js"></script>
+<script type="text/javascript" src="http://points.icomefromthenet.com/jquery-ui/jquery-ui.min.js"></script>
+<script type="text/javascript" src="http://points.icomefromthenet.com/js/jquery-dateformat.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.4.1/jsgrid.min.js"></script>
 
-<script>
-    YUI().use('node-base', 'node-event-delegate', function (Y) {
+<script type="text/javascript">
 
-        var menuButton = Y.one('.nav-menu-button'),
-            nav        = Y.one('#nav');
+    jQuery(function($){
+        
+        
+         var $menuButton = $('.nav-menu-button');
+         var $nav        = $('#nav');
 
         // Setting the active class name expands the menu vertically on small screens.
-        menuButton.on('click', function (e) {
-            nav.toggleClass('active');
+        $menuButton.click(function (e) {
+            $nav.toggleClass('active');
         });
 
         // Your application code goes here...
-        PAGE.init();
+        if(PAGE) {
+            PAGE.init();    
+        }
+        
+        // Set default Date Picker if on page
+        
+        $('#oProcessingDate').find(':input').datepicker({
+            dateFormat :'yy-mm-dd'
+            
+        });
+        
+        $('#oProcessingDate').submit(function(event){
+            PAGE.filter(this.oProcessingDate);
+            
+            return false;
+        });
+        
+        
     });
+    
+    function rtrim(str, charlist) {
+      //  discuss at: http://phpjs.org/functions/rtrim/
+      // original by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+      //    input by: Erkekjetter
+      //    input by: rem
+      // improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+      // bugfixed by: Onno Marsman
+      // bugfixed by: Brett Zamir (http://brett-zamir.me)
+      //   example 1: rtrim('    Kevin van Zonneveld    ');
+      //   returns 1: '    Kevin van Zonneveld'
+    
+      charlist = !charlist ? ' \\s\u00A0' : (charlist + '')
+        .replace(/([\[\]\(\)\.\?\/\*\{\}\+\$\^\:])/g, '\\$1');
+      var re = new RegExp('[' + charlist + ']+$', 'g');
+      return (str + '')
+        .replace(re, '');
+    }
+
 </script>
 
 {% block scriptExtras %}

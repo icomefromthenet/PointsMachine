@@ -77,6 +77,7 @@ class BuilderTest extends TestWithContainer
             $sAlias.'zone_name_slug' => 'demo_zone_a',
             $sAlias.'enabled_from' => new DateTime(),
             $sAlias.'enabled_to' => new DateTime('3000-01-01'),
+            'system_name'        => 'system1',
         );
         
         $oPointsSystemZone = $oBuilder->build($aRawEntity);
@@ -89,6 +90,7 @@ class BuilderTest extends TestWithContainer
         $this->assertEquals($aRawEntity[$sAlias.'enabled_from'],$oPointsSystemZone->oEnabledFrom);
         $this->assertEquals($aRawEntity[$sAlias.'enabled_to'],$oPointsSystemZone->oEnabledTo);
         
+        $this->assertEquals($aRawEntity['system_name'],$oPointsSystemZone->sSystemName);
         
         # test demolish
         
@@ -101,6 +103,7 @@ class BuilderTest extends TestWithContainer
         $this->assertEquals($oPointsSystemZone->sZoneNameSlug,$aRawEntity['zone_name_slug']);
         $this->assertEquals($oPointsSystemZone->oEnabledFrom,$aRawEntity['enabled_from']);
         $this->assertEquals($oPointsSystemZone->oEnabledTo,$aRawEntity['enabled_to']);
+        $this->assertEquals($oPointsSystemZone->sSystemName,$aRawEntity['system_name']);
         
        
     }
@@ -168,6 +171,7 @@ class BuilderTest extends TestWithContainer
             $sAlias.'score_value'     => 100,
             $sAlias.'enabled_from'    => new DateTime(),
             $sAlias.'enabled_to'      => new DateTime('3000-01-01'),
+            'score_group_name'        => 'scoregroup1',
         );
         
         $oEntity = $oBuilder->build($aRawEntity);
@@ -180,6 +184,9 @@ class BuilderTest extends TestWithContainer
         $this->assertEquals($aRawEntity[$sAlias.'enabled_from'],$oEntity->oEnabledFrom);
         $this->assertEquals($aRawEntity[$sAlias.'enabled_to'],$oEntity->oEnabledTo);
         $this->assertEquals($aRawEntity[$sAlias.'score_value'],$oEntity->fScoreValue);
+        $this->assertEquals($aRawEntity['score_group_name'],$oEntity->sScoreGroupName);
+        
+        
     
         $aRawEntity = $oBuilder->demolish($oEntity);
         
@@ -190,6 +197,7 @@ class BuilderTest extends TestWithContainer
         $this->assertEquals($oEntity->sScoreNameSlug,$aRawEntity['score_name_slug']);
         $this->assertEquals($oEntity->oEnabledFrom,$aRawEntity['enabled_from']);
         $this->assertEquals($oEntity->oEnabledTo,$aRawEntity['enabled_to']);
+        $this->assertEquals($oEntity->sScoreGroupName,$aRawEntity['score_group_name']);
         
         
         
@@ -460,6 +468,8 @@ class BuilderTest extends TestWithContainer
             $sAlias.'system_id'            => 'L5D37F95-525F-9E4F-A5B7-F6EA3A269A34',
             $sAlias.'enabled_from'         => new DateTime(),
             $sAlias.'enabled_to'           => new DateTime('3000-01-01'),
+            'rule_group_name'              => 'rulegroup1',
+            'score_group_name'             => 'scoregroup1',
          );
         
          $oEntity = $oBuilder->build($aRawEntity);
@@ -471,6 +481,9 @@ class BuilderTest extends TestWithContainer
          $this->assertEquals($aRawEntity[$sAlias.'enabled_from'],$oEntity->oEnabledFrom);
          $this->assertEquals($aRawEntity[$sAlias.'enabled_to'],$oEntity->oEnabledTo);
         
+         $this->assertEquals($aRawEntity['rule_group_name'],$oEntity->sAdjustmentGroupName);
+         $this->assertEquals($aRawEntity['score_group_name'],$oEntity->sScoreGroupName);
+        
         
          $aRawEntity = $oBuilder->demolish($oEntity);
         
@@ -480,6 +493,10 @@ class BuilderTest extends TestWithContainer
          $this->assertEquals($oEntity->sSystemID,$aRawEntity['system_id']);
          $this->assertEquals($oEntity->oEnabledFrom,$aRawEntity['enabled_from']);
          $this->assertEquals($oEntity->oEnabledTo,$aRawEntity['enabled_to']);
+         
+         $this->assertEquals($oEntity->sAdjustmentGroupName, $aRawEntity['rule_group_name']);
+         $this->assertEquals($oEntity->sScoreGroupName, $aRawEntity['score_group_name']);
+        
         
         
      }
@@ -546,7 +563,7 @@ class BuilderTest extends TestWithContainer
         $sAlias   = $oBuilder->getTableQueryAlias().'_';
         
         # test build
-        
+
         $aRawEntity = array(
             $sAlias.'episode_id'      => 1,
             $sAlias.'rule_id'         => 'B5D37F95-525F-9E4F-A5B7-F6EA3A269A34',

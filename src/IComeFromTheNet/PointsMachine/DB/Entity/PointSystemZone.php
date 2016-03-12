@@ -58,6 +58,9 @@ class PointSystemZone extends TemporalEntity implements ActiveRecordInterface
     
     public $oEnabledTo;
     
+    // optional fields for display only
+    
+    public $sSystemName;
     
     //--------------------------------------------------------------------------
     # Entity Hooks

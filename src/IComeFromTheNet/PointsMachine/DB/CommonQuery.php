@@ -267,6 +267,32 @@ class CommonQuery extends AbstractQuery
                                                                  ->getNowExpression()));
         
     }
+    
+    /**
+     * Choose between a limit based on current records query or use
+     * a slower validity period query
+     * 
+     * @return this
+     * @param DateTime  $oDate  The filter date (AS of Date)
+     * 
+     */ 
+    public function filterCurrentOrValidityPeriod(DateTime $oDate)
+    {
+    
+        if($oDate->format('Y-m-d') == '3000-01-01') {
+        
+            $this->filterByCurrent(new DateTime('3000-01-01'));
+                
+        } else {
+                
+            // Date range used open-closed that equ of enabled_on <= date and disabled_on > date
+            $this->filterByDisabledAfter($oDate);
+            $this->filterByEnabledAfterAndOn($oDate);
+            
+        }
+        
+        return $this;
+    }
 
 }
 /* End of Class */

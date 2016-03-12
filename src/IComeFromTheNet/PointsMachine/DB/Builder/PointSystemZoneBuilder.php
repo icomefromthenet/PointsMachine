@@ -23,18 +23,20 @@ class PointSystemZoneBuilder extends CommonBuilder
       */
     public function build($data)
     {
-        $oSystem = new PointSystemZone($this->oGateway, $this->oLogger);
+        $oSystemZone = new PointSystemZone($this->oGateway, $this->oLogger);
         $sAlias = $this->getTableQueryAlias();
         
-        $oSystem->iEpisodeID        = $this->getField($data,'episode_id',$sAlias);
-        $oSystem->sZoneID           = $this->getField($data,'zone_id',$sAlias);
-        $oSystem->sSystemID         = $this->getField($data,'system_id',$sAlias);
-        $oSystem->sZoneName         = $this->getField($data,'zone_name',$sAlias);
-        $oSystem->sZoneNameSlug     = $this->getField($data,'zone_name_slug',$sAlias);
-        $oSystem->oEnabledFrom      = $this->getField($data,'enabled_from',$sAlias);
-        $oSystem->oEnabledTo        = $this->getField($data,'enabled_to',$sAlias);
+        $oSystemZone->iEpisodeID        = $this->getField($data,'episode_id',$sAlias);
+        $oSystemZone->sZoneID           = $this->getField($data,'zone_id',$sAlias);
+        $oSystemZone->sSystemID         = $this->getField($data,'system_id',$sAlias);
+        $oSystemZone->sZoneName         = $this->getField($data,'zone_name',$sAlias);
+        $oSystemZone->sZoneNameSlug     = $this->getField($data,'zone_name_slug',$sAlias);
+        $oSystemZone->oEnabledFrom      = $this->getField($data,'enabled_from',$sAlias);
+        $oSystemZone->oEnabledTo        = $this->getField($data,'enabled_to',$sAlias);
         
-        return $oSystem;
+        $oSystemZone->sSystemName       = $data['system_name'];
+        
+        return $oSystemZone;
     }
     
     /**
@@ -53,7 +55,8 @@ class PointSystemZoneBuilder extends CommonBuilder
           'zone_name'       => $oSystemZone->sZoneName,
           'zone_name_slug'  => $oSystemZone->sZoneNameSlug,
           'enabled_from'    => $oSystemZone->oEnabledFrom,
-          'enabled_to'      => $oSystemZone->oEnabledTo
+          'enabled_to'      => $oSystemZone->oEnabledTo,
+          'system_name'     => $oSystemZone->sSystemName,
         );
         
     }

@@ -4,35 +4,145 @@
 {% block scriptExtras %}
 <script>
     
-    var PAGE = function(document,YUI) {
+    
+    
+    var PAGE = function(document,$) {
         
+        /**
+         * End points for the Points System API
+         * 
+         * @var string 
+         */ 
+        var APIPATH = "{{ path_for('get_system', {'odate': ''} ) }}";
+    
+        /**
+         * The last used filter date
+         * 
+         * Default to the known as the current date (max date)
+         * 
+         * @var Date 
+         */ 
+        var oFilterDate = new Date(3000, 0, 1);
         
-        // Private Members
-        
+        /**
+         * Options that are passed in an int function
+         * 
+         * 
+         * @var object
+         */ 
         var oWidgetOptions = {
-          'el' : ''  
+          'el' : '#pointSystemGrid'  
             
             
         };
         
         
         // Event Handlers    
+        
+        /**
+         * Fired on Page load this will setup
+         * the data grids and forms on this page
+         * 
+         * @param object oOptions
+         * @return void
+         */ 
+        var onInit = function(oOptions) {
             
-        var onInit = function() {
+            // bind the dom nodes
+            oWidgetOptions.el = $(oWidgetOptions.el);
             
-            //oWidgetOptions.el = YUI.find
+            var sAPIPath = getPath();
             
-            
+            // Setup the Datagrid
+            oWidgetOptions.el.jsGrid({
+                height: "auto",
+                width: "100%",
+         
+                sorting: true,
+                paging: false,
+                autoload: true,
+         
+                controller: {
+                    loadData: function() {
+                        var d = $.Deferred();
+         
+                        $.ajax({
+                            url: "http://points.icomefromthenet.com"+sAPIPath,
+                            dataType: "json"
+                        }).done(function(response) {
+                            d.resolve(response);
+                        });
+         
+                        return d.promise();
+                    }
+                },
+         
+                fields: [
+                    { name: "Name", type: "text" },
+                    { name: "Description", type: "textarea", width: 150 },
+                    { name: "Rating", type: "number", width: 50, align: "center",
+                        itemTemplate: function(value) {
+                            return $("<div>").addClass("rating").append(Array(value + 1).join("&#9733;"));
+                        }
+                    },
+                    { name: "Price", type: "number", width: 50,
+                        itemTemplate: function(value) {
+                            return value.toFixed(2) + "$"; }
+                    }
+                ]
+            });
+                   
         }
+        
+        
+        var onLoadData = function() {
+            
+            
+            
+        };
+        
+        /**
+         * Refresh the lower grids with members 
+         * who are active as of this date
+         *  
+         * @param Node     Input element bound with jQuery-ui date widget
+         */ 
+        var onDateFilterSubmit = function(oDate) {
+         
+            var sDate = $(oDate).datepicker( "getDate" );
+            
+            if(sDate === null) {
+                alert('Pick a date to filer on');
+            }
+          
+            //refresh the grids below
+            oFilterDate = sDate; 
+          
+        }
+        
+        
+        // Utilities
+        
+        /**
+         * Return the path with the date filter place holder
+         * 
+         * @return string the full path to use in API calls
+         */ 
+        var getPath = function() {
+               
+            return rtrim(APIPATH,'/') + '/'+ $.format.date(oFilterDate, 'yyyyMMdd');
+        }
+        
         
         // Public API
         
         return {
-            init: onInit
+            init: onInit,
+            filter: onDateFilterSubmit
             
         }
         
-    }(document,YUI) 
+    }(document,jQuery) 
     
 </script>
 {% endblock %}
@@ -40,13 +150,30 @@
 
 {% block bodyContent %}
 
- <div id="main" class="pure-u-1">
-     
-     
-     
- 
-      
- </div>
+    <div id="main" class="pure-u-1">
+        <div class="email-content">
+            <div class="email-content-header pure-g">
+                <div class="pure-u-1-2">
+                    <h1 class="email-content-title">Point Systems</h1>
+                    <p class="email-content-subtitle">
+                        Are containers for Adjustment Rules</span>
+                    </p>
+                </div>
+
+                <div class="email-content-controls pure-u-1-2">
+                    {% include "processing_dte.html.twig" %}
+                </div>
+            </div>
+
+            <div class="email-content-body">
+                <p>
+                    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                </p>
+                <div id="pointSystemGrid"></div>
+                
+            </div>
+        </div>
+    </div>
 
 
 {% endblock %}

@@ -52,7 +52,8 @@ class ScoreGroupQuery extends CommonQuery
         return $this->andWhere($sAlias."group_name_slug LIKE ".$this->createNamedParameter($sGUID,$paramType));
         
     }
-
+    
+    
 }
 /* End of Class */
 

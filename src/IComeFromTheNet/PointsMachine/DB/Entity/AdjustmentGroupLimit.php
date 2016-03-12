@@ -45,7 +45,12 @@ class AdjustmentGroupLimit extends TemporalEntity
     
     public $oEnabledTo;
     
+  
+    // optional fields (Display needs only)
     
+    public $sAdjustmentGroupName;
+    
+    public $sScoreGroupName;
    
     
     

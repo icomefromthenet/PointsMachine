@@ -63,6 +63,10 @@ class Score extends TemporalEntity implements ActiveRecordInterface
     
     public $oEnabledTo;
     
+    // optional fields for display
+    
+    public $sScoreGroupName;
+    
     
     //--------------------------------------------------------------------------
     # Entity Hooks

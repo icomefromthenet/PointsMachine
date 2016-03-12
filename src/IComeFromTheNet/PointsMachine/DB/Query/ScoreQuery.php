@@ -76,6 +76,37 @@ class ScoreQuery extends CommonQuery
         
     }
     
+    /**
+     * Join this query onto the Score Groups database table
+     * 
+     * Where looking for the score group that is valid for the entire
+     * validity period of this score. 
+     * 
+     * @return this
+     * @param string    $sScoreGroupAlias     The Alias to use in the query
+     * @access public
+     */ 
+    public function withScoreGroup($sScoreGroupAlias)
+    {
+        $sAlias   = $this->getDefaultAlias();
+        
+        $sTableName = $this->getGateway()
+                           ->getGatewayCollection()
+                           ->getGateway('pt_score_group')
+                           ->getMetaData()
+                           ->getName();
+        
+        $sSql  =" $sScoreGroupAlias.score_group_id = $sAlias.score_group_id ";
+        
+        // Score Group is valid on or before this score 
+        $sSql .="AND $sScoreGroupAlias.enabled_from <= $sAlias.enabled_from ";
+        
+        // Score Group is valid on or after this score
+        $sSql .="AND $sScoreGroupAlias.enabled_to >= $sAlias.enabled_to ";
+        
+        
+        return $this->innerJoin($sAlias,$sTableName,$sScoreGroupAlias, $sSql);
+    }
 
 }
 /* End of Class */

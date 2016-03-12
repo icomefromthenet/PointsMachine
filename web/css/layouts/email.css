@@ -88,19 +88,29 @@ a {
     border: none;
     text-align: left;
 }
-    #nav .pure-menu-link:hover,
-    #nav .pure-menu-link:focus {
-        background: rgb(55, 60, 90);
-    }
-    #nav .pure-menu-link {
-        color: #fff;
-        margin-left: 0.5em;
-    }
-    #nav .pure-menu-heading {
-        border-bottom: none;
-        font-size:110%;
-        color: rgb(75, 113, 151);
-    }
+
+#nav .pure-menu-link:hover,
+#nav .pure-menu-link:focus {
+    background: rgb(55, 60, 90);
+}
+#nav .pure-menu-link {
+    color: #fff;
+    margin-left: 0.5em;
+}
+#nav .pure-menu-heading {
+    border-bottom: none;
+    font-size:110%;
+    color: rgb(75, 113, 151);
+}
+
+
+/* 
+ *  Procesing Date From 
+ * 
+ */
+#oProcessingDate {
+   
+}
 
 
 /*
@@ -131,35 +141,7 @@ a {
 }
 
 
-/* Email Item Styles */
-.email-item {
-    padding: 0.9em 1em;
-    border-bottom: 1px solid #ddd;
-    border-left: 6px solid transparent;
-}
-    .email-avatar {
-        border-radius: 3px;
-        margin-right: 0.5em;
-    }
-    .email-name,
-    .email-subject {
-        margin: 0;
-    }
-    .email-name {
-        text-transform: uppercase;
-        color: #999;
-    }
-    .email-desc {
-        font-size: 80%;
-        margin: 0.4em 0;
-    }
 
-.email-item-selected {
-    background: #eee;
-}
-.email-item-unread {
-    border-left: 6px solid #1b98f8;
-}
 
 /* Email Content Styles */
 .email-content-header, .email-content-body, .email-content-footer {
@@ -181,17 +163,11 @@ a {
                 color: #999;
             }
     .email-content-controls {
-        margin-top: 2em;
+        
         text-align: right;
     }
-        .email-content-controls .secondary-button {
-            margin-bottom: 0.3em;
-        }
+        
 
-    .email-avatar {
-        width: 40px;
-        height: 40px;
-    }
 
 
 /*
@@ -242,6 +218,8 @@ a {
         width: auto; /* so that it's not 100% */
     }
 
+ 
+
 }
 
 /*
@@ -258,5 +236,6 @@ a {
         margin: 0;
         padding: 0;
     }
+    
 }
 
