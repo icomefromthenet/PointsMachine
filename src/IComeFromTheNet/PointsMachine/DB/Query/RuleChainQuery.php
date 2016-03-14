@@ -92,6 +92,90 @@ class RuleChainQuery extends CommonQuery
         return $this->andWhere($sAlias."chain_name_slug LIKE ".$this->createNamedParameter($sGUID,$paramType));
         
     }
+    
+    
+    /**
+     * Join this query onto the System database table
+     * 
+     * @return this
+     * @param string    $sSystemAlias   The Alias to use in the query
+     * @param DateTime  $oProcessingDate    The Processing Date
+     * @access public
+     */ 
+    public function withSystem($sSystemAlias, DateTime $oProcessingDate)
+    {
+        $sAlias   = $this->getDefaultAlias();
+        
+        $sTableName = $this->getGateway()
+                           ->getGatewayCollection()
+                           ->getGateway('pt_system')
+                           ->getMetaData()
+                           ->getName();
+        
+        
+        $paramTypeTo   =  $this->getGateway()->getMetaData()->getColumn('enabled_to')->getType();
+        $paramTypeFrom =  $this->getGateway()->getMetaData()->getColumn('enabled_from')->getType();
+    
+        
+        $sSql  =" $sSystemAlias.system_id = $sAlias.system_id ";
+        
+         if($oProcessingDate->format('Y-m-d') === '3000-01-01') {
+            
+            $sSql .=" AND $sSystemAlias.enabled_to = ".$this->createNamedParameter($oProcessingDate,$paramTypeTo);
+
+        } else {
+   
+        
+            // Adj Group is enabled before this processing date and valid after 
+            $sSql .=" AND $sSystemAlias.enabled_from <= ".$this->createNamedParameter($oProcessingDate,$paramTypeFrom);
+            $sSql .=" AND $sSystemAlias.enabled_to > ".$this->createNamedParameter($oProcessingDate,$paramTypeTo);
+        
+        }
+        
+        return $this->innerJoin($sAlias,$sTableName,$sSystemAlias, $sSql);
+    }
+    
+    
+    /**
+     * Join this query onto the Event Type database table
+     * 
+     * @return this
+     * @param string    $sEventTypeAlias   The Alias to use in the query
+     * @param DateTime  $oProcessingDate    The Processing Date
+     * @access public
+     */ 
+    public function withEventType($sEventTypeAlias, DateTime $oProcessingDate)
+    {
+        $sAlias   = $this->getDefaultAlias();
+        
+        $sTableName = $this->getGateway()
+                           ->getGatewayCollection()
+                           ->getGateway('pt_event_type')
+                           ->getMetaData()
+                           ->getName();
+        
+        
+        $paramTypeTo   =  $this->getGateway()->getMetaData()->getColumn('enabled_to')->getType();
+        $paramTypeFrom =  $this->getGateway()->getMetaData()->getColumn('enabled_from')->getType();
+    
+        
+        $sSql  =" $sEventTypeAlias.event_type_id = $sAlias.event_type_id ";
+        
+         if($oProcessingDate->format('Y-m-d') === '3000-01-01') {
+            
+            $sSql .=" AND $sEventTypeAlias.enabled_to = ".$this->createNamedParameter($oProcessingDate,$paramTypeTo);
+
+        } else {
+   
+        
+            // Adj Group is enabled before this processing date and valid after 
+            $sSql .=" AND $sEventTypeAlias.enabled_from <= ".$this->createNamedParameter($oProcessingDate,$paramTypeFrom);
+            $sSql .=" AND $sEventTypeAlias.enabled_to > ".$this->createNamedParameter($oProcessingDate,$paramTypeTo);
+        
+        }
+        
+        return $this->innerJoin($sAlias,$sTableName,$sEventTypeAlias, $sSql);
+    }
 
 }
 /* End of Class */

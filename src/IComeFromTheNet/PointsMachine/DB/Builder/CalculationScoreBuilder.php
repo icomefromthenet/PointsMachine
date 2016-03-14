@@ -35,8 +35,8 @@ class CalculationScoreBuilder extends CommonBuilder
         $oRule->iScoreQuantity      = $this->getField($data,'score_quantity',$sAlias);
         
         // fields from join table won't have alias
-        $oRule->sScoreName          = $data['score_name'];
-        $oRule->sScoreGroupName     = $data['score_group_name'];
+        $oRule->sScoreName          = $this->getField($data,'score_name','');
+        $oRule->sScoreGroupName     = $this->getField($data,'score_group_name','');
          
         return $oRule;
     }

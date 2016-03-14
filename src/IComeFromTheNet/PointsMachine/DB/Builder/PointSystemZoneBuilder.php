@@ -34,7 +34,7 @@ class PointSystemZoneBuilder extends CommonBuilder
         $oSystemZone->oEnabledFrom      = $this->getField($data,'enabled_from',$sAlias);
         $oSystemZone->oEnabledTo        = $this->getField($data,'enabled_to',$sAlias);
         
-        $oSystemZone->sSystemName       = $data['system_name'];
+        $oSystemZone->sSystemName       = $this->getField($data,'system_name','');
         
         return $oSystemZone;
     }

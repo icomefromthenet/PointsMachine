@@ -1,0 +1,242 @@
+{% extends "layout.html.twig" %}
+
+
+{% block scriptExtras %}
+<script>
+    
+    
+    
+    var PAGE = function(document,$) {
+        
+        /**
+         * End points for the Points System API
+         * 
+         * @var string 
+         */ 
+        var ZONE_APIPATH = "{{ path_for('get_zone', {'odate': ''} ) }}";
+    
+        /**
+         * End points for the Points System API
+         * 
+         * @var string 
+         */ 
+        var RULE_APIPATH = "{{ path_for('', {'odate': ''} ) }}";
+    
+    
+        /**
+         * The last used filter date
+         * 
+         * Default to the known as the current date (max date)
+         * 
+         * @var Date 
+         */ 
+        var oFilterDate = new Date(3000, 0, 1);
+        
+        /**
+         * The last selected system entity ID
+         * 
+         * @var string 
+         */ 
+        var sSelectedSystem = 'no system';
+        
+        /**
+         * Options that are passed in an int function
+         * 
+         * 
+         * @var object
+         */ 
+        var oWidgetOptions = {
+          'el' : '#pointSystemGrid',
+          'zone': '#pointSystemZoneGrid'
+            
+            
+        };
+        
+        
+        // Event Handlers    
+        
+        /**
+         * Fired on Page load this will setup
+         * the data grids and forms on this page
+         * 
+         * @param object oOptions
+         * @return void
+         */ 
+        var onInit = function(oOptions) {
+            
+            // bind the dom nodes
+            oWidgetOptions.el   = $(oWidgetOptions.el);
+            oWidgetOptions.zone = $(oWidgetOptions.zone);
+            
+            // Setup the Datagrid
+            oWidgetOptions.el.jsGrid({
+                height: "auto",
+                width: "100%",
+         
+                sorting: false,
+                paging: false,
+                autoload: true,
+                rowClick: onSystemSelected,
+                noDataContent: "No Systems Found",
+                controller: {
+                    loadData: function() {
+                        var d = $.Deferred();
+         
+                        $.ajax({
+                            url: "http://points.icomefromthenet.com"+getPath(SYS_APIPATH,{}),
+                            dataType: "json"
+                        }).done(function(response) {
+                            d.resolve(response);
+                        });
+         
+                        return d.promise();
+                    }
+                },
+         
+                fields: [
+                    { title: "Episode ID", name: "iEpisodeID", type: "number", visible: false },
+                    { title: "id", name: "sSystemID", type: "text" },
+                    { title: "Name", name: "sSystemName", type: "text" },
+                    { title: "Valid From", name: "oEnabledFrom", type: "text",  itemTemplate: function(value, item) { return $.format.date(new Date(value.date), 'yyyy-MM-dd');  } },
+                    { title: "Valid To", name: "oEnabledTo", type: "text" ,     itemTemplate: function(value, item) { return $.format.date(new Date(value.date), 'yyyy-MM-dd');  } },
+                ]
+            });
+            
+            
+            
+            // Setup the Datagrid
+            oWidgetOptions.zone.jsGrid({
+                height: "auto",
+                width: "100%",
+                noDataContent: "No Zones or no Points System selected", 
+                sorting: false,
+                paging: false,
+                autoload: false,
+         
+                controller: {
+                    loadData: function() {
+                        var d = $.Deferred();
+         
+                        $.ajax({
+                            url: "http://points.icomefromthenet.com"+getPath(ZONE_APIPATH, { "sSystemId": sSelectedSystem }),
+                            dataType: "json"
+                        }).done(function(response) {
+                            d.resolve(response);
+                        });
+         
+                        return d.promise();
+                    }
+                },
+         
+                fields: [
+                    { title: "Episode ID", name: "iEpisodeID", type: "number", visible: false },
+                    { title: "id", name: "sZoneID", type: "text" },
+                    { title: "Name", name: "sZoneName", type: "text" },
+                    { title: "System Name", name: "sSystemName", type: "text", visible: false },
+                    { title: "System ID", name: "sSystemID", type: "text", visible:false },
+                    { title: "Valid From", name: "oEnabledFrom", type: "text",  itemTemplate: function(value, item) { return $.format.date(new Date(value.date), 'yyyy-MM-dd');  } },
+                    { title: "Valid To", name: "oEnabledTo", type: "text" ,     itemTemplate: function(value, item) { return $.format.date(new Date(value.date), 'yyyy-MM-dd');  } },
+                ]
+            });
+                   
+        }
+        
+        
+       
+        
+        /**
+         * Refresh the lower grids with members 
+         * who are active as of this date
+         *  
+         * @param Node     Input element bound with jQuery-ui date widget
+         */ 
+        var onDateFilterSubmit = function(oDate) {
+         
+            var sDate = $(oDate).datepicker( "getDate" );
+            
+            if(sDate === null) {
+                return alert('Pick a date to filer on');
+            }
+          
+            //refresh the grids below
+            oFilterDate = sDate; 
+            sSelectedSystem = 'no system';
+            
+            oWidgetOptions.el.jsGrid('loadData');
+            oWidgetOptions.zone.jsGrid('loadData');
+        }
+        
+        
+        var onSystemSelected = function(args) {
+            // change the selected system
+            sSelectedSystem = args.item.sSystemId;
+            
+            // make the zone grid reload
+            oWidgetOptions.zone.jsGrid('loadData');
+                
+        }; 
+        
+        // Utilities
+        
+        /**
+         * Return the path with the date filter place holder
+         * 
+         * @return string              The full path to use in API calls
+         * @param string  sApiPath     The API Endpoint
+         * @param object  oOptions     Query String Options
+         */ 
+        var getPath = function(sApiPath,oOptions) {
+               
+            return rtrim(sApiPath,'/') + '/'+ $.format.date(oFilterDate, 'yyyyMMdd') + '?' + $.param(oOptions);
+        }
+        
+        
+        // Public API
+        
+        return {
+            init: onInit,
+            filter: onDateFilterSubmit
+            
+        }
+        
+    }(document,jQuery) 
+    
+</script>
+{% endblock %}
+
+
+{% block bodyContent %}
+
+    <div id="main" class="pure-u-1">
+        <div class="email-content">
+            <div class="email-content-header pure-g">
+                <div class="pure-u-1-2">
+                    <h1 class="email-content-title">Point Systems Zones</h1>
+                    <p class="email-content-subtitle">
+                        Segments a system into smaller units for filtering rules.</span>
+                    </p>
+                </div>
+
+                <div class="email-content-controls pure-u-1-2">
+                    {% include "processing_dte.html.twig" %}
+                </div>
+            </div>
+
+            <div class="email-content-body">
+                <p>
+      
+                </p>
+                <div id="pointZoneGrid"></div>
+               
+                <h2>Adjustment Rules</h2>
+                <p>
+      
+                </p>
+                <div id="pointAdjRuleGrid"></div>
+                
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}

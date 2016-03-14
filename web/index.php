@@ -31,7 +31,7 @@ $container['PointsMachine'] = $oPointsContainer;
 
 $container['view'] = function ($container) {
     
-    $view = new \Slim\Views\Twig(__DIR__, [
+    $view = new \Slim\Views\Twig(__DIR__.'/template', [
         'cache' => false
     ]);
     
@@ -110,7 +110,6 @@ $oQueryLogMiddleware = function ($request, $response, $next) use ($app) {
     // invoke the next middle ware or APP Route Handler
     $response = $next($request, $response);
 
-
     return $response;
 };
 
@@ -142,7 +141,7 @@ $app->group('/setup', function () use ($app) {
         
         
         return $this->view->render($response, 'setup_system.html.twig', [
-            'sName' => 'Home',
+            'sName' => 'Points Systems',
             'sDescription' => 'Mange Points Systems'
         ]);
         
@@ -151,8 +150,109 @@ $app->group('/setup', function () use ($app) {
 
 
 
+    $app->get('/systemzones',function(ServerRequestInterface $request, ResponseInterface $response, $args){
+        
+        
+        return $this->view->render($response, 'setup_zone.html.twig', [
+            'sName' => 'Point System Zones',
+            'sDescription' => 'Mange Points Systems Zones'
+        ]);
+        
+        
+    })->setName('setup_zone');
 
 
+    $app->get('/eventtype',function(ServerRequestInterface $request, ResponseInterface $response, $args){
+        
+        
+        return $this->view->render($response, 'setup_event.html.twig', [
+            'sName' => 'Event Types',
+            'sDescription' => 'Mange Event Types'
+        ]);
+        
+        
+        
+    })->setName('setup_event');
+
+    
+    
+    $app->get('/score',function(ServerRequestInterface $request, ResponseInterface $response, $args){
+        
+        
+        return $this->view->render($response, 'setup_score.html.twig', [
+            'sName' => 'Scores',
+            'sDescription' => 'Mange Scores'
+        ]);
+        
+        
+        
+    })->setName('setup_score');
+
+    
+    $app->get('/scoregroup',function(ServerRequestInterface $request, ResponseInterface $response, $args){
+        
+        
+        return $this->view->render($response, 'setup_score_group.html.twig', [
+            'sName' => 'Score Groups',
+            'sDescription' => 'Mange Score Groups'
+        ]);
+        
+        
+        
+    })->setName('setup_scoregroup');
+    
+    
+    $app->get('/rulechain',function(ServerRequestInterface $request, ResponseInterface $response, $args){
+        
+        
+        return $this->view->render($response, 'setup_rulechain.html.twig', [
+            'sName' => 'Rule Chains',
+            'sDescription' => 'Mange Rule Chains'
+        ]);
+        
+        
+        
+    })->setName('setup_rulechain');
+    
+    
+    $app->get('/chainmember',function(ServerRequestInterface $request, ResponseInterface $response, $args){
+        
+        
+        return $this->view->render($response, 'setup_chainmember.html.twig', [
+            'sName' => 'Rule Chain Members',
+            'sDescription' => 'Mange Rule Chain Members'
+        ]);
+        
+        
+        
+    })->setName('setup_chainmember');
+    
+    
+    $app->get('/adjgroup',function(ServerRequestInterface $request, ResponseInterface $response, $args){
+        
+        
+        return $this->view->render($response, 'setup_adjgroup.html.twig', [
+            'sName' => 'Adjustment Rule Groups',
+            'sDescription' => 'Mange Rule Rule Groups'
+        ]);
+        
+        
+        
+    })->setName('setup_adjgroup');
+    
+    
+    $app->get('/adjrule',function(ServerRequestInterface $request, ResponseInterface $response, $args){
+        
+        
+        return $this->view->render($response, 'setup_adjrule.html.twig', [
+            'sName' => 'Adjustment Rules',
+            'sDescription' => 'Mange Rule Rules'
+        ]);
+        
+        
+        
+    })->setName('setup_adjrule');
+    
 
 })->add($oQueryLogMiddleware);
 
@@ -214,7 +314,7 @@ $app->group('/api', function () use ($app) {
         $aResult = $oSystemZoneGateway->selectQuery()
             ->start()
             ->addSelect('s.system_name')
-            ->withSystem('s')
+            ->withSystem('s',$oDate)
             ->filterCurrentOrValidityPeriod($oDate)
             ->ifThen( false === empty($sSystemId),function($oQuery) use ($sSystemId){
         
@@ -285,7 +385,7 @@ $app->group('/api', function () use ($app) {
         $aResult = $oScoreGateway->selectQuery()
             ->start()
             ->addSelect('sg.group_name as score_group_name')
-            ->withScoreGroup('sg')
+            ->withScoreGroup('sg',$oDate)
             ->filterCurrentOrValidityPeriod($oDate)
             ->ifThen( false === empty($sScoreGroupId),function($oQuery) use ($sScoreGroupId){
         
@@ -304,10 +404,192 @@ $app->group('/api', function () use ($app) {
     })->setName('get_score');
     
     
+    /**
+     * List all adjustment rule groups assinged at date x
+     * 
+     * @return JSON array of adjustment group entities
+     */ 
+    $app->get('/adjgroup/{odate}',function(ServerRequestInterface $request, ResponseInterface $response, $args) use($app){
+   
+        $oDate             = $args['odate'];
+        $oPointsContainer  = $this->get('PointsMachine');
+        $oAdjGroupGateway= $oPointsContainer->getGatewayCollection()->getGateway('pt_rule_group'); 
+     
+   
+        $aResult = $oAdjGroupGateway->selectQuery()
+            ->start()
+            ->filterCurrentOrValidityPeriod($oDate)
+            ->end()         
+        ->find();
+        
+        
+        $response->withJson($aResult->toArray(),200);
+      
+        return $response;
+  
+    
+     })->setName('get_adj_group');
+     
+     
+     /**
+     * List all adj rules s assinged at date x and as an option filter by a adj group
+     * 
+     * @return JSON array of adjustment rule group entities
+     */  
+    $app->get('/adjrule/{odate}',function(ServerRequestInterface $request, ResponseInterface $response, $args) use($app){
+  
+        $oDate             = $args['odate'];
+        $oPointsContainer  = $this->get('PointsMachine');
+        $oRuleGateway     = $oPointsContainer->getGatewayCollection()->getGateway('pt_rule'); 
+        
+        $aQueryParam       = $request->getQueryParams();
+        $sRuleGroupId     = null;
+        
+        if(true === isset($aQueryParam['sAdjustmentGroupId']) &&  false === empty($aQueryParam['sAdjustmentGroupId'])) {
+            $sRuleGroupId = $aQueryParam['sAdjustmentGroupId'];
+        }
+        
+        
+        $aResult = $oRuleGateway->selectQuery()
+            ->start()
+            ->addSelect('rg.rule_group_name AS rule_group_name')
+            ->withAdjustmentGroup('rg',$oDate)
+            ->filterCurrentOrValidityPeriod($oDate)
+            ->ifThen( false === empty($sRuleGroupId),function($oQuery) use ($sRuleGroupId){
+        
+                $oQuery->filterByAdjustmentGroup($sRuleGroupId);
+                
+            })
+            ->end()         
+        ->find();
+        
+        
+        $response->withJson($aResult->toArray(),200);
+   
+        return $response;
+  
+  
+    })->setName('get_rule');
+    
+    
+     /**
+     * List all adj rules assinged at date x and as an option filter by a system zone
+     * 
+     * @return JSON array of adjustment rule entities
+     */  
+    $app->get('/adjzone/{odate}',function(ServerRequestInterface $request, ResponseInterface $response, $args) use($app){
+  
+        $oDate             = $args['odate'];
+        $oPointsContainer  = $this->get('PointsMachine');
+        $oRuleGateway     = $oPointsContainer->getGatewayCollection()->getGateway('pt_rule_sys_zone'); 
+        
+        $aQueryParam       = $request->getQueryParams();
+        $sZoneId     = null;
+        
+        if(true === isset($aQueryParam['sZoneId']) &&  false === empty($aQueryParam['sZoneId'])) {
+            $sZoneId = $aQueryParam['sZoneId'];
+        }
+        
+        
+        $aResult = $oRuleGateway->selectQuery()
+            ->start()
+            ->addSelect('sz.zone_name AS zone_name', 'r.rule_name AS rule_name')
+            ->withAdjustmentRule('r',$oDate)
+            ->withSystemZone('sz',$oDate)
+            ->filterCurrentOrValidityPeriod($oDate)
+            ->ifThen( false === empty($sZoneId),function($oQuery) use ($sZoneId){
+        
+                $oQuery->filterBySystemZone($sZoneId);
+                
+            })
+            ->end()         
+        ->find();
+        
+        
+        $response->withJson($aResult->toArray(),200);
+   
+        return $response;
+  
+  
+    })->setName('get_adjzone');
+    
+    
+    
+    /**
+     * List all Event Types assinged at date x 
+     * 
+     * @return JSON array of adjustment rule entities
+     */  
+    $app->get('/eventtype/{odate}',function(ServerRequestInterface $request, ResponseInterface $response, $args) use($app){
+  
+        $oDate             = $args['odate'];
+        $oPointsContainer  = $this->get('PointsMachine');
+        $oEventTypeGateway     = $oPointsContainer->getGatewayCollection()->getGateway('pt_event_type'); 
+        
+        
+        
+        $aResult = $oEventTypeGateway->selectQuery()
+            ->start()
+            ->filterCurrentOrValidityPeriod($oDate)
+            ->end()         
+        ->find();
+        
+        
+        $response->withJson($aResult->toArray(),200);
+   
+        return $response;
+  
+    
+    })->setName('get_event');
+    
+    
+    
+    /**
+     * List all Rule Chains assinged at date x and as an option filter by an event type
+     * 
+     * @return JSON array of adjustment rule entities
+     */  
+    $app->get('/rulechain/{odate}',function(ServerRequestInterface $request, ResponseInterface $response, $args) use($app){
+  
+        $oDate             = $args['odate'];
+        $oPointsContainer  = $this->get('PointsMachine');
+        $oRuleChainGateway     = $oPointsContainer->getGatewayCollection()->getGateway('pt_rule_chain'); 
+        
+        $aQueryParam       = $request->getQueryParams();
+        $sEventTypeId     = null;
+        
+        if(true === isset($aQueryParam['sEventTypeId']) &&  false === empty($aQueryParam['sEventTypeId'])) {
+            $sEventTypeId = $aQueryParam['sEventTypeId'];
+        }
+        
+        
+        $aResult = $oRuleChainGateway->selectQuery()
+            ->start()
+            ->addSelect('et.event_name','s.system_name')
+            ->withEventType('et',$oDate)
+            ->withSystem('s',$oDate)
+            ->filterCurrentOrValidityPeriod($oDate)
+            ->ifThen( false === empty($sEventTypeId),function($oQuery) use ($sEventTypeId){
+        
+                $oQuery->filterByEventType($sEventTypeId);
+                
+            })
+            ->end()         
+        ->find();
+        
+        
+        $response->withJson($aResult->toArray(),200);
+   
+        return $response;
+  
+  
+    
+    })->setName('get_chain');
+    
     
     
 
-})->add($oDateConvertMiddleware,$oQueryLogMiddleware);
+})->add($oDateConvertMiddleware)->add($oQueryLogMiddleware);
 
 
 // Routes - Results JSON API

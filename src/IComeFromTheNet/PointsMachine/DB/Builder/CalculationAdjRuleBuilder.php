@@ -37,9 +37,9 @@ class CalculationAdjRuleBuilder extends CommonBuilder
         
         // fields from join table
         
-        $oRule->sScoreName           = $data['score_name'];
-        $oRule->sAdjustmentRuleName  = $data['rule_name'];
-        $oRule->sAdjustmentGroupName = $data['rule_group_name'];
+        $oRule->sScoreName           = $this->getField($data,'score_name','');
+        $oRule->sAdjustmentRuleName  = $this->getField($data,'rule_name','');
+        $oRule->sAdjustmentGroupName = $this->getField($data,'rule_group_name','');
         
          
         return $oRule;

@@ -35,7 +35,7 @@ class ScoreBuilder extends CommonBuilder
         $oScore->oEnabledTo        = $this->getField($data,'enabled_to',$sAlias);
         $oScore->fScoreValue       = $this->getField($data,'score_value',$sAlias);
         
-        $oScore->sScoreGroupName   = $data['score_group_name']; 
+        $oScore->sScoreGroupName   = $this->getField($data,'score_group_name',''); 
         
         return $oScore;
     }

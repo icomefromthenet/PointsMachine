@@ -72,6 +72,53 @@ class AdjustmentRuleQuery extends CommonQuery
         return $this->andWhere($sAlias."rule_name_slug LIKE ".$this->createNamedParameter($sGUID,$paramType));
         
     }
+    
+    
+    /**
+     * Join this query onto the Adj Groups database table
+     * 
+     * Where looking for the adj group that is valid for the entire
+     * validity period of this adj rule. 
+     * 
+     * @return this
+     * 
+     * @param string    $sAdjGroupAlias     The Alias to use in the query
+     * @param DateTime  $oProcessingDate    The Processing Date
+     * @access public
+     */ 
+    public function withAdjustmentGroup($sAdjGroupAlias, DateTime $oProcessingDate)
+    {
+        $sAlias   = $this->getDefaultAlias();
+        
+        $sTableName = $this->getGateway()
+                           ->getGatewayCollection()
+                           ->getGateway('pt_rule_group')
+                           ->getMetaData()
+                           ->getName();
+        
+        
+        $paramTypeTo   =  $this->getGateway()->getMetaData()->getColumn('enabled_to')->getType();
+        $paramTypeFrom =  $this->getGateway()->getMetaData()->getColumn('enabled_from')->getType();
+    
+    
+        
+        $sSql  =" $sAdjGroupAlias.rule_group_id = $sAlias.rule_group_id ";
+    
+        if($oProcessingDate->format('Y-m-d') === '3000-01-01') {
+            
+            $sSql .=" AND $sAdjGroupAlias.enabled_to = ".$this->createNamedParameter($oProcessingDate,$paramTypeTo);
+
+        } else {
+   
+        
+            // Adj Group is enabled before this processing date and valid after 
+            $sSql .=" AND $sAdjGroupAlias.enabled_from <= ".$this->createNamedParameter($oProcessingDate,$paramTypeFrom);
+            $sSql .=" AND $sAdjGroupAlias.enabled_to > ".$this->createNamedParameter($oProcessingDate,$paramTypeTo);
+        
+        }     
+        
+        return $this->innerJoin($sAlias,$sTableName,$sAdjGroupAlias, $sSql);
+    }
 
 }
 /* End of Class */

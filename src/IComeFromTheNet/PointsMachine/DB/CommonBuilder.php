@@ -36,6 +36,38 @@ abstract class CommonBuilder extends AliasBuilder
        $this->oLogger  = $oLogger;
    }
    
+   
+   /**
+     * If alias exists fetch field using its alias name, if alias is empty
+     * use the normal field name to return the value at that index
+     * 
+     * If index does not exist
+     * 
+     * @return mixed the field at the index
+     * @param   array   $aResult    The result from the database query
+     * @param   string  $sField     The no-alias field name
+     * @param   string  $sAlias     The Alias assigned 
+     * @param   string  $mDefault   A default value to use
+     */ 
+    protected function getField(array &$aResult,$sField,$sAlias, $mDefault = null)
+    {
+        $mResult = $mDefault;
+        
+        if(false === empty($sAlias)) {
+           $sFullIndex = $sAlias.'_'.$sField;
+        } 
+        else {
+            $sFullIndex = $sField;
+        }
+        
+               
+        if(true === array_key_exists($sFullIndex,$aResult)) {
+               $mResult = $aResult[$sFullIndex];
+        } 
+        
+        return $mResult;
+        
+    }
  
     
 }

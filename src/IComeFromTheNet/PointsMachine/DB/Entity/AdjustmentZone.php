@@ -44,7 +44,14 @@ class AdjustmentZone extends TemporalEntity
     public $oEnabledTo;
     
     
-     //--------------------------------------------------------------------------
+    // optional fields for display only
+    
+    public $sSystemZoneName;
+    
+    public $sAdjustmentRuleName;
+    
+    
+    //--------------------------------------------------------------------------
     # Entity Hooks
    
     

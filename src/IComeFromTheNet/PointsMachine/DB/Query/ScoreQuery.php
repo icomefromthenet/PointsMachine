@@ -83,10 +83,12 @@ class ScoreQuery extends CommonQuery
      * validity period of this score. 
      * 
      * @return this
+     * 
      * @param string    $sScoreGroupAlias     The Alias to use in the query
+     * @param DateTime  $oProcessingDate      The processing date
      * @access public
      */ 
-    public function withScoreGroup($sScoreGroupAlias)
+    public function withScoreGroup($sScoreGroupAlias, DateTime $oProcessingDate)
     {
         $sAlias   = $this->getDefaultAlias();
         
@@ -95,15 +97,23 @@ class ScoreQuery extends CommonQuery
                            ->getGateway('pt_score_group')
                            ->getMetaData()
                            ->getName();
+                           
+        $paramTypeTo   =  $this->getGateway()->getMetaData()->getColumn('enabled_to')->getType();
+        $paramTypeFrom =  $this->getGateway()->getMetaData()->getColumn('enabled_from')->getType();
+     
         
         $sSql  =" $sScoreGroupAlias.score_group_id = $sAlias.score_group_id ";
         
-        // Score Group is valid on or before this score 
-        $sSql .="AND $sScoreGroupAlias.enabled_from <= $sAlias.enabled_from ";
-        
-        // Score Group is valid on or after this score
-        $sSql .="AND $sScoreGroupAlias.enabled_to >= $sAlias.enabled_to ";
-        
+        if($oProcessingDate->format('Y-m-d') === '3000-01-01') {
+            
+            $sSql .=" AND $sScoreGroupAlias.enabled_to = ".$this->createNamedParameter($oProcessingDate,$paramTypeTo);
+
+        } else {
+    
+            // Score Group is enabled before this processing date and valid after 
+            $sSql .=" AND $sScoreGroupAlias.enabled_from <= ".$this->createNamedParameter($oProcessingDate,$paramTypeFrom);
+            $sSql .=" AND $sScoreGroupAlias.enabled_to > ".$this->createNamedParameter($oProcessingDate,$paramTypeTo);
+        }
         
         return $this->innerJoin($sAlias,$sTableName,$sScoreGroupAlias, $sSql);
     }

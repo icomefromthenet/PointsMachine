@@ -1,0 +1,266 @@
+{% extends "layout.html.twig" %}
+
+
+{% block scriptExtras %}
+<script>
+    
+    var PAGE = function(document,$) {
+        
+        /**
+         * End points for the Points System API
+         * 
+         * @var string 
+         */ 
+        var EVENT_APIPATH = "{{ path_for('get_event', {'odate': ''} ) }}";
+    
+        /**
+         * End points for the Points System API
+         * 
+         * @var string 
+         */ 
+        var CHAIN_APIPATH = "{{ path_for('get_chain', {'odate': ''} ) }}";
+    
+    
+        /**
+         * The last used filter date
+         * 
+         * Default to the known as the current date (max date)
+         * 
+         * @var Date 
+         */ 
+        var oFilterDate = new Date(3000, 0, 1);
+        
+        /**
+         * The last selected Event Type ID
+         * 
+         * @var string 
+         */ 
+        var sSelectedEventType = 'no type';
+        
+        /**
+         * Options that are passed in an int function
+         * 
+         * 
+         * @var object
+         */ 
+        var oWidgetOptions = {
+          'eventEl' : '#eventTypeGrid',
+          'chainEl': '#ruleChainGrid'
+            
+            
+        };
+        
+        
+        // Event Handlers    
+        
+        /**
+         * Fired on Page load this will setup
+         * the data grids and forms on this page
+         * 
+         * @param object oOptions
+         * @return void
+         */ 
+        var onInit = function(oOptions) {
+            
+            // bind the dom nodes
+            oWidgetOptions.eventEl   = $(oWidgetOptions.eventEl);
+            oWidgetOptions.chainEl = $(oWidgetOptions.chainEl);
+            
+            // Setup the Datagrid
+            oWidgetOptions.eventEl.jsGrid({
+                height: "auto",
+                width: "100%",
+         
+                sorting: false,
+                paging: false,
+                autoload: true,
+                rowClick: onEventTypeRowSelected,
+                noDataContent: "No Event Types Found",
+                controller: {
+                    loadData: function() {
+                        var d = $.Deferred();
+         
+                        $.ajax({
+                            url: "http://points.icomefromthenet.com"+getPath(EVENT_APIPATH,{}),
+                            dataType: "json"
+                        }).done(function(response) {
+                            d.resolve(response);
+                        });
+         
+                        return d.promise();
+                    }
+                },
+         
+                fields: [
+                    { title: "Episode ID", name: "iEpisodeID", type: "number", visible: false },
+                    { title: "id", name: "sEventTypeID", type: "text" },
+                    { title: "Name", name: "sEventName", type: "text" },
+                    { title: "Valid From", name: "oEnabledFrom", type: "text",  itemTemplate: function(value, item) { return $.format.date(new Date(value.date), 'yyyy-MM-dd');  } },
+                    { title: "Valid To", name: "oEnabledTo", type: "text" ,     itemTemplate: function(value, item) { return $.format.date(new Date(value.date), 'yyyy-MM-dd');  } },
+                ]
+            });
+            
+            
+            
+            // Setup the Datagrid
+            oWidgetOptions.chainEl.jsGrid({
+                height: "auto",
+                width: "100%",
+                noDataContent: "No Rule Chains found with selected Event Type", 
+                sorting: false,
+                paging: false,
+                autoload: false,
+         
+                controller: {
+                    loadData: function() {
+                        var d = $.Deferred();
+         
+                        $.ajax({
+                            url: "http://points.icomefromthenet.com"+getPath(CHAIN_APIPATH, { "sEventTypeId": sSelectedEventType }),
+                            dataType: "json"
+                        }).done(function(response) {
+                            d.resolve(response);
+                        });
+         
+                        return d.promise();
+                    }
+                },
+         
+                fields: [
+                    { title: "Episode ID", name: "iEpisodeID", type: "number", visible: false },
+                    { title: "id", name: "sRuleChainID", type: "text" },
+                    { title: "Name", name: "sChainName", type: "text" },
+                    { title: "Name Slug", name: "sChainNameSlug", type: "text", visible:false },
+                    
+                    
+                    { title: "System Name", name: "sSystemName", type: "text" },
+                    { title: "Event Type Name", name: "sEventTypeName", type: "text" },
+                    
+                    {title : "System ID", name:"sSystemID", type: "text", visible: false },
+                    {title : "Event Type ID", name:"sEventTypeID", type: "text", visible: false },
+                    
+                    {title : "Round Option", name:"iRoundingOption", type: "text",
+                        itemTemplate: function(value, item) { 
+                        var methods = {
+                            0 : 'ROUND_NONE',
+                            1 : 'ROUND_NORMAL',
+                            2 : 'ROUND_CEIL',
+                            3 : 'ROUND_FLOOR'
+                        
+                        };
+                        var sValue = methods[0];
+                        
+                        if(value) {
+                            sValue = methods[value]
+                        }
+                        
+                       return  sValue;
+                            
+                    }},
+                    {title : "Cap Value"  , name: "fCapValue"   , type: "number" },
+                    { title: "Valid From" , name: "oEnabledFrom", type: "text",  itemTemplate: function(value, item) { return $.format.date(new Date(value.date), 'yyyy-MM-dd');  } },
+                    { title: "Valid To"   , name: "oEnabledTo"  , type: "text" ,     itemTemplate: function(value, item) { return $.format.date(new Date(value.date), 'yyyy-MM-dd');  } },
+                ]
+            });
+                   
+        }
+        
+        
+       
+        
+        /**
+         * Refresh the lower grids with members 
+         * who are active as of this date
+         *  
+         * @param Node     Input element bound with jQuery-ui date widget
+         */ 
+        var onDateFilterSubmit = function(oDate) {
+         
+            var sDate = $(oDate).datepicker( "getDate" );
+            
+            if(sDate === null) {
+                return alert('Pick a date to filer on');
+            }
+          
+            //refresh the grids below
+            oFilterDate = sDate; 
+            sSelectedEventType = 'no event type';
+            
+            oWidgetOptions.eventEl.jsGrid('loadData');
+            oWidgetOptions.chainEl.jsGrid('loadData');
+        }
+        
+        
+        var onEventTypeRowSelected = function(args) {
+            // change the selected system
+            sSelectedEventType = args.item.sEventTypeId;
+            
+            // make the rule chain grid reload
+            oWidgetOptions.chainEl.jsGrid('loadData');
+                
+        }; 
+        
+        // Utilities
+        
+        /**
+         * Return the path with the date filter place holder
+         * 
+         * @return string              The full path to use in API calls
+         * @param string  sApiPath     The API Endpoint
+         * @param object  oOptions     Query String Options
+         */ 
+        var getPath = function(sApiPath,oOptions) {
+               
+            return rtrim(sApiPath,'/') + '/'+ $.format.date(oFilterDate, 'yyyyMMdd') + '?' + $.param(oOptions);
+        }
+        
+        
+        // Public API
+        
+        return {
+            init: onInit,
+            filter: onDateFilterSubmit
+            
+        }
+        
+    }(document,jQuery) 
+    
+</script>
+{% endblock %}
+
+
+{% block bodyContent %}
+
+    <div id="main" class="pure-u-1">
+        <div class="email-content">
+            <div class="email-content-header pure-g">
+                <div class="pure-u-1-2">
+                    <h1 class="email-content-title">Event Types</h1>
+                    <p class="email-content-subtitle">
+                        Causes of calculation run</span>
+                    </p>
+                </div>
+
+                <div class="email-content-controls pure-u-1-2">
+                    {% include "processing_dte.html.twig" %}
+                </div>
+            </div>
+
+            <div class="email-content-body">
+                <p>
+                  These related to
+                </p>
+                <div id="eventTypeGrid"></div>
+               
+                <h2>Rule Chains</h2>
+                <p>
+      
+                </p>
+                <div id="ruleChainGrid"></div>
+                
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}

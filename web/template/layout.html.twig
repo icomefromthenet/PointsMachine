@@ -33,19 +33,19 @@
                     <li class="pure-menu-item"><a href="#" class="pure-menu-link">New Raid</a></li>
                     
                     <li class="pure-menu-heading">Setup</li>
-                    <li class="pure-menu-item"><a href="{{ path_for('setup_system',{}) }}" class="pure-menu-link">Point Systems</a></li>
-                    <li class="pure-menu-item"><a href="#" class="pure-menu-link">Systems Zones</a></li>
+                    <li class="pure-menu-item"><a href="{{ path_for('setup_system',{ } ) }}" class="pure-menu-link">Point Systems</a></li>
+                    <li class="pure-menu-item"><a href="{{ path_for('setup_zone', { } ) }}" class="pure-menu-link">Systems Zones</a></li>
                     
-                    <li class="pure-menu-item"><a href="#" class="pure-menu-link">Event Types</a></li>
-                    <li class="pure-menu-item"><a href="#" class="pure-menu-link">Scores</a></li>
-                    <li class="pure-menu-item"><a href="#" class="pure-menu-link">Score Groups</a></li>
+                    <li class="pure-menu-item"><a href="{{ path_for('setup_event', { } )  }}" class="pure-menu-link">Event Types</a></li>
+                    <li class="pure-menu-item"><a href="{{ path_for('setup_score', { } )  }}" class="pure-menu-link">Scores</a></li>
+                    <li class="pure-menu-item"><a href="{{ path_for('setup_scoregroup', { } ) }}" class="pure-menu-link">Score Groups</a></li>
                     
                     
-                    <li class="pure-menu-item"><a href="#" class="pure-menu-link">Rule Chains</a></li>
-                    <li class="pure-menu-item"><a href="#" class="pure-menu-link">Rule Chains Members</a></li>
+                    <li class="pure-menu-item"><a href="{{ path_for('setup_rulechain', { } )}}" class="pure-menu-link">Rule Chains</a></li>
+                    <li class="pure-menu-item"><a href="{{ path_for('setup_chainmember', { } )}}" class="pure-menu-link">Rule Chains Members</a></li>
                     
-                    <li class="pure-menu-item"><a href="#" class="pure-menu-link">Adjustment Rule Groups</a></li>
-                    <li class="pure-menu-item"><a href="#" class="pure-menu-link">Adjustment Rules</a></li>
+                    <li class="pure-menu-item"><a href="{{ path_for('setup_adjgroup', { } ) }}" class="pure-menu-link">Adjustment Rule Groups</a></li>
+                    <li class="pure-menu-item"><a href="{{ path_for('setup_adjrule', { }) }}" class="pure-menu-link">Adjustment Rules</a></li>
                     
                 </ul>
             </div>

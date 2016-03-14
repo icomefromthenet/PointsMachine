@@ -31,6 +31,9 @@ class AdjustmentZoneBuilder extends CommonBuilder
         $oRule->sSystemZoneID   = $this->getField($data,'zone_id',$sAlias);
         $oRule->oEnabledFrom    = $this->getField($data,'enabled_from',$sAlias);
         $oRule->oEnabledTo      = $this->getField($data,'enabled_to',$sAlias);
+        
+        $oRule->sSystemZoneName = $this->getField($data, 'zone_name','');
+        $oRule->sAdjustment     = $this->getField($data, 'rule_name','');
          
         return $oRule;
     }
@@ -50,6 +53,9 @@ class AdjustmentZoneBuilder extends CommonBuilder
             'zone_id'         => $oAdjustmentZone->sSystemZoneID,
             'enabled_from'    => $oAdjustmentZone->oEnabledFrom,
             'enabled_to'      => $oAdjustmentZone->oEnabledTo,
+            
+            'zone_name'       => $oAdjustmentZone->sSystemZoneName,
+            'rule_name'       => $oAdjustmentZone->sAdjustmentRuleName,
         );
         
     }

@@ -36,6 +36,8 @@ class RuleChainBuilder extends CommonBuilder
         $oChain->fCapValue       = $this->getField($data,'cap_value',$sAlias);
         $oChain->oEnabledFrom    = $this->getField($data,'enabled_from',$sAlias);
         $oChain->oEnabledTo      = $this->getField($data,'enabled_to',$sAlias);
+        $oChain->sSystemName     = $this->getField($data,'system_name','');
+        $oChain->sEventTypeName  = $this->getField($data,'event_name','');
          
         return $oChain;
     }
@@ -60,6 +62,8 @@ class RuleChainBuilder extends CommonBuilder
             'cap_value'             => $oRuleChain->fCapValue,
             'enabled_from'          => $oRuleChain->oEnabledFrom,
             'enabled_to'            => $oRuleChain->oEnabledTo,
+            'system_name'           => $oRuleChain->sSystemName,
+            'event_name'       => $oRuleChain->sEventTypeName,
         );
         
     }

@@ -226,6 +226,8 @@ class BuilderTest extends TestWithContainer
              $sAlias.'cap_value'       => 100,
              $sAlias.'enabled_from'    => new DateTime(),
              $sAlias.'enabled_to'      => new DateTime('3000-01-01'),
+             'system_name'             => 'systemA',
+             'event_name'              => 'eventA',
          );
         
          $oEntity = $oBuilder->build($aRawEntity);
@@ -240,6 +242,8 @@ class BuilderTest extends TestWithContainer
          $this->assertEquals($aRawEntity[$sAlias.'cap_value'],$oEntity->fCapValue);
          $this->assertEquals($aRawEntity[$sAlias.'enabled_from'],$oEntity->oEnabledFrom);
          $this->assertEquals($aRawEntity[$sAlias.'enabled_to'],$oEntity->oEnabledTo);
+         $this->assertEquals($aRawEntity['system_name'],$oEntity->sSystemName);
+         $this->assertEquals($aRawEntity['event_name'],$oEntity->sEventTypeName);
         
         
          $aRawEntity = $oBuilder->demolish($oEntity);
@@ -254,6 +258,8 @@ class BuilderTest extends TestWithContainer
          $this->assertEquals($oEntity->fCapValue,$aRawEntity['cap_value']);
          $this->assertEquals($oEntity->oEnabledFrom,$aRawEntity['enabled_from']);
          $this->assertEquals($oEntity->oEnabledTo,$aRawEntity['enabled_to']);
+         $this->assertEquals($oEntity->sSystemName,$aRawEntity['system_name']);
+         $this->assertEquals($oEntity->sEventTypeName,$aRawEntity['event_name']);
        
         
      }
@@ -523,6 +529,7 @@ class BuilderTest extends TestWithContainer
             $sAlias.'invert_flag'     => 1,
             $sAlias.'enabled_from'    => new DateTime(),
             $sAlias.'enabled_to'      => new DateTime('3000-01-01'),
+            'rule_group_name'         => 'rulegroup1',
         );
         
         $oEntity = $oBuilder->build($aRawEntity);
@@ -537,6 +544,8 @@ class BuilderTest extends TestWithContainer
         $this->assertEquals($aRawEntity[$sAlias.'invert_flag'],(int)$oEntity->bInvertFlag);
         $this->assertEquals($aRawEntity[$sAlias.'enabled_from'],$oEntity->oEnabledFrom);
         $this->assertEquals($aRawEntity[$sAlias.'enabled_to'],$oEntity->oEnabledTo);
+        $this->assertEquals($aRawEntity['rule_group_name'],$oEntity->sAdjustmentGroupName);
+        
         
         $aRawEntity = $oBuilder->demolish($oEntity);
         
@@ -550,6 +559,8 @@ class BuilderTest extends TestWithContainer
         $this->assertEquals($oEntity->bInvertFlag,(bool)$aRawEntity['invert_flag']);
         $this->assertEquals($oEntity->oEnabledFrom,$aRawEntity['enabled_from']);
         $this->assertEquals($oEntity->oEnabledTo,$aRawEntity['enabled_to']);
+        $this->assertEquals($oEntity->sAdjustmentGroupName,$aRawEntity['rule_group_name']);
+        
         
     }
     

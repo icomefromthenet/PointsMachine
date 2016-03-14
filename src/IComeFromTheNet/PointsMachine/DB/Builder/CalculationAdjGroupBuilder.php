@@ -35,8 +35,8 @@ class CalculationAdjGroupBuilder extends CommonBuilder
          
         // fields from join tables have no alias 
          
-        $oRule->sScoreName           = $data['score_name'];
-        $oRule->sAdjustmentGroupName = $data['rule_group_name'];
+        $oRule->sScoreName           = $this->getField($data,'score_name','');
+        $oRule->sAdjustmentGroupName = $this->getField($data,'rule_group_name','');
          
         return $oRule;
     }

@@ -36,6 +36,8 @@ class AdjustmentRuleBuilder extends CommonBuilder
         $oRule->bInvertFlag     = (bool) $this->getField($data,'invert_flag',$sAlias);
         $oRule->oEnabledFrom    = $this->getField($data,'enabled_from',$sAlias);
         $oRule->oEnabledTo      = $this->getField($data,'enabled_to',$sAlias);
+        
+        $oRule->sAdjustmentGroupName = $this->getField($data,'rule_group_name','');
          
         return $oRule;
     }
@@ -60,6 +62,7 @@ class AdjustmentRuleBuilder extends CommonBuilder
             'multiplier'      => $oAdjustmentRule->fMultiplier,
             'modifier'        => $oAdjustmentRule->fModifier,
             'invert_flag'     => (int)$oAdjustmentRule->bInvertFlag,
+            'rule_group_name' => $oAdjustmentRule->sAdjustmentGroupName,
             
         );
         

@@ -81,10 +81,11 @@ class PointSystemZoneQuery extends CommonQuery
      * validity period of this zone. ie fills
      * 
      * @return this
-     * @param string    $sAlias     The Alias to use in the query
+     * @param string    $sAlias             The Alias to use in the query
+     * @param DateTime  $oProcessingDate    The processing date
      * @access public
      */ 
-    public function withSystem($sSystemAlias)
+    public function withSystem($sSystemAlias, DateTime $oProcessingDate)
     {
         $sAlias   = $this->getDefaultAlias();
         
@@ -94,14 +95,23 @@ class PointSystemZoneQuery extends CommonQuery
                            ->getMetaData()
                            ->getName();
         
+        
+        $paramTypeTo   =  $this->getGateway()->getMetaData()->getColumn('enabled_to')->getType();
+        $paramTypeFrom =  $this->getGateway()->getMetaData()->getColumn('enabled_from')->getType();
+     
+        
         $sSql  =" $sSystemAlias.system_id = $sAlias.system_id ";
         
-        // System is valid on or before this zone 
-        $sSql .="AND $sSystemAlias.enabled_from <= $sAlias.enabled_from ";
+        if($oProcessingDate->format('Y-m-d') === '3000-01-01') {
+            
+            $sSql .=" AND $sSystemAlias.enabled_to = ".$this->createNamedParameter($oProcessingDate,$paramTypeTo);
+
+        } else {
         
-        // System is valid on or after this zone
-        $sSql .="AND $sSystemAlias.enabled_to >= $sAlias.enabled_to ";
-        
+            // System is enabled before this processing date and valid after 
+            $sSql .=" AND $sSystemAlias.enabled_from <= ".$this->createNamedParameter($oProcessingDate,$paramTypeFrom);
+            $sSql .=" AND $sSystemAlias.enabled_to > ".$this->createNamedParameter($oProcessingDate,$paramTypeTo);
+        }
         
         return $this->innerJoin($sAlias,$sTableName,$sSystemAlias, $sSql);
     }

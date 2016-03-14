@@ -35,8 +35,8 @@ class AdjustmentGroupLimitBuilder extends CommonBuilder
         
         // optional fields
         
-        $oGroup->sAdjustmentGroupName   = $data['rule_group_name'];
-        $oGroup->sScoreGroupName        = $data['score_group_name'];
+        $oGroup->sAdjustmentGroupName   = $this->getField($data,'rule_group_name','');
+        $oGroup->sScoreGroupName        = $this->getField($data,'score_group_name','');
          
         return $oGroup;
     }

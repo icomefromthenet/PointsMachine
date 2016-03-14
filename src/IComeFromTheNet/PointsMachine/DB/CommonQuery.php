@@ -284,10 +284,11 @@ class CommonQuery extends AbstractQuery
             $this->filterByCurrent(new DateTime('3000-01-01'));
                 
         } else {
+               
                 
             // Date range used open-closed that equ of enabled_on <= date and disabled_on > date
             $this->filterByDisabledAfter($oDate);
-            $this->filterByEnabledAfterAndOn($oDate);
+            $this->filterByEnabledBeforeAndOn($oDate);
             
         }
         

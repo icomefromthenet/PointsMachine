@@ -67,6 +67,10 @@ class AdjustmentRule extends TemporalEntity
     
     public $oEnabledTo;
     
+    // Optional fields for display only
+    
+    public $sAdjustmentGroupName;
+    
     
    //--------------------------------------------------------------------------
     # Entity Hooks

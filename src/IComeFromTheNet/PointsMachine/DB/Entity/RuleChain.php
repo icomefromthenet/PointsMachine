@@ -72,6 +72,14 @@ class RuleChain extends TemporalEntity
     
     public $oEnabledTo;
     
+    
+    // optional properties for display only
+    
+    public $sEventTypeName;
+    
+    public $sSystemName;
+    
+    
     //--------------------------------------------------------------------------
     # Entity Hooks
    
