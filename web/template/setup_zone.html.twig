@@ -20,7 +20,7 @@
          * 
          * @var string 
          */ 
-        var RULE_APIPATH = "{{ path_for('', {'odate': ''} ) }}";
+        var RULE_APIPATH = "{{ path_for('get_adjzone', {'odate': ''} ) }}";
     
     
         /**
@@ -33,11 +33,11 @@
         var oFilterDate = new Date(3000, 0, 1);
         
         /**
-         * The last selected system entity ID
+         * The last selected zone entity ID
          * 
          * @var string 
          */ 
-        var sSelectedSystem = 'no system';
+        var sSelectedZone = 'no zone';
         
         /**
          * Options that are passed in an int function
@@ -46,8 +46,8 @@
          * @var object
          */ 
         var oWidgetOptions = {
-          'el' : '#pointSystemGrid',
-          'zone': '#pointSystemZoneGrid'
+          'zone': '#systemZoneGrid',
+          'rule': '#adjRuleGrid'
             
             
         };
@@ -65,25 +65,25 @@
         var onInit = function(oOptions) {
             
             // bind the dom nodes
-            oWidgetOptions.el   = $(oWidgetOptions.el);
-            oWidgetOptions.zone = $(oWidgetOptions.zone);
+            oWidgetOptions.rule   = $(oWidgetOptions.rule);
+            oWidgetOptions.zone   = $(oWidgetOptions.zone);
             
             // Setup the Datagrid
-            oWidgetOptions.el.jsGrid({
+            oWidgetOptions.zone.jsGrid({
                 height: "auto",
                 width: "100%",
          
                 sorting: false,
                 paging: false,
                 autoload: true,
-                rowClick: onSystemSelected,
-                noDataContent: "No Systems Found",
+                rowClick: onZoneSelected,
+                noDataContent: "No Zones Found",
                 controller: {
                     loadData: function() {
                         var d = $.Deferred();
          
                         $.ajax({
-                            url: "http://points.icomefromthenet.com"+getPath(SYS_APIPATH,{}),
+                            url: "http://points.icomefromthenet.com"+getPath(ZONE_APIPATH,{}),
                             dataType: "json"
                         }).done(function(response) {
                             d.resolve(response);
@@ -91,12 +91,17 @@
          
                         return d.promise();
                     }
+                
+                    
                 },
          
                 fields: [
                     { title: "Episode ID", name: "iEpisodeID", type: "number", visible: false },
-                    { title: "id", name: "sSystemID", type: "text" },
-                    { title: "Name", name: "sSystemName", type: "text" },
+                    { title: "Zone Id", name: "sZoneID", type: "text" },
+                    { title: "Name", name: "sZoneName", type: "text" },
+                    { title: "Name Slug", name: "sZoneNameSlug", type: "text", visible: false },
+                    { title: "System Id", name: "sSystemID", type: "text", visible: false },
+                    { title: "System", name: "sSystemName", type: "text" },
                     { title: "Valid From", name: "oEnabledFrom", type: "text",  itemTemplate: function(value, item) { return $.format.date(new Date(value.date), 'yyyy-MM-dd');  } },
                     { title: "Valid To", name: "oEnabledTo", type: "text" ,     itemTemplate: function(value, item) { return $.format.date(new Date(value.date), 'yyyy-MM-dd');  } },
                 ]
@@ -105,10 +110,10 @@
             
             
             // Setup the Datagrid
-            oWidgetOptions.zone.jsGrid({
+            oWidgetOptions.rule.jsGrid({
                 height: "auto",
                 width: "100%",
-                noDataContent: "No Zones or no Points System selected", 
+                noDataContent: "No Adjustment Rules found for selected System Zone", 
                 sorting: false,
                 paging: false,
                 autoload: false,
@@ -118,7 +123,7 @@
                         var d = $.Deferred();
          
                         $.ajax({
-                            url: "http://points.icomefromthenet.com"+getPath(ZONE_APIPATH, { "sSystemId": sSelectedSystem }),
+                            url: "http://points.icomefromthenet.com"+getPath(RULE_APIPATH, { "sZoneId": sSelectedZone }),
                             dataType: "json"
                         }).done(function(response) {
                             d.resolve(response);
@@ -130,10 +135,10 @@
          
                 fields: [
                     { title: "Episode ID", name: "iEpisodeID", type: "number", visible: false },
-                    { title: "id", name: "sZoneID", type: "text" },
-                    { title: "Name", name: "sZoneName", type: "text" },
-                    { title: "System Name", name: "sSystemName", type: "text", visible: false },
-                    { title: "System ID", name: "sSystemID", type: "text", visible:false },
+                    { title: "Rule Id", name: "sAdjustmentRuleID", type: "text" },
+                    { title: "Zone Id", name: "sSystemZoneID", type: "text", visible: false },
+                    { title: "Zone Name", name: "sSystemZoneName", type: "text", visible: false },
+                    { title: "Rule Name", name: "sAdjustmentRuleName", type: "text" },
                     { title: "Valid From", name: "oEnabledFrom", type: "text",  itemTemplate: function(value, item) { return $.format.date(new Date(value.date), 'yyyy-MM-dd');  } },
                     { title: "Valid To", name: "oEnabledTo", type: "text" ,     itemTemplate: function(value, item) { return $.format.date(new Date(value.date), 'yyyy-MM-dd');  } },
                 ]
@@ -160,19 +165,20 @@
           
             //refresh the grids below
             oFilterDate = sDate; 
-            sSelectedSystem = 'no system';
+            sSelectedZone = 'no zone';
             
-            oWidgetOptions.el.jsGrid('loadData');
             oWidgetOptions.zone.jsGrid('loadData');
+            oWidgetOptions.rule.jsGrid('loadData');
+            
         }
         
         
-        var onSystemSelected = function(args) {
+        var onZoneSelected = function(args) {
             // change the selected system
-            sSelectedSystem = args.item.sSystemId;
+            sSelectedZone = args.item.sZoneID;
             
             // make the zone grid reload
-            oWidgetOptions.zone.jsGrid('loadData');
+            oWidgetOptions.rule.jsGrid('loadData');
                 
         }; 
         
@@ -224,15 +230,19 @@
 
             <div class="email-content-body">
                 <p>
-      
+                    I'm using character classes as the donations/raid Zones they happend to be mutually 
+                    exclusive categories in this imaginary example. 
                 </p>
-                <div id="pointZoneGrid"></div>
+                <div id="systemZoneGrid"></div>
                
                 <h2>Adjustment Rules</h2>
                 <p>
-      
+                  A zone is used to filter rules that will apply during a run. A rule can be grouped with one to many Zones.
+                  <br />
+                  If an adjustment rule has <strong>not</strong> been linked to any system zones then it will apply to <strong>all</strong> zones. 
                 </p>
-                <div id="pointAdjRuleGrid"></div>
+                
+                <div id="adjRuleGrid"></div>
                 
             </div>
         </div>

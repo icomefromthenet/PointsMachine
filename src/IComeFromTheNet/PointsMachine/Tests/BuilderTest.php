@@ -581,6 +581,9 @@ class BuilderTest extends TestWithContainer
             $sAlias.'zone_id'         => 'C5D37F95-525F-9E4F-A5B7-F6EA3A269A34',
             $sAlias.'enabled_from'    => new DateTime(),
             $sAlias.'enabled_to'      => new DateTime('3000-01-01'),
+            'rule_name'               => 'rule1',
+            'zone_name'               => 'zone1',
+            
         );
         
         $oEntity = $oBuilder->build($aRawEntity);
@@ -590,6 +593,10 @@ class BuilderTest extends TestWithContainer
         $this->assertEquals($aRawEntity[$sAlias.'zone_id'],$oEntity->sSystemZoneID);
         $this->assertEquals($aRawEntity[$sAlias.'enabled_from'],$oEntity->oEnabledFrom);
         $this->assertEquals($aRawEntity[$sAlias.'enabled_to'],$oEntity->oEnabledTo);
+        $this->assertEquals($aRawEntity['rule_name'],$oEntity->sAdjustmentRuleName);
+        $this->assertEquals($aRawEntity['zone_name'],$oEntity->sSystemZoneName);
+    
+    
         
         $aRawEntity = $oBuilder->demolish($oEntity);
         
@@ -598,6 +605,9 @@ class BuilderTest extends TestWithContainer
         $this->assertEquals($oEntity->sSystemZoneID,$aRawEntity['zone_id']);
         $this->assertEquals($oEntity->oEnabledFrom,$aRawEntity['enabled_from']);
         $this->assertEquals($oEntity->oEnabledTo,$aRawEntity['enabled_to']);
+        $this->assertEquals($oEntity->sAdjustmentRuleName,$aRawEntity['rule_name']);
+        $this->assertEquals($oEntity->sSystemZoneName,$aRawEntity['zone_name']);
+    
         
     }
     

@@ -32,8 +32,9 @@ class AdjustmentZoneBuilder extends CommonBuilder
         $oRule->oEnabledFrom    = $this->getField($data,'enabled_from',$sAlias);
         $oRule->oEnabledTo      = $this->getField($data,'enabled_to',$sAlias);
         
-        $oRule->sSystemZoneName = $this->getField($data, 'zone_name','');
-        $oRule->sAdjustment     = $this->getField($data, 'rule_name','');
+        $oRule->sSystemZoneName     = $this->getField($data, 'zone_name','');
+        $oRule->sAdjustmentRuleName = $this->getField($data, 'rule_name','');
+        
          
         return $oRule;
     }
