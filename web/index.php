@@ -586,7 +586,56 @@ $app->group('/api', function () use ($app) {
     
     })->setName('get_chain');
     
+     /**
+     * List all Rule Chains Members assinged at date x and as an option filter by a rule chain or adj group
+     * 
+     * @return JSON array of adjustment rule entities
+     */  
+    $app->get('/chainmember/{odate}',function(ServerRequestInterface $request, ResponseInterface $response, $args) use($app){
+  
+        $oDate                  = $args['odate'];
+        $oPointsContainer       = $this->get('PointsMachine');
+        $oChainMemberGateway    = $oPointsContainer->getGatewayCollection()->getGateway('pt_chain_member'); 
+        
+        $aQueryParam       = $request->getQueryParams();
+        $sAdjRuleId        = null;
+        $sRuleChainId      = null;
+        
+        if(true === isset($aQueryParam['sAdjustmentGroupID']) &&  false === empty($aQueryParam['sAdjustmentGroupID'])) {
+            $sAdjRuleId = $aQueryParam['sAdjustmentGroupID'];
+        }
+        
+        if(true === isset($aQueryParam['sRuleChainID']) &&  false === empty($aQueryParam['sRuleChainID'])) {
+            $sRuleChainId = $aQueryParam['sRuleChainID'];
+        }
+        
+        $aResult = $oChainMemberGateway->selectQuery()
+            ->start()
+            ->addSelect('ag.rule_group_name','rc.chain_name')
+            ->withAjustmentGroup('ag',$oDate)
+            ->withRuleChain('rc',$oDate)
+            ->filterCurrentOrValidityPeriod($oDate)
+            ->ifThen( false === empty($sAdjRuleId),function($oQuery) use ($sAdjRuleId){
+        
+                $oQuery->filterByAdjustmentGroup($sAdjRuleId);
+                
+            })
+             ->ifThen( false === empty($sRuleChainId),function($oQuery) use ($sRuleChainId){
+        
+                $oQuery->filterByRuleChain($sRuleChainId);
+                
+            })
+            ->end()         
+        ->find();
+        
+        
+        $response->withJson($aResult->toArray(),200);
+   
+        return $response;
+  
+  
     
+    })->setName('get_chainmember');
     
 
 })->add($oDateConvertMiddleware)->add($oQueryLogMiddleware);

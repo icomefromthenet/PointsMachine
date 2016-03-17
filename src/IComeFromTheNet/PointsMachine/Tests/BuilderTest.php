@@ -283,6 +283,9 @@ class BuilderTest extends TestWithContainer
              $sAlias.'order_seq'       => 2,
              $sAlias.'enabled_from'    => new DateTime(),
              $sAlias.'enabled_to'      => new DateTime('3000-01-01'),
+             
+             'rule_group_name'               => 'Rule1',
+             'chain_name'              => 'Chain1',
          );
         
          $oEntity = $oBuilder->build($aRawEntity);
@@ -294,6 +297,8 @@ class BuilderTest extends TestWithContainer
          $this->assertEquals($aRawEntity[$sAlias.'order_seq'],$oEntity->iOrderSeq);
          $this->assertEquals($aRawEntity[$sAlias.'enabled_from'],$oEntity->oEnabledFrom);
          $this->assertEquals($aRawEntity[$sAlias.'enabled_to'],$oEntity->oEnabledTo);
+         $this->assertEquals($aRawEntity['rule_group_name'],$oEntity->sAdjustmentGroupName);
+         $this->assertEquals($aRawEntity['chain_name'],$oEntity->sRuleChainName);
         
         
          $aRawEntity = $oBuilder->demolish($oEntity);
@@ -305,6 +310,8 @@ class BuilderTest extends TestWithContainer
          $this->assertEquals($oEntity->iOrderSeq,$aRawEntity['order_seq']);
          $this->assertEquals($oEntity->oEnabledFrom,$aRawEntity['enabled_from']);
          $this->assertEquals($oEntity->oEnabledTo,$aRawEntity['enabled_to']);
+         $this->assertEquals($oEntity->sAdjustmentGroupName,$aRawEntity['rule_group_name']);
+         $this->assertEquals($oEntity->sRuleChainName,$aRawEntity['chain_name']);
        
         
      }

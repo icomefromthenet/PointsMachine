@@ -33,6 +33,9 @@ class RuleChainMemberBuilder extends CommonBuilder
         $oChain->iOrderSeq          = $this->getField($data,'order_seq',$sAlias);
         $oChain->oEnabledFrom       = $this->getField($data,'enabled_from',$sAlias);
         $oChain->oEnabledTo         = $this->getField($data,'enabled_to',$sAlias);
+        
+        $oChain->sAdjustmentGroupName = $this->getField($data,'rule_group_name','');
+        $oChain->sRuleChainName       = $this->getField($data,'chain_name','');      
          
         return $oChain;
     }
@@ -54,6 +57,9 @@ class RuleChainMemberBuilder extends CommonBuilder
             'order_seq'           => $oRuleChainMember->iOrderSeq,
             'enabled_from'        => $oRuleChainMember->oEnabledFrom,
             'enabled_to'          => $oRuleChainMember->oEnabledTo,
+            
+            'rule_group_name'     => $oRuleChainMember->sAdjustmentGroupName,
+            'chain_name'          => $oRuleChainMember->sRuleChainName,
         );
         
     }

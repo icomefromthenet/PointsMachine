@@ -34,6 +34,7 @@ class AdjustmentGroupLimitQuery extends CommonQuery
     }
     
     
+    
     /**
      * Filter by a scoring rule entity
      * 
@@ -74,6 +75,9 @@ class AdjustmentGroupLimitQuery extends CommonQuery
         return $this->andWhere($sAlias."system_id = ".$this->createNamedParameter($sGUID,$paramType));
         
     }
+    
+    
+    
    
 
 }

@@ -51,6 +51,13 @@ class RuleChainMember extends TemporalEntity
     public $oEnabledTo;
     
     
+    // optional fields display only
+    
+    public $sRuleChainName;
+    
+    public $sAdjustmentGroupName;
+    
+    
     //--------------------------------------------------------------------------
     # Entity Hooks
    
