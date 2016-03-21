@@ -483,6 +483,7 @@ class BuilderTest extends TestWithContainer
             $sAlias.'enabled_to'           => new DateTime('3000-01-01'),
             'rule_group_name'              => 'rulegroup1',
             'score_group_name'             => 'scoregroup1',
+            'system_name'                  => 'system1'
          );
         
          $oEntity = $oBuilder->build($aRawEntity);
@@ -496,6 +497,7 @@ class BuilderTest extends TestWithContainer
         
          $this->assertEquals($aRawEntity['rule_group_name'],$oEntity->sAdjustmentGroupName);
          $this->assertEquals($aRawEntity['score_group_name'],$oEntity->sScoreGroupName);
+         $this->assertEquals($aRawEntity['system_name'],$oEntity->sPointSystemName);
         
         
          $aRawEntity = $oBuilder->demolish($oEntity);
@@ -509,6 +511,7 @@ class BuilderTest extends TestWithContainer
          
          $this->assertEquals($oEntity->sAdjustmentGroupName, $aRawEntity['rule_group_name']);
          $this->assertEquals($oEntity->sScoreGroupName, $aRawEntity['score_group_name']);
+         $this->assertEquals($oEntity->sPointSystemName, $aRawEntity['system_name']);
         
         
         
@@ -844,3 +847,4 @@ class BuilderTest extends TestWithContainer
     
 }
 /* End of Class */
+

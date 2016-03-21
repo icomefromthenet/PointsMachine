@@ -52,6 +52,7 @@ class AdjustmentGroupLimit extends TemporalEntity
     
     public $sScoreGroupName;
    
+    public $sPointSystemName;
     
     
      //--------------------------------------------------------------------------

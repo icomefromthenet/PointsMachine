@@ -514,6 +514,58 @@ $app->group('/api', function () use ($app) {
     })->setName('get_adjzone');
     
     
+    /**
+     * List all adj group limits assinged at date x and as an option filter by a system or score group
+     * 
+     * @return JSON array of adjustment rule entities
+     */  
+    $app->get('/adjgrouplimit/{odate}',function(ServerRequestInterface $request, ResponseInterface $response, $args) use($app){
+  
+        $oDate             = $args['odate'];
+        $oPointsContainer  = $this->get('PointsMachine');
+        $oAdjLimitGateway  = $oPointsContainer->getGatewayCollection()->getGateway('pt_rule_group_limits'); 
+        
+        $aQueryParam       = $request->getQueryParams();
+        $sSystemId         = null;
+        $sScoreGroupId     = null;
+        
+        if(true === isset($aQueryParam['sScoreGroupId']) &&  false === empty($aQueryParam['sScoreGroupId'])) {
+            $sScoreGroupId = $aQueryParam['sScoreGroupId'];
+        }
+        
+        if(true === isset($aQueryParam['sSystemId']) &&  false === empty($aQueryParam['sSystemId'])) {
+            $sSystemId = $aQueryParam['sSystemId'];
+        }
+        
+        $aResult = $oAdjLimitGateway->selectQuery()
+            ->start()
+            ->addSelect('ag.rule_group_name AS rule_group_name', 'r.system_name AS system_name',' ag.group_name AS score_group_name')
+            ->withAdjustmentGroup('ag',$oDate)
+            ->withSystem('s',$oDate)
+            ->withScoreGroup('sg',$oDate)
+            ->filterCurrentOrValidityPeriod($oDate)
+            ->ifThen( false === empty($sScoreGroupId),function($oQuery) use ($sScoreGroupId){
+        
+                $oQuery->filterByScoreGroup($sScoreGroupId);
+                
+            })
+            ->ifThen( false === empty($sSystemId),function($oQuery) use ($sSystemId){
+        
+                $oQuery->filterBySystem($sSystemId);
+                
+            })
+            ->end()         
+        ->find();
+        
+        
+        $response->withJson($aResult->toArray(),200);
+   
+        return $response;
+  
+  
+    })->setName('get_adjgrouplimit');
+    
+    
     
     /**
      * List all Event Types assinged at date x 
@@ -524,7 +576,7 @@ $app->group('/api', function () use ($app) {
   
         $oDate             = $args['odate'];
         $oPointsContainer  = $this->get('PointsMachine');
-        $oEventTypeGateway     = $oPointsContainer->getGatewayCollection()->getGateway('pt_event_type'); 
+        $oEventTypeGateway = $oPointsContainer->getGatewayCollection()->getGateway('pt_event_type'); 
         
         
         
@@ -601,12 +653,12 @@ $app->group('/api', function () use ($app) {
         $sAdjRuleId        = null;
         $sRuleChainId      = null;
         
-        if(true === isset($aQueryParam['sAdjustmentGroupID']) &&  false === empty($aQueryParam['sAdjustmentGroupID'])) {
-            $sAdjRuleId = $aQueryParam['sAdjustmentGroupID'];
+        if(true === isset($aQueryParam['sAdjustmentGroupId']) &&  false === empty($aQueryParam['sAdjustmentGroupId'])) {
+            $sAdjRuleId = $aQueryParam['sAdjustmentGroupId'];
         }
         
-        if(true === isset($aQueryParam['sRuleChainID']) &&  false === empty($aQueryParam['sRuleChainID'])) {
-            $sRuleChainId = $aQueryParam['sRuleChainID'];
+        if(true === isset($aQueryParam['sRuleChainId']) &&  false === empty($aQueryParam['sRuleChainId'])) {
+            $sRuleChainId = $aQueryParam['sRuleChainId'];
         }
         
         $aResult = $oChainMemberGateway->selectQuery()

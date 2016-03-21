@@ -37,6 +37,7 @@ class AdjustmentGroupLimitBuilder extends CommonBuilder
         
         $oGroup->sAdjustmentGroupName   = $this->getField($data,'rule_group_name','');
         $oGroup->sScoreGroupName        = $this->getField($data,'score_group_name','');
+        $oGroup->sPointSystemName       = $this->getField($data,'system_name',''); 
          
         return $oGroup;
     }
@@ -58,7 +59,8 @@ class AdjustmentGroupLimitBuilder extends CommonBuilder
             'enabled_from'          => $oAdjustmentGroupLimit->oEnabledFrom,
             'enabled_to'            => $oAdjustmentGroupLimit->oEnabledTo,
             'rule_group_name'       => $oAdjustmentGroupLimit->sAdjustmentGroupName,
-            'score_group_name'      => $oAdjustmentGroupLimit->sScoreGroupName
+            'score_group_name'      => $oAdjustmentGroupLimit->sScoreGroupName,
+            'system_name'           => $oAdjustmentGroupLimit->sPointSystemName,
         );
         
     }
