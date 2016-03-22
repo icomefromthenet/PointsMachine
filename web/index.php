@@ -2,7 +2,7 @@
 require __DIR__.'/../app.php';
 
 
-use DateTime;
+use \DateTime;
 use Slim\App;
 use DBALGateway\Feature\StreamQueryLogger;
 use Psr\Http\Message\ServerRequestInterface;
@@ -539,13 +539,13 @@ $app->group('/api', function () use ($app) {
         
         $aResult = $oAdjLimitGateway->selectQuery()
             ->start()
-            ->addSelect('ag.rule_group_name AS rule_group_name', 'r.system_name AS system_name',' ag.group_name AS score_group_name')
+            ->addSelect('ag.rule_group_name AS rule_group_name', 's.system_name AS system_name',' sg.group_name AS score_group_name')
             ->withAdjustmentGroup('ag',$oDate)
             ->withSystem('s',$oDate)
             ->withScoreGroup('sg',$oDate)
             ->filterCurrentOrValidityPeriod($oDate)
             ->ifThen( false === empty($sScoreGroupId),function($oQuery) use ($sScoreGroupId){
-        
+                
                 $oQuery->filterByScoreGroup($sScoreGroupId);
                 
             })

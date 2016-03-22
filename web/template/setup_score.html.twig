@@ -1,0 +1,200 @@
+{% extends "layout.html.twig" %}
+
+
+{% block scriptExtras %}
+<script>
+    
+    
+    
+    var PAGE = function(document,$) {
+        
+        /**
+         * End points for the Scores API
+         * 
+         * @var string 
+         */ 
+        var SCORE_APIPATH = "{{ path_for('get_score', {'odate': ''} ) }}";
+    
+        
+    
+        /**
+         * The last used filter date
+         * 
+         * Default to the known as the current date (max date)
+         * 
+         * @var Date 
+         */ 
+        var oFilterDate = new Date(3000, 0, 1);
+        
+        /**
+         * The last selected score entity ID
+         * 
+         * @var string 
+         */ 
+        var sSelectedScore = 'no score';
+        
+        /**
+         * Options that are passed in an int function
+         * 
+         * 
+         * @var object
+         */ 
+        var oWidgetOptions = {
+          'el' : '#pointScoreGrid',
+            
+            
+        };
+        
+        
+        // Event Handlers    
+        
+        /**
+         * Fired on Page load this will setup
+         * the data grids and forms on this page
+         * 
+         * @param object oOptions
+         * @return void
+         */ 
+        var onInit = function(oOptions) {
+            
+            // bind the dom nodes
+            oWidgetOptions.el   = $(oWidgetOptions.el);
+           
+            
+            // Setup the Datagrid
+            oWidgetOptions.el.jsGrid({
+                height: "auto",
+                width: "100%",
+         
+                sorting: false,
+                paging: false,
+                autoload: true,
+                rowClick: onScoreSelected,
+                noDataContent: "No Scores Found",
+                controller: {
+                    loadData: function() {
+                        var d = $.Deferred();
+         
+                        $.ajax({
+                            url: "http://points.icomefromthenet.com"+getPath(SCORE_APIPATH ,{}),
+                            dataType: "json"
+                        }).done(function(response) {
+                            d.resolve(response);
+                        });
+         
+                        return d.promise();
+                    }
+                },
+         
+                fields: [
+                    { title: "Episode ID", name: "iEpisodeID", type: "number", visible: false },
+                    { title: "id", name: "sScoreID", type: "text" },
+                    { title: "id", name: "sScoreGroupID", type: "text", visible: false },
+                    { title: "Name", name: "sScoreName", type: "text" },
+                    { title: "Name", name: "sScoreGroupName", type: "text" },
+                    { title: "Slug Name", name: "sScoreNameSlug", type: "text", visible: false },
+                    { title: "Score Value", name: "fScoreValue", type: "text" },
+                    { title: "Valid From", name: "oEnabledFrom", type: "text",  itemTemplate: function(value, item) { return $.format.date(new Date(value.date), 'yyyy-MM-dd');  } },
+                    { title: "Valid To", name: "oEnabledTo", type: "text" ,     itemTemplate: function(value, item) { return $.format.date(new Date(value.date), 'yyyy-MM-dd');  } },
+                ]
+            });
+            
+            
+            
+                     
+        }
+        
+        
+       
+        
+        /**
+         * Refresh the lower grids with members 
+         * who are active as of this date
+         *  
+         * @param Node     Input element bound with jQuery-ui date widget
+         */ 
+        var onDateFilterSubmit = function(oDate) {
+         
+            var sDate = $(oDate).datepicker( "getDate" );
+            
+            if(sDate === null) {
+                return alert('Pick a date to filer on');
+            }
+          
+            //refresh the grids below
+            oFilterDate = sDate; 
+            sSelectedScore = 'no score';
+            
+            oWidgetOptions.el.jsGrid('loadData');
+            
+        }
+        
+        
+        var onScoreSelected = function(args) {
+            // change the selected system
+            sSelectedScoresSelectedSystem = args.item.sScoreId;
+            
+            // make the zone grid reload
+            //oWidgetOptions.zone.jsGrid('loadData');
+                
+        }; 
+        
+        // Utilities
+        
+        /**
+         * Return the path with the date filter place holder
+         * 
+         * @return string              The full path to use in API calls
+         * @param string  sApiPath     The API Endpoint
+         * @param object  oOptions     Query String Options
+         */ 
+        var getPath = function(sApiPath,oOptions) {
+               
+            return rtrim(sApiPath,'/') + '/'+ $.format.date(oFilterDate, 'yyyyMMdd') + '?' + $.param(oOptions);
+        }
+        
+        
+        // Public API
+        
+        return {
+            init: onInit,
+            filter: onDateFilterSubmit
+            
+        }
+        
+    }(document,jQuery) 
+    
+</script>
+{% endblock %}
+
+
+{% block bodyContent %}
+
+    <div id="main" class="pure-u-1">
+        <div class="email-content">
+            <div class="email-content-header pure-g">
+                <div class="pure-u-1-2">
+                    <h1 class="email-content-title">Scores</h1>
+                    <p class="email-content-subtitle">
+                        Where it all starts</span>
+                    </p>
+                </div>
+
+                <div class="email-content-controls pure-u-1-2">
+                    {% include "processing_dte.html.twig" %}
+                </div>
+            </div>
+
+            <div class="email-content-body">
+                <p>
+                    
+                </p>
+                <div id="pointScoreGrid"></div>
+               
+                
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}

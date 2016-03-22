@@ -115,7 +115,7 @@ class AdjustmentGroupLimitQuery extends CommonQuery
         
         }
         
-        return $this->innerJoin($sAlias,$sTableName,$sSystemAlias, $sSql);
+        return $this->leftJoin($sAlias,$sTableName,$sSystemAlias, $sSql);
     }
     
     
@@ -157,7 +157,7 @@ class AdjustmentGroupLimitQuery extends CommonQuery
         
         }
         
-        return $this->innerJoin($sAlias,$sTableName,$sScoreGroupAlias, $sSql);
+        return $this->leftJoin($sAlias,$sTableName,$sScoreGroupAlias, $sSql);
     }
     
     
