@@ -473,7 +473,7 @@ $app->group('/api', function () use ($app) {
     
     
      /**
-     * List all adj rules assinged at date x and as an option filter by a system zone
+     * List all adj rules assinged at date x and as an option filter by a system zone or an adjustment rule
      * 
      * @return JSON array of adjustment rule entities
      */  
@@ -484,11 +484,18 @@ $app->group('/api', function () use ($app) {
         $oRuleGateway     = $oPointsContainer->getGatewayCollection()->getGateway('pt_rule_sys_zone'); 
         
         $aQueryParam       = $request->getQueryParams();
-        $sZoneId     = null;
+        $sZoneId            = null;
+        $sAdjRuleId         = null;
+        
         
         if(true === isset($aQueryParam['sZoneId']) &&  false === empty($aQueryParam['sZoneId'])) {
             $sZoneId = $aQueryParam['sZoneId'];
         }
+        
+         if(true === isset($aQueryParam['sAdjRuleId']) &&  false === empty($aQueryParam['sAdjRuleId'])) {
+            $sAdjRuleId = $aQueryParam['sAdjRuleId'];
+        }
+        
         
         
         $aResult = $oRuleGateway->selectQuery()
@@ -500,6 +507,11 @@ $app->group('/api', function () use ($app) {
             ->ifThen( false === empty($sZoneId),function($oQuery) use ($sZoneId){
         
                 $oQuery->filterBySystemZone($sZoneId);
+                
+            })
+            ->ifThen(false === empty($sAdjRuleId),function($oQuery) use ($sAdjRuleId) {
+                
+                $oQuery->filterByAdjustmentRule($sAdjRuleId);   
                 
             })
             ->end()         
