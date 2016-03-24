@@ -107,8 +107,8 @@
                     { title: "Modifier", name: "fModifier", type: "text" },
                     { title: "Operation", name: "bInvertFlag", type: "text", itemTemplate: function(value, item) {  if(value === true) { return 'Divisor'; } else { return 'Multiplier';} }},
                     
-                    { title: "Valid From", name: "oEnabledFrom", type: "text",  itemTemplate: function(value, item) { return $.format.date(new Date(value.date), 'yyyy-MM-dd');  } },
-                    { title: "Valid To", name: "oEnabledTo", type: "text" ,     itemTemplate: function(value, item) { return $.format.date(new Date(value.date), 'yyyy-MM-dd');  } },
+                    { title: "Valid From", name: "oEnabledFrom", type: "text",  itemTemplate: function(value, item) { return moment(value.date, "YYYY-MM-DD").format('DD-MM-YYYY');  } },
+                    { title: "Valid To", name: "oEnabledTo", type: "text" ,     itemTemplate: function(value, item) { return moment(value.date, "YYYY-MM-DD").format('DD-MM-YYYY');  } },
                 ]
             });
             
@@ -144,8 +144,8 @@
                     { title: "Zone Name", name: "sSystemZoneName", type: "text" },
                     { title: "System Zone Id", name: "$sSystemZoneID", type: "text", visible: false },
                     { title: "Adj Rule Name", name: "sAdjustmentRuleName", type: "text", visible: false },
-                    { title: "Valid From", name: "oEnabledFrom", type: "text",  itemTemplate: function(value, item) { return $.format.date(new Date(value.date), 'yyyy-MM-dd');  } },
-                    { title: "Valid To", name: "oEnabledTo", type: "text" ,     itemTemplate: function(value, item) { return $.format.date(new Date(value.date), 'yyyy-MM-dd');  } },
+                    { title: "Valid From", name: "oEnabledFrom", type: "text",  itemTemplate: function(value, item) { return moment(value.date, "YYYY-MM-DD").format('DD-MM-YYYY');  } },
+                    { title: "Valid To", name: "oEnabledTo", type: "text" ,     itemTemplate: function(value, item) { return moment(value.date, "YYYY-MM-DD").format('DD-MM-YYYY');  } },
                 ]
             });
                    
@@ -196,7 +196,7 @@
          */ 
         var getPath = function(sApiPath,oOptions) {
                
-            return rtrim(sApiPath,'/') + '/'+ $.format.date(oFilterDate, 'yyyyMMdd') + '?' + $.param(oOptions);
+            return rtrim(sApiPath,'/') + '/'+ moment(oFilterDate).format('YYYYMMDD') + '?' + $.param(oOptions);
         }
         
         

@@ -814,6 +814,48 @@ $app->group('/transactions', function () use ($app) {
 })->add($oQueryLogMiddleware);
 
 
+// Routes - Event Process JSON API
+$app->group('/process', function () use ($app) {
+
+
+    $app->post('/raid',function(ServerRequestInterface $request, ResponseInterface $response, $args){
+        
+         $oPointsContainer =  $this->get('PointsMachine');
+        
+        
+        
+        return $this->view->render($response, 'setup_score_group.html.twig', [
+            'sName' => 'Score Groups',
+            'sDescription' => 'Mange Score Groups'
+        ]);
+    
+        
+        
+        
+    })->setName('process_raid');
+
+
+    $app->post('/donation',function(ServerRequestInterface $request, ResponseInterface $response, $args){
+        
+        
+         $oPointsContainer =  $this->get('PointsMachine');
+        
+        
+        return $this->view->render($response, 'setup_score_group.html.twig', [
+            'sName' => 'Score Groups',
+            'sDescription' => 'Mange Score Groups'
+        ]);
+    
+        
+        
+        
+    })->setName('process_donation');
+
+
+})->add($oQueryLogMiddleware);
+
+
+
 
 // Run app
 $app->run();

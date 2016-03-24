@@ -94,8 +94,8 @@
                     { title: "Name", name: "sScoreGroupName", type: "text" },
                     { title: "Slug Name", name: "sScoreNameSlug", type: "text", visible: false },
                     { title: "Score Value", name: "fScoreValue", type: "text" },
-                    { title: "Valid From", name: "oEnabledFrom", type: "text",  itemTemplate: function(value, item) { return $.format.date(new Date(value.date), 'yyyy-MM-dd');  } },
-                    { title: "Valid To", name: "oEnabledTo", type: "text" ,     itemTemplate: function(value, item) { return $.format.date(new Date(value.date), 'yyyy-MM-dd');  } },
+                    { title: "Valid From", name: "oEnabledFrom", type: "text",  itemTemplate: function(value, item) { return moment(value.date, "YYYY-MM-DD").format('DD-MM-YYYY');  } },
+                    { title: "Valid To", name: "oEnabledTo", type: "text" ,     itemTemplate: function(value, item) { return moment(value.date, "YYYY-MM-DD").format('DD-MM-YYYY');  } },
                 ]
             });
             
@@ -150,7 +150,7 @@
          */ 
         var getPath = function(sApiPath,oOptions) {
                
-            return rtrim(sApiPath,'/') + '/'+ $.format.date(oFilterDate, 'yyyyMMdd') + '?' + $.param(oOptions);
+            return rtrim(sApiPath,'/') + '/'+ moment(oFilterDate).format('YYYYMMDD') + '?' + $.param(oOptions);
         }
         
         

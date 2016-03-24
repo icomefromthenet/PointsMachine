@@ -95,8 +95,8 @@
                     { title: "Episode ID", name: "iEpisodeID", type: "number", visible: false },
                     { title: "id", name: "sEventTypeID", type: "text" },
                     { title: "Name", name: "sEventName", type: "text" },
-                    { title: "Valid From", name: "oEnabledFrom", type: "text",  itemTemplate: function(value, item) { return $.format.date(new Date(value.date), 'yyyy-MM-dd');  } },
-                    { title: "Valid To", name: "oEnabledTo", type: "text" ,     itemTemplate: function(value, item) { return $.format.date(new Date(value.date), 'yyyy-MM-dd');  } },
+                    { title: "Valid From", name: "oEnabledFrom", type: "text",  itemTemplate: function(value, item) { return moment(value.date, "YYYY-MM-DD").format('DD-MM-YYYY');  } },
+                    { title: "Valid To", name: "oEnabledTo", type: "text" ,     itemTemplate: function(value, item) { return moment(value.date, "YYYY-MM-DD").format('DD-MM-YYYY');  } },
                 ]
             });
             
@@ -158,8 +158,8 @@
                             
                     }},
                     {title : "Cap Value"  , name: "fCapValue"   , type: "number" },
-                    { title: "Valid From" , name: "oEnabledFrom", type: "text",  itemTemplate: function(value, item) { return $.format.date(new Date(value.date), 'yyyy-MM-dd');  } },
-                    { title: "Valid To"   , name: "oEnabledTo"  , type: "text" ,     itemTemplate: function(value, item) { return $.format.date(new Date(value.date), 'yyyy-MM-dd');  } },
+                    { title: "Valid From", name: "oEnabledFrom", type: "text",  itemTemplate: function(value, item) { return moment(value.date, "YYYY-MM-DD").format('DD-MM-YYYY');  } },
+                    { title: "Valid To", name: "oEnabledTo", type: "text" ,     itemTemplate: function(value, item) { return moment(value.date, "YYYY-MM-DD").format('DD-MM-YYYY');  } },
                 ]
             });
                    
@@ -211,7 +211,7 @@
          */ 
         var getPath = function(sApiPath,oOptions) {
                
-            return rtrim(sApiPath,'/') + '/'+ $.format.date(oFilterDate, 'yyyyMMdd') + '?' + $.param(oOptions);
+            return rtrim(sApiPath,'/') + '/'+ moment(oFilterDate).format('YYYYMMDD') + '?' + $.param(oOptions);
         }
         
         
