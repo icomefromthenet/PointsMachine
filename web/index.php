@@ -537,9 +537,11 @@ $app->group('/api', function () use ($app) {
         $oPointsContainer  = $this->get('PointsMachine');
         $oAdjLimitGateway  = $oPointsContainer->getGatewayCollection()->getGateway('pt_rule_group_limits'); 
         
-        $aQueryParam       = $request->getQueryParams();
-        $sSystemId         = null;
-        $sScoreGroupId     = null;
+        $aQueryParam        = $request->getQueryParams();
+        $sSystemId          = null;
+        $sScoreGroupId      = null;
+        $sAdjustmentGroupId = null;
+        $sKey               = null; 
         
         if(true === isset($aQueryParam['sScoreGroupId']) &&  false === empty($aQueryParam['sScoreGroupId'])) {
             $sScoreGroupId = $aQueryParam['sScoreGroupId'];
@@ -549,9 +551,18 @@ $app->group('/api', function () use ($app) {
             $sSystemId = $aQueryParam['sSystemId'];
         }
         
+        if(true === isset($aQueryParam['sAdjustmentGroupId']) &&  false === empty($aQueryParam['sAdjustmentGroupId'])) {
+            $sAdjustmentGroupId = $aQueryParam['sAdjustmentGroupId'];
+        }
+        
+        if(true === isset($aQueryParam['sKey']) &&  false === empty($aQueryParam['sKey'])) {
+            $sKey = $aQueryParam['sKey'];
+        }
+        
+        
         $aResult = $oAdjLimitGateway->selectQuery()
             ->start()
-            ->addSelect('ag.rule_group_name AS rule_group_name', 's.system_name AS system_name',' sg.group_name AS score_group_name')
+            ->addSelect('ag.rule_group_name AS rule_group_name', 's.system_name AS system_name','sg.group_name AS score_group_name')
             ->withAdjustmentGroup('ag',$oDate)
             ->withSystem('s',$oDate)
             ->withScoreGroup('sg',$oDate)
@@ -564,6 +575,21 @@ $app->group('/api', function () use ($app) {
             ->ifThen( false === empty($sSystemId),function($oQuery) use ($sSystemId){
         
                 $oQuery->filterBySystem($sSystemId);
+                
+            })
+            ->ifThen( false === empty($sAdjustmentGroupId),function($oQuery) use ($sAdjustmentGroupId){
+        
+                $oQuery->filterByAdjustmentGroup($sAdjustmentGroupId);
+                
+            })
+            ->ifThen($sKey === 'GROUP',function($oQuery){
+        
+                $oQuery->andWhere('sg.group_name IS NOT NULL');
+                
+            })
+            ->ifThen($sKey === 'SYSTEM',function($oQuery){
+            
+                $oQuery->andWhere('s.system_name IS NOT NULL');
                 
             })
             ->end()         

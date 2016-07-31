@@ -45,7 +45,7 @@ class AggValuePass extends AbstractPass
         
             # Insert basic data into the agg table
             # Where expecing the $sRankTmpTableName to be a cross join between the scores and the rules in this calculation run.
-            # Because we may have the same score 1..n times where using a surrogate key `score_slot_id` not the database if from the pt_score table.
+            # Because we may have the same score 1..n times where using a surrogate key `score_slot_id` not the database id from the pt_score table.
            
             $sSql = " INSERT INTO $sAggTmpTableName (score_slot_id, rule_group_ep, rule_group_id, rank, modifier, multiplier, cumval) ";
             $sSql .=" SELECT rnk.score_slot_id, r.rule_group_ep, rnk.rule_group_id, max(rnk.rule_group_seq), 0, 1, 0";

@@ -109,11 +109,12 @@ class PointsMachine
         
         
         # insert score seeds
-        foreach($this->aScores as $sScore) {
+        foreach($this->aScores as $aScore) {
             
             $bSuccess = $oTmpScoreGateway->insertQuery()
              ->start()
-                ->addColumn('score_id',$sScore)
+                ->addColumn('score_id',$aScore[0])
+                ->addColumn('score_qty',$aScore[1])
              ->end()
             ->insert(); 
     
@@ -285,13 +286,13 @@ class PointsMachine
      * @param   string  $sScoreId           The database table id of pt_score
      * @return void
      */ 
-    public function addScore($sScoreId)
+    public function addScore($sScoreId,$iQuantity = 1)
     {
         if(true === empty($sScoreId)) {
             throw new PointsMachineException('The ScoreId must not be empty');
         }
         
-        $this->aScores[] = $sScoreId;
+        $this->aScores[] = array($sScoreId,$iQuantity);
     }
 
     /**

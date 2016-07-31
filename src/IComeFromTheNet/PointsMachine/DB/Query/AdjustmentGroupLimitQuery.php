@@ -51,6 +51,8 @@ class AdjustmentGroupLimitQuery extends CommonQuery
         
         $paramType = $oGateway->getMetaData()->getColumn('score_group_id')->getType();
         
+        $this->andWhere($sAlias."system_id IS NULL");
+        
         return $this->andWhere($sAlias."score_group_id = ".$this->createNamedParameter($sGUID,$paramType));
         
     }
@@ -72,9 +74,12 @@ class AdjustmentGroupLimitQuery extends CommonQuery
         
         $paramType = $oGateway->getMetaData()->getColumn('system_id')->getType();
         
+        $this->andWhere($sAlias."score_group_id IS NULL");
+        
         return $this->andWhere($sAlias."system_id = ".$this->createNamedParameter($sGUID,$paramType));
         
     }
+    
     
     
     /**

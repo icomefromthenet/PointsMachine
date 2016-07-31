@@ -23,6 +23,7 @@ return [
             [
                  'slot_id' => 1
                 ,'score_ep' => null
+                ,'score_qty' => 1
                 ,'score_group_ep' => null
                 ,'score_id'  => '755D1FFF-A190-9F70-21A1-3BCFAB7A60AA'
                 ,'score_group_id' => null
@@ -35,6 +36,7 @@ return [
             ,[
                  'slot_id' => 2
                 ,'score_ep' => null
+                ,'score_qty' => 1
                 ,'score_group_ep' => null
                 ,'score_id'  => '66C19B18-0C52-29A2-09CE-0D9021EDB0CB'
                 ,'score_group_id' => null
@@ -47,6 +49,7 @@ return [
             ,[
                  'slot_id' => 3
                 ,'score_ep' => null
+                ,'score_qty' => 1
                 ,'score_group_ep' => null
                 ,'score_id'  => 'EAF0B47C-B1AA-5867-DDF0-6B09AB03FDA0'
                 ,'score_group_id' => null

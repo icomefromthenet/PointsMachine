@@ -26,6 +26,9 @@
     "autoload": {
         "psr-0": {
             "IComeFromTheNet\\PointsMachine": "src/"
+        },
+        "psr-4": {
+            "IComeFromTheNet\\PointsMachine\\Tests\\": "tests/"
         }
     }
 }

@@ -10,6 +10,7 @@ return [
         [
              'slot_id' => 1
             ,'score_ep' => 1
+            ,'score_qty' => 1
             ,'score_group_ep' => 1
             ,'score_id'  => '755D1FFF-A190-9F70-21A1-3BCFAB7A60AA'
             ,'score_group_id' => 'B1FEA3E0-1568-6C33-2519-14FBCC13BCED'
@@ -24,6 +25,7 @@ return [
         ,[
              'slot_id' => 2
             ,'score_ep' => 4
+            ,'score_qty' => 1
             ,'score_group_ep' => 2
             ,'score_id'  => 'EAF0B47C-B1AA-5867-DDF0-6B09AB03FDA0' // Healing Pot in Alchmey Group
             ,'score_group_id' => 'B123E69A-9055-8593-38AD-7BF7B6E138FC'

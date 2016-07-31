@@ -83,11 +83,12 @@ class DetailSavePass extends AbstractPass
               
             $this->getDatabaseAdaper()->executeUpdate($sSql);
             
-            # Save the scores in the scores table
-            # as scores may be repeated and will always have the same find values we only want to store the first instance with others incrementing a count
+            # Save the scores in the scores table, we have 2 methods to hanle duplicates
+            # 1. As scores may be repeated and will always have the same values we only want to store the first instance with others incrementing a count
+            # 2. Or have a single score with a quantity column value > 1
             $sSql  = "INSERT INTO $sTranScoreTableName ";
             $sSql .=" (`event_id`, `score_ep`, `score_group_ep`, `score_base`, `score_cal_raw`, `score_cal_capped`,`score_quantity`)";
-            $sSql .=" (SELECT `c`.`event_id`, `s`.`score_ep`, `s`.`score_group_ep`, `s`.`score_base`, `s`.`score_cal_raw`, `s`.`score_cal_capped`, 1 ";
+            $sSql .=" (SELECT `c`.`event_id`, `s`.`score_ep`, `s`.`score_group_ep`, `s`.`score_base`, `s`.`score_cal_raw`, `s`.`score_cal_capped`, `s`.`score_qty` ";
             $sSql .=" FROM  $sScoreTmpTableName s";
             $sSql .=" CROSS JOIN $sCommonTmpTableName c )";
             $sSql .=" ON DUPLICATE KEY UPDATE `score_quantity`=`score_quantity`+1 ";
@@ -99,7 +100,7 @@ class DetailSavePass extends AbstractPass
             $sSql  =" INSERT $sTranEventTableName ";
             $sSql .=" (`event_id`, `system_ep`, `zone_ep`, `event_type_ep`, `created_date`, `processing_date`, `occured_date`,`calrunvalue`) ";
             $sSql .=" SELECT `c`.`event_id`, `c`.`system_ep`, `c`.`system_zone_ep`, `c`.`event_type_ep`, NOW() , ";
-            $sSql .="  `c`.`processing_date`, `c`.`processing_date`,(SELECT sum(ifnull(`score_cal_capped`,`score_cal_raw`)) FROM $sScoreTmpTableName) ";
+            $sSql .="  `c`.`processing_date`, `c`.`processing_date`,(SELECT sum((ifnull(`score_cal_capped`,`score_cal_raw`) * `score_qty`)) FROM $sScoreTmpTableName) ";
             $sSql .=" FROM $sCommonTmpTableName c ";
         
             

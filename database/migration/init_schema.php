@@ -201,11 +201,11 @@ class init_schema implements EntityInterface
         $table = $sc->createTable("pt_transaction_score");
         $table->addColumn('event_id'          ,'integer',array("unsigned" => true));
         $table->addColumn('score_ep'          ,'integer',array("unsigned" => true));
-        $table->addColumn('score_group_ep'    ,'integer',array("unsigned" => true,'default'=>null));
+        $table->addColumn('score_group_ep'    ,'integer',array("unsigned" => true, 'default'=>null));
         $table->addColumn('score_base'        ,'float'  ,array("unsigned" => false,'default'=>0));
         $table->addColumn('score_cal_raw'     ,'float'  ,array("unsigned" => false,'default'=>0));
         $table->addColumn('score_cal_capped'  ,'float'  ,array("unsigned" => false,'default'=>0));
-        $table->addColumn('score_quantity'   ,'integer' ,array("unsigned" => true,'default'=>1));
+        $table->addColumn('score_quantity'   ,'integer' ,array("unsigned" => true,' default'=>1));
         
         
         $table->setPrimaryKey(array('event_id','score_ep'));
@@ -285,6 +285,8 @@ class init_schema implements EntityInterface
        
        
    }
+   
+   
     
     public function buildSchema(Connection $db, ASchema $schema)
     {
@@ -294,9 +296,12 @@ class init_schema implements EntityInterface
         $this->getScoresTables($db,$schema);
         $this->getScoringRulesTables($db,$schema);
         $this->getRuleChain($db,$schema);
+       
         
         return $schema;
     }
+    
+    
     
     public function up(Connection $db, Schema $sc)
     {
