@@ -4,7 +4,7 @@ Library to build Points Systems for MySql.
 #Overview
 PointsMachine allows user defined rule systems that can be configured though values stored in database. 
 
-PointsMachine does not provide the GUI but is a set of classes that will manage the processing and storage of rules and scores.
+PointsMachine does not provide the GUI but is a set of classes that will manage the processing and storage.
 
 A points run starts with a selection of scores that are then applied to a formula defined as a series of rule groups chain together with each group containg one to many adjustment rules that either modify or multiply the base score. These scorce can then be rounded and capped.  
 
@@ -14,7 +14,7 @@ To show you how this library is to be used I will implement a DKP or (Dragon Kil
 
 ## Boostrap the Library
 
-First step is to create the system but before we can do that we need to bootstrap the Library Service Container.
+First step is to create the system but before we can do that we need to bootstrap the libraries container.
 
 ```php
 
@@ -61,11 +61,10 @@ $oPointsContainer->boot(new \DateTime('now'));
 
 After the container is started we will be able to start configuring this system.
 
-I use an Active Record pattern to build this libraries data model each entity has both
-a entity::save() and entity::remove() with each entity having 2 constructor arguments.
-
-1. Table Gateway for the database table this entity represents,
-2. The Application Logger,
+I use an Active Record pattern to build this libraries data model each entity has both an entity::save() and an entity::remove().
+The arguments are as follows:
+1. Table Gateway for the database table this entity represents.
+2. The Application Logger.
 
 
 ```php
@@ -90,11 +89,11 @@ a entity::save() and entity::remove() with each entity having 2 constructor argu
 
 ```
 
-After we have defind a name for our points system we should consider if we need any SystemZones.  
+After we have defind the system basic details we should consider if we need any SystemZones.  
 
-A System has Zones these zones should be mutually exclusive to each other for example sales territories. These zones are used to further filter which rules should apply to a score. 
+I best analogy is sales territories these zones are used to further filter which rules should apply and like territories should be mutually exclusive.
 
-For our Raid Calcualtor I'm going to use character classes.
+For our Raid Calcualtor I am going to use character classes a setup might go like.
 
 
 ```php
@@ -139,7 +138,9 @@ For our Raid Calcualtor I'm going to use character classes.
 
 ## Events Types
 
-This abstraction is used to group occurances that would cause a calcualtion run in this raid calcualtor an event could a dungeon raid, an outdoor raid, ro a PVP raid.
+This entity is used to group those occurances that would cause a calcualtion run. 
+
+In this raid calcualtor an event could a dungeon raid, an outdoor raid, ro a PVP raid.
 
 
 ```php
@@ -180,10 +181,11 @@ This abstraction is used to group occurances that would cause a calcualtion run 
 
 ## Score and Score Groups
 
-Scores are the starting values. If this library was used as a discount calculator you could have one score per product but with dungeon raid each score will instead represent
-a minium allowance for attendence. 
+Scores are used to define starting values.
 
-Score Groups are used to categories multiple score values together with the groups used as filters during a caluclation run.
+For this raid calculator I am going to have each score represent an allowance for attendence so each character that attends this raid will start of with x points. 
+
+Score Groups are used to provide categories for scores.  
 
 We start of with 3 Score Groups.
 
@@ -191,6 +193,8 @@ We start of with 3 Score Groups.
 2. PVP Scores.
 3. Donations.
 
+
+Score groups can be used as extra filters during a calculation run for example I don't want PVE rules being applied to PVP scores.
 
 ```php
 
@@ -324,15 +328,14 @@ $oScoreGateway = $oPointsContainer->getGatewayCollection()->getGateway('pt_score
 
 ## Event : Donation 
 
-Start with a formula that will convert the score, elements of that formula will become your Rule Groups and the values 
+Start with a formula that will convert the score the elements of that formula will become your Rule Groups and the values 
 that this group can take will be your adjustment rules. 
 
 For our Donation Event the following conversion formula should be used.
 
 Sum All Donations for the week (Base Score each * Class Difficulty Modifer + Demand Bonus ) <= 500 
 
-For a single week Sunday - Monday following week earn no more than 500 points. 
-Each score will have a class modifer and a deman bonus applied.
+For a single week Sunday - Monday following week earn no more than 500 points. Each score will have a class modifer and a demand bonus applied.
 
 ```php
 
